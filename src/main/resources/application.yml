@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/test
+    password: 12345
+    # create database basic
+
+  jpa:
+    database-platform:  org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+    hibernate:
+      ddl-auto:  create  #update  #create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: 'true'
+    open-in-view: false
+
+  websocket:
+    enabled: true
+
+server:
+  port: '8084'
+
+

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
+</head>
+<body>
+
+<!--<canvas id="canvas1"></canvas>-->
+<!--<canvas id="canvas2"></canvas>-->
+
+<div id="video-canvas" style="width:360px"></div>
+
+<script>
+  <!--// 각 비디오 스트림에 대해 WebSocket 클라이언트 설정
+    var client1 = new WebSocket('ws://localhost:3001');  // 첫 번째 스트림 WebSocket 연결
+    var canvas1 = document.getElementById('canvas1');    // 첫 번째 스트림을 렌더링할 canvas
+    var player1 = new jsmpeg(client1, {                  // jsmpeg로 첫 번째 스트림 재생
+      canvas: canvas1
+    });
+
+    var client2 = new WebSocket('ws://localhost:3002');  // 두 번째 스트림 WebSocket 연결
+    var canvas2 = document.getElementById('canvas2');    // 두 번째 스트림을 렌더링할 canvas
+    var player2 = new jsmpeg(client2, {                  // jsmpeg로 두 번째 스트림 재생
+      canvas: canvas2
+    });
+  -->
+</script>
+
+<script>
+  // 스트림 정보 배열: 포트 번호 또는 스트림 URL 배열
+          var streams = [
+              { wsPort: 3001},{ wsPort: 3002},{ wsPort: 3003},{ wsPort: 3004},{ wsPort: 3005},{ wsPort: 3006},
+              { wsPort: 3007},{ wsPort: 3008},{ wsPort: 3009},{ wsPort: 3010},{ wsPort: 3011}
+          ];
+
+          // 캔버스를 삽입할 컨테이너
+          var container = document.getElementById('video-canvas');
+
+          // 반복문을 통해 각 스트림에 대해 WebSocket 연결 및 canvas 설정
+          streams.forEach(function(stream, index) {
+              // 캔버스 동적 생성
+              var canvas = document.createElement('canvas');
+              canvas.id = 'canvas' + index;
+              canvas.style.width = "200px";  // 원하는 너비 추가
+              canvas.style.height = "200px"; // 높이 설정
+              container.appendChild(canvas); // 동적으로 캔버스를 HTML에 추가
+
+              // WebSocket 연결 설정
+              var client = new WebSocket('ws://localhost:' + stream.wsPort);
+
+              // jsmpeg로 스트림을 캔버스에 렌더링
+              var player = new jsmpeg(client, {
+                canvas: canvas,
+              });
+          });
+</script>
+</body>
+</html>
