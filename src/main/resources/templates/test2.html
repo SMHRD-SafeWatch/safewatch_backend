@@ -37,30 +37,69 @@
 </div>
 
 <script>
-    // script.js
+  // script.js
   // 모달 요소와 버튼을 가져옵니다
   const modal = document.getElementById("myModal");
   const span = document.getElementsByClassName("close")[0];
 
+  // 전역 변수로 선언하여 여러 함수에서 접근 가능하도록 설정
+  let player = null;
+  let client = null;
+
   // 모달 열기
-  function clickModal() {
+  function clickModal(port) {
+      // 기존 스트림이 있다면 중지
+      if (player) {
+          player.stop();
+          player = null;
+      }
+      if (client) {
+          client.close();
+          client = null;
+      }
+
+      client = new WebSocket('ws://localhost:'+port);  // 첫 번째 스트림 WebSocket 연결
+      var canvas = document.getElementById('video');    // 첫 번째 스트림을 렌더링할 canvas
+      player = new jsmpeg(client, {                  // jsmpeg로 첫 번째 스트림 재생
+        canvas: canvas
+      });
       modal.style.display = "block";
   }
 
   // 모달 닫기 (X 버튼 클릭 시)
   span.onclick = function() {
       modal.style.display = "none";
+
+      if (player) {
+          player.stop();
+          player = null;
+      }
+      if (client) {
+          client.close();
+          client = null;
+      }
+
   }
 
   // 모달 닫기 (모달 외부 클릭 시)
   window.onclick = function(event) {
       if (event.target == modal) {
           modal.style.display = "none";
+
+          // jsmpeg 스트림 중지
+          if (player) {
+              player.stop();
+              player = null; // 메모리 해제를 위해 null로 설정
+          }
+
+          // WebSocket 연결 닫기
+          if (client) {
+              client.close();
+              client = null;
+          }
       }
   }
 
-</script>
-<script>
   // 스트림 정보 배열
   var streams = [
       { wsPort: 3001 }, { wsPort: 3002 }, { wsPort: 3003 }, { wsPort: 3004 },
@@ -90,7 +129,9 @@
           canvas.id = 'canvas' + index;
           canvas.style.width = "200px";
           canvas.style.height = "200px";
-          canvas.onclick= clickModal;
+          canvas.onclick = function() {
+            clickModal(stream.wsPort);  // wsPort 값을 전달
+          };
           container.appendChild(canvas);
 
           // WebSocket 연결 설정
