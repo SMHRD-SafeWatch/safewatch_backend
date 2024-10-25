@@ -15,6 +15,7 @@ var rtspList = [
         {"url":'rtsp://210.99.70.120:1935/live/cctv040.stream',"port":3009, "stream":null},
         {"url":'rtsp://210.99.70.120:1935/live/cctv039.stream',"port":3010, "stream":null},
         {"url":'rtsp://210.99.70.120:1935/live/cctv038.stream',"port":3011, "stream":null},
+        {"url":'rtsp://safewatch:123456@192.168.20.17/stream2',"port":3012, "stream":null}
 ];
 
 var rtspListLength = rtspList.length;
