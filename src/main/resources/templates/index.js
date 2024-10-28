@@ -1,7 +1,65 @@
 const Stream = require('node-rtsp-stream');
+
 // npm install oracledb
 const oracledb = require("oracledb")
+const express = require('express');
+const app = express();
+const port = 3000;
 
+const dbConfig = {
+  user: 'Insa5_SpringB_final_3',
+  password: 'aischool3',
+  connectString: 'project-db-stu3.smhrd.com:1524/xe'
+};
+
+// 스트림 관리를 위한 전역 변수
+let activeStreams = {};
+
+app.get('/api/users/:id', (req, res) => {
+    let connection;
+
+      try {
+        // Oracle DB에 연결
+        connection = await oracledb.getConnection(dbConfig);
+
+        // RTSP 정보를 가져오는 SQL 쿼리 실행 (테이블과 컬럼명은 실제 구조에 맞게 수정)
+        const result = await connection.execute(
+          `SELECT url, port FROM camera_install WHERE admin_id = :id`,
+          { id: streamId }
+        );
+
+        // 결과가 존재하는지 확인
+        if (result.rows.length > 0) {
+          const [url, port, name] = result.rows[0];
+
+          // 이미 동일한 스트림이 활성화되어 있는지 확인
+          if (activeStreams[streamId]) {
+            res.status(200).send(`Stream for ID ${streamId} is already active.`);
+            return;
+          }
+
+          // 스트리밍 시작
+          openStream(streamId, url, port);
+          res.status(200).send(`Stream for ID ${streamId} started successfully.`);
+
+        } else {
+          res.status(404).send('Stream ID not found in the database');
+        }
+
+      } catch (err) {
+        console.error('Database error:', err);
+        res.status(500).send('Database connection error');
+      } finally {
+        if (connection) {
+          try {
+            // 연결 종료
+            await connection.close();
+          } catch (err) {
+            console.error('Error closing connection:', err);
+          }
+        }
+      }
+});
 // rtsp 리스트 처리
 var rtspList = [
         {"url":'rtsp://210.99.70.120:1935/live/cctv048.stream',"port":3001, "stream":null},
@@ -15,7 +73,7 @@ var rtspList = [
         {"url":'rtsp://210.99.70.120:1935/live/cctv040.stream',"port":3009, "stream":null},
         {"url":'rtsp://210.99.70.120:1935/live/cctv039.stream',"port":3010, "stream":null},
         {"url":'rtsp://210.99.70.120:1935/live/cctv038.stream',"port":3011, "stream":null},
-        {"url":'rtsp://safewatch:123456@192.168.20.17/stream2',"port":3012, "stream":null}
+        {"url":'rtsp://safewatch:123456@192.168.20.17/stream1',"port":3012, "stream":null}
 ];
 
 var rtspListLength = rtspList.length;
@@ -69,6 +127,7 @@ wss.on('connection', (ws) => {
 });
 
 console.log('WebSocket server is running on ws://localhost:8082');
+
 
 // ffmpeg 설치 : https://ffmpeg.org/
 
