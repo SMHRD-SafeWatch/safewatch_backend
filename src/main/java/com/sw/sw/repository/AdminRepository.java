@@ -13,7 +13,7 @@ public interface AdminRepository extends JpaRepository<Admin, String> {
         count() : 레코드 갯수
         delete() : 레코드 삭제
         findBy : 쿼리를 요청하는 메서드 임을 알림
-        counyBy : 쿼리 결과 레토드 수를 요청하는 메서드 임을 알림
+        countBy : 쿼리 결과 레토드 수를 요청하는 메서드 임을 알림
    */
     public Admin findByAdminIdAndPassword(String adminId, String password);
 }
