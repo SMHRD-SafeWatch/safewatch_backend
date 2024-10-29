@@ -13,22 +13,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EducationService {
 
-    @Autowired
     private final EducationRepository educationRepository;
 
+
     // 교육 일정 목록 가져오기
-    public List<Education> findAll(){
+    public List<Education> educationList(){
         return educationRepository.findAll();
     }
 
     // 교육 일정 정렬
     public List<Education> sortEducations(String sortOption){
-        List<Education> educations = findAll();
+        List<Education> educations = educationList();
 
         if("latest".equals(sortOption)){
-            educations.sort(Comparator.comparing(Education::getEduDate).reversed()); // 최신순
+            educations.sort(Comparator.comparing(Education::getEduDate)); // 최근 순
         } else {
-            educations.sort(Comparator.comparing(Education::getEduDate)); // 오래된 순
+            educations.sort(Comparator.comparing(Education::getEduDate).reversed()); // 먼 미래 순
         }
         return educations;
     }

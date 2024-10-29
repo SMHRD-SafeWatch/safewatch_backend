@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AdminController {
     private final AdminService adminService;
 
-    // 홈 (test용)
+    // 홈
     @GetMapping("/home")
     public String home(){
         return "home";
     }
 
-    // 로그인 페이지
+    // 로그인 페이지 로딩
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("adm", null);
