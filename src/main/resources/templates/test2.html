@@ -35,7 +35,10 @@
     <div id="video"></div>
   </div>
 </div>
+
 <script>
+  let portList = [];
+
   // 데이터를 가져오는 함수
   async function fetchCameraData() {
     try {
@@ -48,13 +51,8 @@
       // JSON 데이터로 변환
       const cameras = await response.json();
 
-      // 데이터를 HTML에 표시
-      const cameraListDiv = document.getElementById('camera-list');
-      cameras.forEach(camera => {
-        const cameraDiv = document.createElement('div');
-        cameraDiv.textContent = `Camera ID: ${camera.id}, Port: ${camera.wsPort}`;
-        cameraListDiv.appendChild(cameraDiv);
-      });
+      portList = cameras.map(camera => ({ wsPort: camera.port }));
+      renderVideos(); // 데이터가 로드된 후 비디오 렌더링
     } catch (error) {
       console.error('Error fetching camera data:', error);
     }
@@ -62,176 +60,132 @@
 
   // 페이지가 로드되면 데이터 가져오기
   window.onload = fetchCameraData;
-</script>
-<script>
 
-   // script.js
-   // 모달 요소와 버튼을 가져옵니다
-   const modal = document.getElementById("myModal");
-   const span = document.getElementsByClassName("close")[0];
+  const modal = document.getElementById("myModal");
+  const span = document.getElementsByClassName("close")[0];
 
-   // 전역 변수로 선언하여 여러 함수에서 접근 가능하도록 설정
-   let player2 = null;
-   let client2 = null;
-   const canvas2 = document.getElementById("video")
+  let player2 = null;
+  let client2 = null;
+  const canvas2 = document.getElementById("video");
 
-   // 모달 열기
-   function clickModal(port) {
-       // 기존 스트림이 있다면 중지
- <!--      if (player2) {-->
- <!--          player2.stop();-->
- <!--          player2 = null;-->
- <!--      }-->
- <!--      if (client2) {-->
- <!--          client2.close();-->
- <!--          client2 = null;-->
- <!--      }-->
- <!--      canvas2.innerHTML = '';-->
+  // 모달 열기
+  function clickModal(port) {
+      if (player2) {
+          player2.stop();
+          player2 = null;
+      }
+      if (client2) {
+          client2.close();
+          client2 = null;
+      }
+      canvas2.innerHTML = '';
 
-       // <canvas> 요소 동적 생성
-       const canvas3 = document.createElement('canvas');
-       canvas3.id = 'canvasModal'; // ID를 부여하여 나중에 참조 가능하게 설정
-       canvas3.width = 640; // 원하는 너비 설정
-       canvas3.height = 480; // 원하는 높이 설정
+      const canvas3 = document.createElement('canvas');
+      canvas3.id = 'canvasModal';
+      canvas3.width = 640;
+      canvas3.height = 480;
+      canvas2.appendChild(canvas3);
 
-       // <div>에 <canvas> 추가
-       canvas2.appendChild(canvas3);
+      client2 = new WebSocket('ws://localhost:' + port);
+      player2 = new jsmpeg(client2, { canvas: canvas3 });
+      modal.style.display = "block";
+  }
 
-       client2 = new WebSocket('ws://localhost:'+port);  //스트림 WebSocket 연결
-       var canvas = document.getElementById('canvasModal');    //스트림을 렌더링할 canvas
-       player2 = new jsmpeg(client2, {                  // jsmpeg로 스트림 재생
-         canvas: canvas
-       });
-       modal.style.display = "block";
-   }
+  // 모달 닫기 (X 버튼 클릭 시)
+  span.onclick = function() {
+      if (player2) {
+          player2.stop();
+          player2 = null;
+      }
+      if (client2) {
+          client2.close();
+          client2 = null;
+      }
+      canvas2.innerHTML = '';
+      modal.style.display = "none";
+  }
 
-   // 모달 닫기 (X 버튼 클릭 시)
-   span.onclick = function() {
+  // 모달 닫기 (모달 외부 클릭 시)
+  window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+          if (player2) {
+              player2.stop();
+              player2 = null;
+          }
+          if (client2) {
+              client2.close();
+              client2 = null;
+          }
+          canvas2.innerHTML = '';
+      }
+  }
 
-       if (player2) {
-           player2.stop();
-           player2 = null;
-       }
-       if (client2) {
-           client2.close();
-           client2 = null;
-       }
-       canvas2.innerHTML = '';
-       modal.style.display = "none";
+  let currentPage = 1;
+  const itemsPerPage = 6;
+  const container = document.getElementById('video-canvas');
 
-   }
+  let players = [];
+  let clients = [];
 
-   // 모달 닫기 (모달 외부 클릭 시)
-   window.onclick = function(event) {
-       if (event.target == modal) {
-           modal.style.display = "none";
+  function renderVideos() {
+      container.innerHTML = '';
+      if (players.length > 0) {
+          players.forEach(player => player.stop());
+          players = [];
+      }
+      if (clients.length > 0) {
+          clients.forEach(client => client.close());
+          clients = [];
+      }
 
-           // jsmpeg 스트림 중지
-           if (player2) {
-               player2.stop();
-               player2 = null; // 메모리 해제를 위해 null로 설정
-           }
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const currentItems = portList.slice(startIndex, endIndex);
 
-           // WebSocket 연결 닫기
-           if (client2) {
-               client2.close();
-               client2 = null;
-           }
-           canvas2.innerHTML = '';
-       }
-   }
+      currentItems.forEach((portObj, index) => {
+          const canvas = document.createElement('canvas');
+          canvas.id = 'canvas' + index;
+          canvas.style.width = "200px";
+          canvas.style.height = "200px";
+          canvas.onclick = function() {
+              clickModal(portObj.wsPort);
+          };
+          container.appendChild(canvas);
 
-   // 스트림 정보 배열
-   var streams = [
-       { wsPort: 3001 }, { wsPort: 3002 }, { wsPort: 3003 }, { wsPort: 3004 },
-       { wsPort: 3005 }, { wsPort: 3006 }, { wsPort: 3007 }, { wsPort: 3008 },
-       { wsPort: 3009 }, { wsPort: 3010 }, { wsPort: 3011 }, { wsPort: 3012 }
-   ];
+          const client = new WebSocket('ws://localhost:' + portObj.wsPort);
+          clients.push(client);
 
+          const player = new jsmpeg(client, {
+              canvas: canvas,
+          });
+          players.push(player);
+      });
 
-   // 페이지네이션 설정
-   let currentPage = 1;
-   const itemsPerPage = 6; // 한 페이지에 표시할 cctv수
-   const container = document.getElementById('video-canvas');
+      updatePageInfo();
+  }
 
- let players = [];
- let clients = [];
+  function updatePageInfo() {
+      const pageInfo = document.getElementById('page-info');
+      const totalPages = Math.ceil(portList.length / itemsPerPage);
+      pageInfo.textContent = `페이지 ${currentPage} / ${totalPages}`;
+  }
 
- function renderVideos() {
-     // 기존 비디오 제거 및 연결 해제
-     container.innerHTML = '';
-     if (players.length > 0) {
-         players.forEach(player => {
-             player.stop();  // 기존 jsmpeg 인스턴스 정지
-         });
-         players = []; // 배열 비우기
-     }
+  document.getElementById('prev-button').addEventListener('click', () => {
+      if (currentPage > 1) {
+          currentPage--;
+          renderVideos();
+      }
+  });
 
-     if (clients.length > 0) {
-         clients.forEach(client => {
-             client.close(); // 기존 WebSocket 연결 닫기
-         });
-         clients = []; // 배열 비우기
-     }
+  document.getElementById('next-button').addEventListener('click', () => {
+      const totalPages = Math.ceil(portList.length / itemsPerPage);
+      if (currentPage < totalPages) {
+          currentPage++;
+          renderVideos();
+      }
+  });
 
-     // 시작 인덱스와 끝 인덱스 계산
-     const startIndex = (currentPage - 1) * itemsPerPage;
-     const endIndex = startIndex + itemsPerPage;
-     const currentItems = streams.slice(startIndex, endIndex);
-
-     // 현재 페이지의 스트림을 렌더링
-     currentItems.forEach(function (stream, index) {
-         var canvas = document.createElement('canvas');
-         canvas.id = 'canvas' + index;
-         canvas.style.width = "200px";
-         canvas.style.height = "200px";
-         canvas.onclick = function() {
-             clickModal(stream.wsPort);
-         };
-         container.appendChild(canvas);
-
-         // WebSocket 연결 설정
-         var client = new WebSocket('ws://localhost:' + stream.wsPort);
-         clients.push(client);  // 연결 배열에 저장
-
-         // jsmpeg로 스트림을 캔버스에 렌더링
-         var player = new jsmpeg(client, {
-             canvas: canvas,
-         });
-         players.push(player);  // jsmpeg 인스턴스 배열에 저장
-     });
-
-
-       // 페이지 정보 업데이트
-       updatePageInfo();
-   }
-
-   // 페이지 정보 업데이트 함수
-   function updatePageInfo() {
-       const pageInfo = document.getElementById('page-info');
-       const totalPages = Math.ceil(streams.length / itemsPerPage);
-       pageInfo.textContent = `페이지 ${currentPage} / ${totalPages}`;
-   }
-
-   // 이전 페이지 버튼 클릭 핸들러
-   document.getElementById('prev-button').addEventListener('click', () => {
-       if (currentPage > 1) {
-           currentPage--;
-           renderVideos();
-       }
-   });
-
-   // 다음 페이지 버튼 클릭 핸들러
-   document.getElementById('next-button').addEventListener('click', () => {
-       const totalPages = Math.ceil(streams.length / itemsPerPage);
-       if (currentPage < totalPages) {
-           currentPage++;
-           renderVideos();
-       }
-   });
-
-   // 초기 비디오 렌더링
-   renderVideos();
 </script>
 
 </body>
