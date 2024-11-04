@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detection Data</title>
+</head>
+<body>
+<h1>Detection Data</h1>
+<table border="1">
+  <thead>
+  <tr>
+    <th>riskLevel</th>
+    <th>Image URL</th>
+    <th>detectionTime</th>
+    <th>Warning Type</th>
+    <th>Location</th>
+    <th>Camera ID</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- details 리스트의 데이터를 반복하여 테이블에 표시 -->
+  <tr th:each="detection : ${details}">
+    <td th:text="${detection?.riskLevel}"></td>
+    <td><img th:src="@{/img/frame_8.jpg}" width = "200" height = "200"/></td>
+    <td th:text="${detection?.detectionTime}"></td>
+    <td th:text="${detection.warning?.warningType}"></td>
+    <td th:text="${detection.cameraInstall?.location}"></td>
+    <td th:text="${detection.cameraInstall?.cameraId}"></td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
