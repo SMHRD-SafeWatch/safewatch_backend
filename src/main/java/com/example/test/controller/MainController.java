@@ -9,6 +9,6 @@ public class MainController {
     @GetMapping("/")
     public String main(){
 
-        return "test2";
+        return "stream";
     }
 }

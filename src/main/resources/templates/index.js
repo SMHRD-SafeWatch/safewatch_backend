@@ -46,7 +46,6 @@ function openStream(obj){
                 wsPort: obj.port,
                 ffmpegOptions: { //ffmpeg 설정
                         '-stats': '', // 통계표시
-                        '-r': 30, // 프레임 속도 설정
                 }
         });
 
