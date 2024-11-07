@@ -98,20 +98,5 @@ app.listen(PORT, () => {
 
 // ffmpeg 설치 : https://ffmpeg.org/
 
-// node_modules -> node-rtsp-stream -> mpeg1muxer.js 설정 확인
-/*this.spawnOptions = [
-      "-rtsp_transport", "tcp", "-i",
-      this.url,
-      '-f',
-      'mpeg1video',
-      '-b:v', '1000k',
-      '-maxrate', '1000k',
-      '-bufsize', '1000k',
-      '-an', '-r', '24',
-      // additional ffmpeg options go here
-      ...this.additionalFlags,
-      '-'
-    ]*/
-
 // node src/main/resources/templates/index.js
 // 터미널에 입력 node 실행
