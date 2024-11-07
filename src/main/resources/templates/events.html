@@ -23,12 +23,79 @@
   <tr th:each="detection : ${details}">
     <td th:text="${detection?.riskLevel}"></td>
     <td><img th:src="@{/img/frame_8.jpg}" width = "200" height = "200"/></td>
-    <td th:text="${detection?.detectionTime}"></td>
-    <td th:text="${detection.warning?.warningType}"></td>
+    <td th:text="${detection?.formattedDetectionTime}"></td>
+    <td th:text="${detection?.content}"></td>
     <td th:text="${detection.cameraInstall?.location}"></td>
     <td th:text="${detection.cameraInstall?.cameraId}"></td>
   </tr>
   </tbody>
 </table>
+
+<!-- 팝업 HTML 구조 -->
+<div id="alertPopup" style="display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -20%); background: white; border: 2px solid red; padding: 20px; width: 300px; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  <h2>⚠️ 알림 - 매우 위험</h2>
+  <img id="popupImage" src="" alt="Detection Image" width="100%" style="margin-bottom: 10px;">
+  <p>카메라 ID: <span id="popupCameraId"></span></p>
+  <p>발생 시간: <span id="popupDetectionTime"></span></p>
+  <p>상황 설명: <span id="popupContent"></span></p>
+  <p>위치: <span id="popupLocation"></span></p>
+  <button onclick="closeAlertPopup()" style="margin-top: 10px;">확인</button>
+</div>
+
+<!-- WebSocket Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script type="text/javascript">
+  var socket = new SockJS('/ws');
+  var stompClient = Stomp.over(socket);
+  var lastAlertData = null; // 마지막으로 표시된 알림 데이터 저장
+
+  stompClient.connect({}, function (frame) {
+      stompClient.subscribe('/topic/alerts', function (message) {
+          var alertData = JSON.parse(message.body);
+          console.log("js에서 값을 가져와? :", alertData);
+            // 팝업을 표시하고 alertData로부터 받은 값을 HTML 요소에 표시
+
+<!--            if (!isSameAlert(lastAlertData, alertData)) {-->
+
+              document.getElementById("popupImage").src = alertData.imageUrl;
+              document.getElementById("popupCameraId").textContent = alertData.cameraId;
+              document.getElementById("popupDetectionTime").textContent = new Date(alertData.detectionTime).toLocaleString();
+              document.getElementById("popupContent").textContent = alertData.content;
+              document.getElementById("popupLocation").textContent = alertData.location;
+
+            // 팝업을 표시하는 함수 호출
+            showAlertPopup();
+            lastAlertData = alertData; // 마지막 알림 데이터를 업데이트
+
+<!--          }-->
+
+      });
+  });
+<!-- function isSameAlert(alert1, alert2) {-->
+<!-- if (!alert1 || !alert2) return false;-->
+<!--  return (-->
+<!--    alert1.imageUrl === alert2.imageUrl &&-->
+<!--    alert1.cameraId === alert2.cameraId &&-->
+<!--    alert1.detectionTime === alert2.detectionTime &&-->
+<!--    alert1.content === alert2.content &&-->
+<!--    alert1.location === alert2.location-->
+<!--  );-->
+<!--}-->
+
+
+
+   function showAlertPopup() {
+        // 실제 팝업 표시 로직 작성
+        console.log("showAlertPopup 잘 가져옴");
+        document.getElementById("alertPopup").style.display = "block";
+    }
+  function closeAlertPopup() {
+        document.getElementById("alertPopup").style.display = "none";
+        console.log("closeAlertPopup 잘 가져옴");
+    }
+</script>
+
 </body>
 </html>

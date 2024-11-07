@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -35,6 +37,9 @@ public class Detection {
     @Column(name = "risk_level")
     private String riskLevel;
 
+    @Column(name = "content")
+    private String content;
+
     @ManyToOne
     @JoinColumn(name = "camera_id", insertable = false, updatable = false)
     private CameraInstall cameraInstall;
@@ -42,5 +47,8 @@ public class Detection {
     @OneToOne
     @JoinColumn(name = "detection_id", referencedColumnName = "detection_id", insertable = false, updatable = false)
     private Warning warning;
+
+    @Transient
+    private String formattedDetectionTime;
 }
 

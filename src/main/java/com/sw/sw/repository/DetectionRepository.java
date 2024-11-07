@@ -11,5 +11,8 @@ import java.util.List;
 public interface DetectionRepository extends JpaRepository<Detection, Long> {
 
     List<Detection> findAll();
+
+    @Query("SELECT d FROM Detection d WHERE d.detectionId = (SELECT MAX(d2.detectionId) FROM Detection d2)")
+    Detection findLatest();
 }
 
