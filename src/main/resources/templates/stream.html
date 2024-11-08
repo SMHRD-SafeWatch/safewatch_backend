@@ -64,19 +64,18 @@
   const modal = document.getElementById("myModal");
   const span = document.getElementsByClassName("close")[0];
 
-  let player2 = null;
-  let client2 = null;
+  let modal_player = null;
+  let modal_client = null;
   const modal_video = document.getElementById("video");
 
-  //
   function clickModal(port) {
-      if (player2) {
-          player2.stop();
-          player2 = null;
+      if (modal_player) {
+          modal_player.stop();
+          modal_player = null;
       }
-      if (client2) {
-          client2.close();
-          client2 = null;
+      if (modal_client) {
+          modal_client.close();
+          modal_client = null;
       }
       modal_video.innerHTML = '';
 
@@ -86,20 +85,20 @@
       stream_video.height = 480;
       modal_video.appendChild(stream_video);
 
-      client2 = new WebSocket('ws://localhost:' + port);
-      player2 = new jsmpeg(client2, { canvas: stream_video });
+      modal_client = new WebSocket('ws://localhost:' + port);
+      modal_player = new jsmpeg(modal_client, { canvas: stream_video });
       modal.style.display = "block";
   }
 
   // 모달 닫기 (X 버튼 클릭 시)
   span.onclick = function() {
-      if (player2) {
-          player2.stop();
-          player2 = null;
+      if (modal_player) {
+          modal_player.stop();
+          modal_player = null;
       }
-      if (client2) {
-          client2.close();
-          client2 = null;
+      if (modal_client) {
+          modal_client.close();
+          modal_client = null;
       }
       modal_video.innerHTML = '';
       modal.style.display = "none";
@@ -109,13 +108,13 @@
   window.onclick = function(event) {
       if (event.target == modal) {
           modal.style.display = "none";
-          if (player2) {
-              player2.stop();
-              player2 = null;
+          if (modal_player) {
+              modal_player.stop();
+              modal_player = null;
           }
-          if (client2) {
-              client2.close();
-              client2 = null;
+          if (modal_client) {
+              modal_client.close();
+              modal_client = null;
           }
           modal_video.innerHTML = '';
       }
