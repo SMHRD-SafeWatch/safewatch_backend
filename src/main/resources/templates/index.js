@@ -21,7 +21,7 @@ async function fetchData() {
 
         // `camera_url`과 `port`만 추출한 리스트 생성
         const rtspList = cameras.map(camera => ({
-            url: camera.camera_url,
+            url: camera.cameraUrl,
             port: camera.port
         }));
 

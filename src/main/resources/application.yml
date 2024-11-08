@@ -4,7 +4,6 @@ spring:
     username: Insa5_SpringB_final_3
     url: jdbc:oracle:thin:@project-db-stu3.smhrd.com:1524:xe
     password: aischool3
-    # create database basic
 
   jpa:
     hibernate:
@@ -13,10 +12,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.OracleDialect
 
+  thymeleaf:
+    cache: false
+
   websocket:
     enabled: true
 
 server:
   port: '8084'
-
-

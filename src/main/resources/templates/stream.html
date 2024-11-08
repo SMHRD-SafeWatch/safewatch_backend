@@ -66,7 +66,7 @@
 
   let player2 = null;
   let client2 = null;
-  const canvas2 = document.getElementById("video");
+  const modal_video = document.getElementById("video");
 
   //
   function clickModal(port) {
@@ -78,16 +78,16 @@
           client2.close();
           client2 = null;
       }
-      canvas2.innerHTML = '';
+      modal_video.innerHTML = '';
 
-      const canvas3 = document.createElement('canvas');
-      canvas3.id = 'canvasModal';
-      canvas3.width = 640;
-      canvas3.height = 480;
-      canvas2.appendChild(canvas3);
+      const stream_video = document.createElement('canvas');
+      stream_video.id = 'canvasModal';
+      stream_video.width = 640;
+      stream_video.height = 480;
+      modal_video.appendChild(stream_video);
 
       client2 = new WebSocket('ws://localhost:' + port);
-      player2 = new jsmpeg(client2, { canvas: canvas3 });
+      player2 = new jsmpeg(client2, { canvas: stream_video });
       modal.style.display = "block";
   }
 
@@ -101,7 +101,7 @@
           client2.close();
           client2 = null;
       }
-      canvas2.innerHTML = '';
+      modal_video.innerHTML = '';
       modal.style.display = "none";
   }
 
@@ -117,7 +117,7 @@
               client2.close();
               client2 = null;
           }
-          canvas2.innerHTML = '';
+          modal_video.innerHTML = '';
       }
   }
 

@@ -1,7 +1,7 @@
-package com.example.test.controller;
+package com.sw.sw.controller;
 
-import com.example.test.entity.Camera_Install;
-import com.example.test.repository.Camera_InstallRepository;
+import com.sw.sw.entity.CameraInstall;
+import com.sw.sw.repository.CameraInstallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,13 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class CameraController {
+public class RestAPIController {
 
     @Autowired
-    private Camera_InstallRepository camera_installRepository;
+    private CameraInstallRepository camerainstallRepository;
 
     @GetMapping("/portget")
-    public List<Camera_Install> portGet(){
-        return camera_installRepository.findAll();
+    public List<CameraInstall> portGet(){
+        return camerainstallRepository.findAll();
     }
+
 }
