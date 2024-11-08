@@ -6,7 +6,7 @@
   <title>Modal 예제</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
   <style>
-    #video-canvas {
+    #streams {
         display: grid;
         grid-template-columns: repeat(3, 1fr); /* 한 행에 3개의 비디오 */
         gap: 10px;
@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div id="video-canvas" style="width:700px"></div>
+<div id="streams" style="width:700px"></div>
 <div id="pagination-controls">
   <button id="prev-button">이전</button>
   <span id="page-info"></span>
@@ -32,7 +32,7 @@
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>모달 제목</h2>
-    <div id="video"></div>
+    <div id="stream"></div>
   </div>
 </div>
 
@@ -66,7 +66,7 @@
 
   let modal_player = null;
   let modal_client = null;
-  const modal_video = document.getElementById("video");
+  const modal_video = document.getElementById("stream");
 
   function clickModal(port) {
       if (modal_player) {
@@ -81,8 +81,8 @@
 
       const stream_video = document.createElement('canvas');
       stream_video.id = 'canvasModal';
-      stream_video.width = 640;
-      stream_video.height = 480;
+      stream_video.style.width = "640px";
+      stream_video.style.height = "480px";
       modal_video.appendChild(stream_video);
 
       modal_client = new WebSocket('ws://localhost:' + port);
@@ -122,7 +122,7 @@
 
   let currentPage = 1;
   const itemsPerPage = 6;
-  const container = document.getElementById('video-canvas');
+  const container = document.getElementById('streams');
 
   let players = [];
   let clients = [];

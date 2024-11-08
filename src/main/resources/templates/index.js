@@ -44,7 +44,7 @@ function openStream(obj){
                 name: 'name',
                 streamUrl : obj.url,
                 wsPort: obj.port,
-                ffmpegOptions: { //ffmpeg 설정
+                ffmpegOptions: {
                         '-stats': '', // 통계표시
                 }
         });
