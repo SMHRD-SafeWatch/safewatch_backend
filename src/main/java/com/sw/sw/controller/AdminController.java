@@ -20,7 +20,6 @@ public class AdminController {
         return "monitoring";
     }
 
-
     // 홈
     @GetMapping("/home")
     public String home(){

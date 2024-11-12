@@ -1,0 +1,131 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    width: 170px;
+    background-color: #000000;
+    color: #ffffff;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px 5px 15px 0px;
+}
+
+.logo {
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.logo-icon {
+    margin-right: 10px;
+}
+
+.logo-icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.menu {
+    flex-grow: 1;
+}
+
+.menu ul {
+    list-style-type: none;
+}
+
+.menu-item {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    position: relative;
+}
+
+.menu-item.active {
+    color: #00E5FF;
+}
+
+.main-content {
+    padding: 20px;
+    width: 100%;
+    background-color: #fbfbfb;
+}
+
+.main-content header{
+    margin: 5px 0 0 10px;
+}
+
+.main-text {
+    color: #00B8D4;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.main-content p {
+    color: #767676;
+    font-size: 13px;
+}
+
+.menu-item.active::before {
+    content: '';
+    width: 6px;
+    height: 90%;
+    background-color: #00E5FF;
+    position: absolute;
+    left: 0;
+    top: 5;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.menu-icon1 {
+    mask: url('../icon/monitoring.svg') no-repeat center;
+}
+.menu-icon2 {
+    mask: url('../icon/events.svg') no-repeat center;
+}
+.menu-icon3 {
+    mask: url('../icon/analytics.svg') no-repeat center;
+}
+.menu-icon4 {
+    mask: url('../icon/settings.svg') no-repeat center;
+}
+
+
+.menu-icon1,
+.menu-icon2,
+.menu-icon3,
+.menu-icon4  {
+    width: 24px;
+    height: 24px;
+    background-color: #ffffff;
+    margin: 0px 10px 0px 0px;
+}
+
+.menu-item.active .menu-icon1,
+.menu-item.active .menu-icon2,
+.menu-item.active .menu-icon3,
+.menu-item.active .menu-icon4 {
+    background-color: #00E5FF;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 10px 0;
+}
