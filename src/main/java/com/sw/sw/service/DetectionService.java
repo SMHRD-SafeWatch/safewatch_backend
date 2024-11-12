@@ -12,7 +12,6 @@ import java.util.List;
 @Service
 public class DetectionService {
 
-
     @Autowired
     private DetectionRepository detectionRepository;
 

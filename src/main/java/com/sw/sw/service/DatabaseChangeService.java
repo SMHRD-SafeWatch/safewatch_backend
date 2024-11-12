@@ -26,14 +26,15 @@ public class DatabaseChangeService {
         Detection detectionCg = detectionRepository.findLatest();
 
 
-        if (detectionCg != null && !detectionCg.getDetectionId().equals(lastDetectionId) && ("high".equalsIgnoreCase(detectionCg.getRiskLevel()) || "medium".equalsIgnoreCase(detectionCg.getRiskLevel()))) {
+        if (detectionCg != null && !detectionCg.getDetectionId().equals(lastDetectionId)) {
             String location = detectionCg.getCameraInstall() != null ? detectionCg.getCameraInstall().getLocation() : "Unknown Location";
             DetectionAlert alert = new DetectionAlert(
                     detectionCg.getImageUrl(),
                     detectionCg.getCameraId(),
                     detectionCg.getDetectionTime(),
                     detectionCg.getContent(),
-                    location
+                    location,
+                    detectionCg.getRiskLevel()
             );
 
             messagingTemplate.convertAndSend("/topic/alerts", alert);

@@ -48,42 +48,54 @@
 
 <script type="text/javascript">
   var socket = new SockJS('/ws');
-  var stompClient = Stomp.over(socket);
-  var lastAlertData = null; // 마지막으로 표시된 알림 데이터 저장
+var stompClient = Stomp.over(socket);
 
-  stompClient.connect({}, function (frame) {
-      stompClient.subscribe('/topic/alerts', function (message) {
-          var alertData = JSON.parse(message.body);
-          console.log("js에서 값을 가져와? :", alertData);
-            // 팝업을 표시하고 alertData로부터 받은 값을 HTML 요소에 표시
+stompClient.connect({}, function (frame) {
+    stompClient.subscribe('/topic/alerts', function (message) {
+        var alertData = JSON.parse(message.body);
+        console.log("새로운 알림 데이터:", alertData);
 
-              document.getElementById("popupImage").src = alertData.imageUrl;
-              document.getElementById("popupCameraId").textContent = alertData.cameraId;
-              document.getElementById("popupDetectionTime").textContent = new Date(alertData.detectionTime).toLocaleString();
-              document.getElementById("popupContent").textContent = alertData.content;
-              document.getElementById("popupLocation").textContent = alertData.location;
+        // 알림 데이터를 localStorage에 저장
+        localStorage.setItem("alertData", JSON.stringify(alertData));
 
-            // 팝업을 표시하는 함수 호출
-            showAlertPopup();
-            lastAlertData = alertData; // 마지막 알림 데이터를 업데이트
+        // 페이지 새로고침
+        location.reload(true);
+    });
+});
 
 
 
-      });
-  });
+// 페이지 로드 시 localStorage에서 alertData를 확인하고 팝업 표시
+window.addEventListener("load", function () {
+    var storedAlertData = localStorage.getItem("alertData");
+    if (storedAlertData) {
+        var alertData = JSON.parse(storedAlertData);
 
+        // 알림 데이터를 화면에 표시
+        if (alertData.riskLevel === "high" || alertData.riskLevel === "medium") {
+        document.getElementById("popupImage").src = alertData.imageUrl;
+        document.getElementById("popupCameraId").textContent = alertData.cameraId;
+        document.getElementById("popupDetectionTime").textContent = new Date(alertData.detectionTime).toLocaleString();
+        document.getElementById("popupContent").textContent = alertData.content;
+        document.getElementById("popupLocation").textContent = alertData.location;
 
-
-
-   function showAlertPopup() {
-        // 실제 팝업 표시 로직 작성
-        console.log("showAlertPopup 잘 가져옴");
-        document.getElementById("alertPopup").style.display = "block";
+        // 팝업 표시
+        showAlertPopup();
     }
-  function closeAlertPopup() {
-        document.getElementById("alertPopup").style.display = "none";
-        console.log("closeAlertPopup 잘 가져옴");
+        // 팝업을 띄운 후 localStorage에서 데이터 제거
+        localStorage.removeItem("alertData");
     }
+});
+
+function showAlertPopup() {
+    console.log("showAlertPopup 실행됨");
+    document.getElementById("alertPopup").style.display = "block";
+}
+
+function closeAlertPopup() {
+    document.getElementById("alertPopup").style.display = "none";
+    console.log("closeAlertPopup 실행됨");
+}
 </script>
 
 </body>

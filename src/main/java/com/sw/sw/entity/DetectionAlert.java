@@ -18,6 +18,6 @@ public class DetectionAlert {
     private LocalDateTime detectionTime;
     private String content;
     private String location;
-
+    private String riskLevel;
 }
 
