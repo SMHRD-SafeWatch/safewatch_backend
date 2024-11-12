@@ -14,6 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AdminController {
     private final AdminService adminService;
 
+    // monitoring Test용 이동
+    @GetMapping("/monitoring")
+    public String monitoring(){
+        return "monitoring";
+    }
+
+
     // 홈
     @GetMapping("/home")
     public String home(){

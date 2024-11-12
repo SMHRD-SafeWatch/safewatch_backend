@@ -1,8 +1,6 @@
 package com.sw.sw.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +18,17 @@ import java.time.LocalDateTime;
 public class Education {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="edu_id")
     private int eduId;
+
+    @Column(name ="edu_date")
     private LocalDateTime eduDate;
+
+    @Column(name ="edu_name")
     private String eduName;
+
+    @Column(name ="edu_duration")
     private int eduDuration;
 
     // 월
@@ -50,12 +56,11 @@ public class Education {
         }
     }
 
-    // 교육시간(시작시간~종료시간)
+    // 교육시간
     public String getFormattedDate() {
         LocalDateTime startDateTime = eduDate;
         LocalDateTime endDateTime = startDateTime.plusMinutes(eduDuration);
 
-        // 시간 (시:분)
         String startTime = String.format("%02d:%02d", startDateTime.getHour(), startDateTime.getMinute());
         String endTime = String.format("%02d:%02d", endDateTime.getHour(), endDateTime.getMinute());
         return startTime + "~" + endTime;
