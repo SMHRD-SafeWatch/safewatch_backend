@@ -57,8 +57,6 @@
           console.log("js에서 값을 가져와? :", alertData);
             // 팝업을 표시하고 alertData로부터 받은 값을 HTML 요소에 표시
 
-<!--            if (!isSameAlert(lastAlertData, alertData)) {-->
-
               document.getElementById("popupImage").src = alertData.imageUrl;
               document.getElementById("popupCameraId").textContent = alertData.cameraId;
               document.getElementById("popupDetectionTime").textContent = new Date(alertData.detectionTime).toLocaleString();
@@ -69,20 +67,11 @@
             showAlertPopup();
             lastAlertData = alertData; // 마지막 알림 데이터를 업데이트
 
-<!--          }-->
+
 
       });
   });
-<!-- function isSameAlert(alert1, alert2) {-->
-<!-- if (!alert1 || !alert2) return false;-->
-<!--  return (-->
-<!--    alert1.imageUrl === alert2.imageUrl &&-->
-<!--    alert1.cameraId === alert2.cameraId &&-->
-<!--    alert1.detectionTime === alert2.detectionTime &&-->
-<!--    alert1.content === alert2.content &&-->
-<!--    alert1.location === alert2.location-->
-<!--  );-->
-<!--}-->
+
 
 
 

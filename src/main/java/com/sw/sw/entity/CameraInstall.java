@@ -18,7 +18,7 @@ public class CameraInstall {
 
     @Id
     @Column(name = "camera_id")
-    private Long cameraId;
+    private String cameraId;
 
     private String location;
 
@@ -40,4 +40,8 @@ public class CameraInstall {
 
     @OneToMany(mappedBy = "cameraInstall")
     private List<Detection> detections;
+
+    public CameraInstall(String cameraId) {
+        this.cameraId = cameraId;
+    }
 }

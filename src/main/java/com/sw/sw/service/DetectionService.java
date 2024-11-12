@@ -33,6 +33,9 @@ public class DetectionService {
         }
         return detections;
     }
+    public Detection saveDetection(Detection detection) {
+        return detectionRepository.save(detection);
+    }
 
 
 

@@ -23,7 +23,7 @@ public class Detection {
     private Long detectionId;
 
     @Column(name = "camera_id")
-    private Long cameraId;
+    private String cameraId;
 
     @Column(name = "detection_time")
     private LocalDateTime detectionTime;
@@ -51,4 +51,3 @@ public class Detection {
     @Transient
     private String formattedDetectionTime;
 }
-
