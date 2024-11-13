@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             data: chartData,
                             backgroundColor: backgroundColors,
                             borderColor: borderColors,
-                            borderWidth: 1.5
+                            borderWidth: 1.2
                         }]
                     },
                     options: {
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         return datasets.map((dataset, index) => {
                             const meta = chart.getDatasetMeta(index);
                             return {
-                                text: `${dataset.label}: ${totalCountsByRiskLevel[dataset.label.toLowerCase()]}회`,
+                                text: `${dataset.label}: ${totalCountsByRiskLevel[dataset.label]}회`,
                                 fillStyle: dataset.backgroundColor,
                                 strokeStyle: dataset.backgroundColor,
                                 hidden: meta.hidden === null ? false : meta.hidden, // hidden 상태 명확히 설정
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 },
                                 {
                                     label: 'LOW',
-                                    data: riskLevels['LOW],
+                                    data: riskLevels['LOW'],
                                     backgroundColor: '#FFEB3B' // 노란색 (low)
                                 }
                             ]
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 }
                             },
                             layout: {
-                                padding: { top: 10, bottom: 5 }
+                                padding: { top: 5, bottom: 3 }
                             }
                         }
                     });
@@ -456,7 +456,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             }
                         },
                         layout: {
-                            padding: { top:10,bottom: 10 }
+                            padding: { top:10,bottom:3 }
                         }
                     }
                 });
