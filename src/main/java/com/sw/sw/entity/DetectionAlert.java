@@ -1,6 +1,8 @@
 package com.sw.sw.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetectionAlert {
-    private String imageUrl;
+    private byte[] imageUrl;
     private String cameraId;
     private LocalDateTime detectionTime;
     private String content;

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,27 +16,25 @@ public class DetectionService {
     @Autowired
     private DetectionRepository detectionRepository;
 
-    private Sort getSort() { // detectionId를 기준으로 오름차순
-        return Sort.by(
-                Sort.Order.desc("detectionId")
-        );
-    }
-    public List<Detection> getDetectionDetails(){
-        Sort sort = getSort();
-        List<Detection> detections = detectionRepository.findAll(sort); // 오름차순 함수 적용 및 Repository 가져옴
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd (HH:mm:ss)");// 날짜 시간을 포매팅
 
-        for (Detection detection : detections) {
+    public List<Detection> getDetectionDetails(int page, int size) {
+        List<Detection> detections = detectionRepository.findAll(Sort.by(Sort.Order.desc("detectionId")));
+        int start = page * size;
+        int end = Math.min((page + 1) * size, detections.size());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd (HH:mm:ss)");
+
+        List<Detection> pagedDetections = start > end ? new ArrayList<>() : detections.subList(start, end);
+        for (Detection detection : pagedDetections) {
             if (detection.getDetectionTime() != null) {
-                detection.setFormattedDetectionTime(detection.getDetectionTime().format(formatter)); // 포메팅 조건 맞으면 넣기
+                detection.setFormattedDetectionTime(detection.getDetectionTime().format(formatter));
             }
         }
-        return detections;
+        return pagedDetections;
     }
-    public Detection saveDetection(Detection detection) {
-        return detectionRepository.save(detection);
+    public long getTotalCount() {
+        return detectionRepository.count();
     }
-
 
 
 
