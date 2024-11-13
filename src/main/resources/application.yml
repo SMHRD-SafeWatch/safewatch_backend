@@ -4,7 +4,6 @@ spring:
     username: Insa5_SpringB_final_3
     url: jdbc:oracle:thin:@project-db-stu3.smhrd.com:1524:xe
     password: aischool3
-
   jpa:
     hibernate:
       ddl-auto: none
