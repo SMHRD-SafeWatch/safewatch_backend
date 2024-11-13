@@ -18,7 +18,7 @@ public class CameraInstall {
 
     @Id
     @Column(name = "camera_id")
-    private Long cameraId;
+    private String cameraId;
 
     private String location;
 

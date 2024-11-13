@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CameraInstallRepository extends JpaRepository<CameraInstall, Long> {
+public interface CameraInstallRepository extends JpaRepository<CameraInstall, String> {
 }

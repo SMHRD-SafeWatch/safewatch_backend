@@ -17,14 +17,13 @@
     }
   </style>
   <link rel="stylesheet" href="/css/streamModal.css">
+  <link rel="stylesheet" href="/css/stream.css">
 </head>
 <body>
 
 <div id="streams" style="width:700px"></div>
 <div id="pagination-controls">
-  <button id="prev-button">이전</button>
   <span id="page-info"></span>
-  <button id="next-button">다음</button>
 </div>
 
 <!-- Modal 구조 -->
@@ -127,30 +126,53 @@
   let players = [];
   let clients = [];
 
+  function clearExistingResources() {
+    // WebSocket 연결 닫기
+    if (clients.length > 0) {
+        clients.forEach(client => {
+            if (client && client.readyState === WebSocket.OPEN) {
+                client.close();
+            }
+        });
+        clients = [];
+    }
+
+    // jsmpeg 인스턴스 중지
+    if (players.length > 0) {
+        players.forEach(player => {
+            if (player && typeof player.stop === 'function') {
+                player.stop();
+                player = null; // 명시적으로 null로 설정하여 메모리 해제 유도
+            }
+        });
+        players = [];
+    }
+  }
+
+
+
   function renderVideos() {
       container.innerHTML = '';
-      if (players.length > 0) {
-          players.forEach(player => player.stop());
-          players = [];
-      }
-      if (clients.length > 0) {
-          clients.forEach(client => client.close());
-          clients = [];
-      }
+      clearExistingResources();
 
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
       const currentItems = portList.slice(startIndex, endIndex);
 
       currentItems.forEach((portObj, index) => {
+          const divContainer = document.createElement('div');
+          divContainer.classList.add('canvas-container');
+          divContainer.id = 'divContainer' + index;
+
           const canvas = document.createElement('canvas');
           canvas.id = 'canvas' + index;
-          canvas.style.width = "200px";
-          canvas.style.height = "200px";
+          canvas.classList.add('canvas-item')
           canvas.onclick = function() {
               clickModal(portObj.wsPort);
           };
-          container.appendChild(canvas);
+
+          divContainer.appendChild(canvas);
+          container.appendChild(divContainer);
 
           const client = new WebSocket('ws://localhost:' + portObj.wsPort);
           clients.push(client);
@@ -165,25 +187,59 @@
   }
 
   function updatePageInfo() {
-      const pageInfo = document.getElementById('page-info');
-      const totalPages = Math.ceil(portList.length / itemsPerPage);
-      pageInfo.textContent = `페이지 ${currentPage} / ${totalPages}`;
-  }
+    const pageInfo = document.getElementById('page-info');
+    pageInfo.innerHTML = ''; // 기존 내용 제거
 
-  document.getElementById('prev-button').addEventListener('click', () => {
-      if (currentPage > 1) {
-          currentPage--;
-          renderVideos();
-      }
-  });
+    const totalPages = Math.ceil(portList.length / itemsPerPage);
 
-  document.getElementById('next-button').addEventListener('click', () => {
-      const totalPages = Math.ceil(portList.length / itemsPerPage);
-      if (currentPage < totalPages) {
-          currentPage++;
-          renderVideos();
-      }
-  });
+    // 페이지 1개 이하면
+    if (totalPages <= 1) {
+        return; // 페이지네이션 버튼을 생성하지 않고 종료
+    }
+
+    // 이전 버튼 추가
+    const prevButton = document.createElement('button');
+    prevButton.textContent = '이전';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderVideos();
+            updatePageInfo(); // 페이지 정보 갱신
+        }
+    };
+    pageInfo.appendChild(prevButton);
+
+    // 페이지 번호 버튼 추가
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('page-button');
+        if (i === currentPage) {
+            pageButton.disabled = true; // 현재 페이지는 비활성화
+            pageButton.classList.add('active'); // 활성 페이지 스타일 추가 아직안함
+        }
+        pageButton.onclick = () => {
+            currentPage = i;
+            renderVideos();
+            updatePageInfo(); // 페이지 정보 갱신
+        };
+        pageInfo.appendChild(pageButton);
+    }
+
+    // 다음 버튼 추가
+    const nextButton = document.createElement('button');
+    nextButton.textContent = '다음';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderVideos();
+            updatePageInfo(); // 페이지 정보 갱신
+        }
+    };
+    pageInfo.appendChild(nextButton);
+}
 
 </script>
 

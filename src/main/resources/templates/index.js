@@ -97,6 +97,8 @@ app.listen(PORT, () => {
 });
 
 // ffmpeg 설치 : https://ffmpeg.org/
+// npm install axios
+// npm install ws
 
 // node src/main/resources/templates/index.js
 // 터미널에 입력 node 실행

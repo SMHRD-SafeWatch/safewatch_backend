@@ -11,4 +11,10 @@ public class StreamController {
 
         return "stream";
     }
+
+    @GetMapping("/monitoring")
+    public String monitoring(){
+
+        return "monitoring";
+    }
 }
