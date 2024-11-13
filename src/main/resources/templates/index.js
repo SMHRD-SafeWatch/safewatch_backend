@@ -40,14 +40,22 @@ async function fetchData() {
 
 // rtsp to websocket
 function openStream(obj){
-        var stream = new Stream({
+        let ffmpegOptions = {
+                '-stats': ''
+            };
+
+            if (obj.port===3008) {
+                ffmpegOptions['-b:v'] = '1000k';
+                ffmpegOptions['-maxrate'] = '1000k';
+                ffmpegOptions['-bufsize'] = '2000k';
+            }
+
+            var stream = new Stream({
                 name: 'name',
-                streamUrl : obj.url,
+                streamUrl: obj.url,
                 wsPort: obj.port,
-                ffmpegOptions: {
-                        '-stats': '', // 통계표시
-                }
-        });
+                ffmpegOptions: ffmpegOptions
+            });
 
         // 에러 처리 및 스트림 재시작
         stream.mpeg1Muxer.on('exitWithError',()=>{

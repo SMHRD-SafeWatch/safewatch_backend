@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/monitoring.css">
+    <link rel="stylesheet" href="css/streamModal.css">
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <div class="logo">
+        <span class="logo-icon">
+            <img src="icon/safewatch.svg" alt="Safe Watch Icon">
+        </span>
+            <h2>Safe Watch</h2>
+        </div>
+        <div class="menu">
+            <ul>
+                <li class="menu-item active" onclick="selectMenu('monitoring')">
+                    <span class="menu-icon1"></span>
+                    <span class="menu-text">Monitoring</span>
+                </li>
+                <li class="menu-item" onclick="selectMenu('events')">
+                    <span class="menu-icon2"></span>
+                    <span class="menu-text">Events</span>
+                </li>
+                <li class="menu-item" onclick="selectMenu('analytics')">
+                    <span class="menu-icon3"></span>
+                    <span class="menu-text">Analytics</span>
+                </li>
+            </ul>
+        </div>
+        <div class="menu-item" onclick="selectMenu('settings')">
+            <span class="menu-icon4"></span>
+            <span class="menu-text">Settings</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1 class="main-text">Monitoring</h1>
+            <p>2024년 11월 12일</p>
+        </header>
+        <div class="nav-tabs">
+            <div class="nav-tab active">Section 1</div>
+            <div class="nav-tab">Section 2</div>
+            <div class="nav-tab">Section 3</div>
+        </div>
+
+        <div class="video-container" id="video-container"></div>
+
+        <ul class="pagination" id="page-info"></ul>
+
+    </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>모달 제목</h2>
+        <div id="stream"></div>
+    </div>
+</div>
+
+<script src="js/stream.js"></script>
+<script>
+    const tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+</script>
+<script src="js/menu.js"></script>
+</body>
+</html>
