@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
                 // 데이터 변환
-                const labels = ['high', 'medium', 'low'];
+                const labels = ['HIGH', 'MEDIUM', 'LOW'];
                 const chartData = labels.map(level => data[level] || 0);
 
                 // 색상 설정
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 window.dailyAlertsChart = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: labels.map(label => label.charAt(0).toUpperCase() + label.slice(1)), // 첫 글자 대문자로 표시
+                        labels: labels,
                         datasets: [{
                             label: '알림 건수',
                             data: chartData,
@@ -164,25 +164,25 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(data => {
                 const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
-                const riskLevels = { 'low': [], 'medium': [], 'high': [] };
-                const totalCountsByRiskLevel = { 'low': 0, 'medium': 0, 'high': 0 }; // 주간 총 알림 건수 객체 초기화
+                const riskLevels = { 'LOW': [], 'MEDIUM': [], 'HIGH': [] };
+                const totalCountsByRiskLevel = { 'LOW': 0, 'MEDIUM': 0, 'HIGH': 0 };
 
                 dayLabels.forEach(day => {
                     const countsByRiskLevel = data[day] || {};
-                    riskLevels['low'].push(countsByRiskLevel['low'] || 0);
-                    riskLevels['medium'].push(countsByRiskLevel['medium'] || 0);
-                    riskLevels['high'].push(countsByRiskLevel['high'] || 0);
+                    riskLevels['LOW'].push(countsByRiskLevel['LOW'] || 0);
+                    riskLevels['MEDIUM'].push(countsByRiskLevel['MEDIUM'] || 0);
+                    riskLevels['HIGH'].push(countsByRiskLevel['HIGH'] || 0);
 
-                    totalCountsByRiskLevel['low'] += countsByRiskLevel['low'] || 0;
-                    totalCountsByRiskLevel['medium'] += countsByRiskLevel['medium'] || 0;
-                    totalCountsByRiskLevel['high'] += countsByRiskLevel['high'] || 0;
+                    totalCountsByRiskLevel['LOW'] += countsByRiskLevel['LOW'] || 0;
+                    totalCountsByRiskLevel['MEDIUM'] += countsByRiskLevel['MEDIUM'] || 0;
+                    totalCountsByRiskLevel['HIGH'] += countsByRiskLevel['HIGH'] || 0;
                 });
 
                 if (weeklyAlertChart) {
                     // 이미 차트가 초기화된 경우 데이터를 업데이트
-                    weeklyAlertChart.data.datasets[0].data = riskLevels['low'];
-                    weeklyAlertChart.data.datasets[1].data = riskLevels['medium'];
-                    weeklyAlertChart.data.datasets[2].data = riskLevels['high'];
+                    weeklyAlertChart.data.datasets[0].data = riskLevels['HIGH'];
+                    weeklyAlertChart.data.datasets[1].data = riskLevels['MEDIUM'];
+                    weeklyAlertChart.data.datasets[2].data = riskLevels['LOW'];
                     weeklyAlertChart.options.plugins.legend.labels.generateLabels = function(chart) {
                         let datasets = chart.data.datasets;
                         return datasets.map((dataset, index) => {
@@ -207,18 +207,18 @@ document.addEventListener("DOMContentLoaded", function() {
                             labels: dayLabels,
                             datasets: [
                                 {
-                                    label: 'High',
-                                    data: riskLevels['high'],
+                                    label: 'HIGH',
+                                    data: riskLevels['HIGH'],
                                     backgroundColor: '#F44336' // 빨간색 (high)
                                 },
                                 {
-                                    label: 'Medium',
-                                    data: riskLevels['medium'],
+                                    label: 'MEDIUM',
+                                    data: riskLevels['MEDIUM'],
                                     backgroundColor: '#FF9800' // 주황색 (medium)
                                 },
                                 {
-                                    label: 'Low',
-                                    data: riskLevels['low'],
+                                    label: 'LOW',
+                                    data: riskLevels['LOW],
                                     backgroundColor: '#FFEB3B' // 노란색 (low)
                                 }
                             ]
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                             return datasets.map((dataset, index) => {
                                                 const meta = chart.getDatasetMeta(index);
                                                 return {
-                                                    text: `${dataset.label}: ${totalCountsByRiskLevel[dataset.label.toLowerCase()]}회`,
+                                                    text: `${dataset.label}: ${totalCountsByRiskLevel[dataset.label]}회`,
                                                     fillStyle: dataset.backgroundColor,
                                                     strokeStyle: dataset.backgroundColor,
                                                     hidden: meta.hidden === null ? false : meta.hidden, // hidden 상태 명확히 설정
@@ -387,17 +387,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 // 각 월별 데이터 정리 및 기본값 설정
                 for (let month = 1; month <= 12; month++) {
-                    const monthData = data[month] || { high: 0, medium: 0, low: 0 };
-                    highData.push(monthData.high || 0);
-                    mediumData.push(monthData.medium || 0);
-                    lowData.push(monthData.low || 0);
+                    const monthData = data[month] || { HIGH: 0, MEDIUM: 0, LOW: 0 };
+                    highData.push(monthData.HIGH || 0);
+                    mediumData.push(monthData.MEDIUM || 0);
+                    lowData.push(monthData.LOW || 0);
                 }
 
                 // 각 위험 수준의 총 건수를 계산
                 const totalCountsByRiskLevel = {
-                    high: highData.reduce((acc, val) => acc + (val || 0), 0),
-                    medium: mediumData.reduce((acc, val) => acc + (val || 0), 0),
-                    low: lowData.reduce((acc, val) => acc + (val || 0), 0)
+                    HIGH: highData.reduce((acc, val) => acc + (val || 0), 0),
+                    MEDIUM: mediumData.reduce((acc, val) => acc + (val || 0), 0),
+                    LOW: lowData.reduce((acc, val) => acc + (val || 0), 0)
                 };
 
                 // 기존 차트를 파괴하고 새로 생성
@@ -410,9 +410,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     data: {
                         labels: Array.from({ length: 12 }, (_, i) => `${i + 1}월`),
                         datasets: [
-                            { label: 'High', data: highData, backgroundColor: '#F44336' },
-                            { label: 'Medium', data: mediumData, backgroundColor: '#FF9800' },
-                            { label: 'Low', data: lowData, backgroundColor: '#FFEB3B' }
+                            { label: 'HIGH', data: highData, backgroundColor: '#F44336' },
+                            { label: 'MEDIUM', data: mediumData, backgroundColor: '#FF9800' },
+                            { label: 'LOW', data: lowData, backgroundColor: '#FFEB3B' }
                         ]
                     },
                     options: {
@@ -428,7 +428,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                         return datasets.map((dataset, index) => {
                                             const meta = chart.getDatasetMeta(index);
                                             return {
-                                                text: `${dataset.label}: ${totalCountsByRiskLevel[dataset.label.toLowerCase()]}회`,
+                                                text: `${dataset.label}: ${totalCountsByRiskLevel[dataset.label]}회`,
                                                 fillStyle: dataset.backgroundColor,
                                                 strokeStyle: dataset.backgroundColor,
                                                 hidden: meta.hidden === null ? false : meta.hidden,
