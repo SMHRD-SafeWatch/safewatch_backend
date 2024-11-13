@@ -29,8 +29,9 @@ public class Detection {
     @Column(name = "detection_object")
     private String detectionObject;
 
+    @Lob
     @Column(name = "image_url")
-    private String imageUrl;
+    private byte[] imageUrl;
 
     @Column(name = "risk_level")
     private String riskLevel;

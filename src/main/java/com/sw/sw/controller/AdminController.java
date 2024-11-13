@@ -20,6 +20,12 @@ public class AdminController {
         return "monitoring";
     }
 
+    // events Test용 이동
+    @GetMapping("/events")
+    public String events(){
+        return "events";
+    }
+
     // 홈
     @GetMapping("/home")
     public String home(){

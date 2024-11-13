@@ -10,7 +10,7 @@ body {
 }
 
 .sidebar {
-    width: 170px;
+    width: 150px;
     background-color: #000000;
     color: #ffffff;
     height: 100vh;
@@ -18,11 +18,12 @@ body {
     flex-direction: column;
     justify-content: space-between;
     padding: 5px 5px 15px 0px;
+    position: fixed; !important;
+    overflow-y: auto; !important;
 }
 
 .logo {
     padding: 10px 20px;
-    text-align: center;
     font-size: 15px;
     font-weight: bold;
     display: flex;
@@ -63,8 +64,9 @@ body {
 
 .main-content {
     padding: 20px;
-    width: 100%;
-    background-color: #fbfbfb;
+    background-color: #ffffff;
+    margin-left: 150px;
+    width: calc(100% - 150px);
 }
 
 .main-content header{

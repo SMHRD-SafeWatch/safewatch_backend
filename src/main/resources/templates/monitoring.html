@@ -6,6 +6,8 @@
   <title>Monitoring</title>
   <link rel="stylesheet" href="css/menu.css">
   <link rel="stylesheet" href="css/monitoring.css">
+  <script src="js/menu.js"></script>
+  <script src="js/monitoring.js"></script>
 </head>
 <body>
 <div class="container">
@@ -116,15 +118,26 @@
   </div>
 </div>
 
-<script>
-  const tabs = document.querySelectorAll('.nav-tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-    });
-  });
-</script>
-<script src="js/menu.js"></script>
+<div id="alertModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <p class="modal-subtitle">Section 1</p>
+        <h1 class="modal-title">
+          cam_001
+          <span class="modal-icon-container">
+              <img src="icon/notification.svg" alt="Notification Icon" class="modal-icon">
+          </span>
+        </h1>
+      </div>
+      <button class="events-button">Events List</button>
+    </div>
+    <div class="modal-content-body">
+      <img src="" alt="Alert Image" id="modalImage" class="modal-image">
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

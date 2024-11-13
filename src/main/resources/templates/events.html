@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/events.css">
+    <script src="js/menu.js"></script>
+    <script src="js/events.js"></script>
+</head>
+<body>
+<div class="sidebar">
+  <div class="logo">
+          <span class="logo-icon">
+            <img src="icon/safewatch.svg" alt="Safe Watch Icon">
+          </span>
+    <h2>Safe Watch</h2>
+  </div>
+  <div class="menu">
+    <ul>
+      <li class="menu-item" onclick="selectMenu('monitoring')">
+        <span class="menu-icon1"></span>
+        <span class="menu-text">Monitoring</span>
+      </li>
+      <li class="menu-item active" onclick="selectMenu('events')">
+        <span class="menu-icon2"></span>
+        <span class="menu-text">Events</span>
+      </li>
+      <li class="menu-item" onclick="selectMenu('analytics')">
+        <span class="menu-icon3"></span>
+        <span class="menu-text">Analytics</span>
+      </li>
+    </ul>
+  </div>
+  <div class="menu-item" onclick="selectMenu('settings')">
+    <span class="menu-icon4"></span>
+    <span class="menu-text">Settings</span>
+  </div>
+</div>
+
+<div class="main-content">
+  <header>
+    <h1 class="main-text">Events</h1>
+    <p>날짜</p>
+  </header>
+  <div class="container">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>경고 단계</th>
+        <th>사진</th>
+        <th>일자</th>
+        <th>사건</th>
+        <th>구역</th>
+        <th>카메라</th>
+        <th>확인</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>HIGH</td>
+        <td><img src="img/example (1).jpg" alt="thumbnail" class="thumbnail"></td>
+        <td>2024-11-12 11:00:00</td>
+        <td>손 탐지</td>
+        <td>Section_01</td>
+        <td>CAM_01</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>MEDIUM</td>
+        <td><img src="img/example (1).jpg" alt="thumbnail" class="thumbnail"></td>
+        <td>2024-11-12 12:00:00</td>
+        <td>적재물 기울기 위험</td>
+        <td>Section_02</td>
+        <td>CAM_02</td>
+        <td>Y</td>
+      </tr>
+      <tr>
+        <td>LOW</td>
+        <td><img src="img/example (1).jpg" alt="thumbnail" class="thumbnail"></td>
+        <td>2024-11-12 13:00:00</td>
+        <td>안전조끼 미착용</td>
+        <td>Section_03</td>
+        <td>CAM_03</td>
+        <td>Y</td>
+      </tr>
+      <tr>
+        <td>LOW</td>
+        <td><img src="img/example (1).jpg" alt="thumbnail" class="thumbnail"></td>
+        <td>2024-11-13 10:00:00</td>
+        <td>안전조끼 미착용</td>
+        <td>Section_03</td>
+        <td>CAM_03</td>
+        <td>Y</td>
+      </tr>
+      </tbody>
+    </table>
+    <ul class="pagination">
+      <li><a href="#">◀</a></li>
+      <li><a href="#" class="active">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">...</a></li>
+      <li><a href="#">▶</a></li>
+    </ul>
+  </div>
+</div>
+
+<div id="alertModal" class="modal">
+  <div class="modal-content">
+    <h2 class="modal-title"><span class="alert-icon">️</span>매우 위험</h2>
+    <p class="modal-description">기기 작동 중 손 탐지</p>
+
+    <div class="modal-content-body">
+      <img src="img/example (1).jpg" alt="Alert Image" id="modalImage" class="modal-image">
+      <div class="modal-details">
+        <div class="detail-section">
+          <p class="section-title">알림 위치</p>
+          <div class="detail-row">
+            <div class="detail-item icon-location">Section_1</div>
+            <div class="detail-item icon-camera">CAM_001</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">알림 일시</p>
+          <div class="detail-row">
+            <div class="detail-item icon-calendar">2024-11-25</div>
+            <div class="detail-item icon-clock">10:07 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="confirm-btn" onclick="closeModal()">확인</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

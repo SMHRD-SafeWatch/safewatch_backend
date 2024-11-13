@@ -9,3 +9,19 @@ function selectMenu(menuId) {
         selectedMenu.classList.add("active");
     }
 }
+
+
+// 오늘 날짜 설정
+function setTodayDate() {
+
+    const today = new Date();
+
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = today.toLocaleDateString('ko-KR', options);
+
+    const dateElement = document.querySelector(".main-content header p");
+    if (dateElement) {
+        dateElement.textContent = formattedDate;
+    }
+}
+document.addEventListener("DOMContentLoaded", setTodayDate);
