@@ -24,6 +24,7 @@ public class DetectionController {
     public String events_dtn(@RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "100") int size,Model model) {
         // 전체 데이터 로드
+
         List<Detection> details = detectionService.getDetectionDetails(page, size);
         model.addAttribute("details", details);
         return "events";

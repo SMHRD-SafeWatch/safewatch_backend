@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -28,6 +29,11 @@ public class DetectionService {
         for (Detection detection : pagedDetections) {
             if (detection.getDetectionTime() != null) {
                 detection.setFormattedDetectionTime(detection.getDetectionTime().format(formatter));
+            }
+            // 이미지가 null이 아닐 경우 Base64로 인코딩하여 imageUrlBase64에 설정
+            if (detection.getImageUrl() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(detection.getImageUrl());
+                detection.setImageUrlBase64(base64Image);
             }
         }
         return pagedDetections;

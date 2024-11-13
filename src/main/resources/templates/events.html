@@ -22,12 +22,22 @@
   <!-- details 리스트의 데이터를 반복하여 테이블에 표시 -->
   <tr th:each="detection : ${details}">
     <td th:text="${detection?.riskLevel}"></td>
-    <td th:text="${detection?.imageUrl}"></td>
+    <td>
+      <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
+      <img th:if="${detection.imageUrlBase64 != null}"
+           th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
+           alt="Detection Image" width="100"/>
+      <!-- imageUrlBase64가 null일 때 기본 이미지를 표시 -->
+      <img th:if="${detection.imageUrlBase64 == null}"
+           th:src="@{/images/placeholder.png}"
+           alt="No Image Available" width="100"/>
+    </td>
     <td th:text="${detection?.formattedDetectionTime}"></td>
     <td th:text="${detection?.content}"></td>
     <td th:text="${detection.cameraInstall?.location}"></td>
     <td th:text="${detection.cameraInstall?.cameraId}"></td>
   </tr>
+
   </tbody>
 </table>
 <!-- 이전 및 다음 버튼 -->

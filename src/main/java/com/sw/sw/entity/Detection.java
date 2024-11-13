@@ -51,4 +51,7 @@ public class Detection {
 
     @Transient
     private String formattedDetectionTime;
+
+    @Transient
+    private String imageUrlBase64;
 }
