@@ -2,7 +2,7 @@ const Stream = require('node-rtsp-stream');
 
 const axios = require('axios');
 
-const apiUrl = 'http://localhost:8084/api/portget';
+const apiUrl = 'http://localhost:8090/api/portget';
 
 const express = require('express');
 const app = express();
@@ -15,7 +15,7 @@ const activeStreams = new Set(); // 중복 방지를 위한 스트림 관리 객
 async function fetchData() {
     try {
         // API 호출
-        const response = await axios.get(apiUrl);
+        const response = await axios.get(apiUrl)
 
         const cameras = response.data;
 
@@ -29,14 +29,16 @@ async function fetchData() {
         rtspList.forEach(camera => {
             if (!activeStreams.has(camera.port)) {
                 openStream(camera);
-                activeStreams.add(camera.port);
             }
         });
 
     } catch (error) {
+
         console.error('데이터 요청 중 오류가 발생했습니다:', error);
     }
 }
+
+setInterval(fetchData, 10000);
 
 // rtsp to websocket
 function openStream(obj){
@@ -57,19 +59,31 @@ function openStream(obj){
                 ffmpegOptions: ffmpegOptions
             });
 
-        // 에러 처리 및 스트림 재시작
-        stream.mpeg1Muxer.on('exitWithError',()=>{
-                stream.stop();
-                openStream(obj);
-        });
+            activeStreams.add(obj.port);
 
-        stream.mpeg1Muxer.on('ffmpegStderr', (data)=>{
+            // 에러 처리 및 스트림 재시작
+            stream.mpeg1Muxer.on('exitWithError', () => {
+                activeStreams.delete(obj.port);
+                retryConnection(obj);
+            });
+
+            stream.mpeg1Muxer.on('ffmpegStderr', (data) => {
                 data = data.toString();
-                if(data.includes('muxing overhead')){
-                        stream.stop();
-                        openStream(obj);
+                if (data.includes('muxing overhead')) {
+                    stream.stop();
+                    activeStreams.delete(obj.port);
+                    retryConnection(obj);
                 }
-        });
+            });
+        }
+function retryConnection(obj) {
+    const retryInterval = 5000;
+
+    activeStreams.delete(obj.port);
+
+    setTimeout(() => {
+        openStream(obj);
+    }, retryInterval);
 }
 
 // websocket 설정

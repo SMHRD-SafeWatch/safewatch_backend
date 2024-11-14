@@ -4,7 +4,7 @@ let portList = [];
 async function fetchCameraData() {
   try {
     // API 요청
-    const response = await fetch('http://localhost:8084/api/portget');
+    const response = await fetch('http://localhost:8090/api/portget');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -105,6 +105,33 @@ function clearExistingResources() {
     }
 }
 
+function createWebSocketConnection(port, canvasElement) {
+            const wsClient = new WebSocket('ws://localhost:' + port);
+
+            wsClient.onopen = function() {
+                console.log('WebSocket connection established to port:', port);
+            };
+
+            wsClient.onerror = function(err) {
+                console.error('WebSocket error on port:', port, err);
+            };
+
+            wsClient.onclose = function() {
+                setTimeout(() => {
+                    createWebSocketConnection(port, canvasElement);
+                }, 5000);
+            };
+
+            const wsPlayer = new jsmpeg(wsClient, {
+                canvas: canvasElement,
+                autoplay: true,
+            });
+
+            // 연결된 client와 player 저장
+            clients.push(wsClient);
+            players.push(wsPlayer);
+        }
+
 function renderVideos() {
     container.innerHTML = '';
     clearExistingResources();
@@ -149,21 +176,8 @@ function renderVideos() {
         divContainer.appendChild(videoInfo);
         container.appendChild(divContainer);
 
-        const client = new WebSocket('ws://localhost:' + portObj.wsPort);
-        clients.push(client);
+        createWebSocketConnection(portObj.wsPort, canvas);
 
-        const player = new jsmpeg(client, {
-            canvas: canvas,
-            autoplay: true,
-            onReady: function() {
-                resolve();
-            },
-            onError: function(err) {
-                console.error('Error loading video stream:', err);
-                reject(err);
-            }
-        });
-        players.push(player);
     });
 
     updatePageInfo();
