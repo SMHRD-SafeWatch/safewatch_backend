@@ -16,6 +16,7 @@
     <th>Warning Type</th>
     <th>Location</th>
     <th>Camera ID</th>
+    <th>resolved</th>
   </tr>
   </thead>
   <tbody>
@@ -36,10 +37,15 @@
     <td th:text="${detection?.content}"></td>
     <td th:text="${detection.cameraInstall?.location}"></td>
     <td th:text="${detection.cameraInstall?.cameraId}"></td>
+    <td th:text="${detection.warning?.resolved}"></td>
+
   </tr>
 
   </tbody>
 </table>
+
+<input type="hidden" id="popupDetectionId" th:value="${detection?.detectionId}">
+
 <!-- 이전 및 다음 버튼 -->
 <div id="pagination-controls">
   <button onclick="previousPage()" id="prevButton" disabled>이전</button>
@@ -55,7 +61,16 @@
   <p>발생 시간: <span id="popupDetectionTime"></span></p>
   <p>상황 설명: <span id="popupContent"></span></p>
   <p>위치: <span id="popupLocation"></span></p>
-  <button onclick="closeAlertPopup()" style="margin-top: 10px;">확인</button>
+  <!-- Thymeleaf를 통해 detectionId를 숨겨진 필드로 전달 -->
+
+  <button onclick="showConfirmPopup()" style="margin-top: 10px;">확인</button>
+</div>
+
+<!-- 확인용 추가 팝업 -->
+<div id="confirmPopup" style="display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -30%); background: white; border: 2px solid black; padding: 20px; width: 250px; z-index: 1100; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+  <p>팝업을 닫으시겠습니까?</p>
+  <button onclick="closeAlertPopup()" style="margin-top: 10px;">예</button>
+  <button onclick="closeConfirmPopup()" style="margin-top: 10px;">아니요</button>
 </div>
 
 <!-- WebSocket Script -->
@@ -92,7 +107,7 @@
           var alertData = JSON.parse(storedAlertData);
 
           // 알림 데이터를 화면에 표시
-          if (alertData.riskLevel === "high" || alertData.riskLevel === "medium") {
+          if (alertData.riskLevel === "HIGH" || alertData.riskLevel === "MEDIUM") {
           document.getElementById("popupImage").src = alertData.imageUrl;
           document.getElementById("popupCameraId").textContent = alertData.cameraId;
           document.getElementById("popupDetectionTime").textContent = new Date(alertData.detectionTime).toLocaleString();
@@ -102,8 +117,7 @@
           // 팝업 표시
           showAlertPopup();
       }
-          // 팝업을 띄운 후 localStorage에서 데이터 제거
-          localStorage.removeItem("alertData");
+
       }
   });
 
@@ -112,9 +126,39 @@
       document.getElementById("alertPopup").style.display = "block";
   }
 
+    function showConfirmPopup() {
+      console.log("showConfirmPopup 실행됨");
+      document.getElementById("confirmPopup").style.display = "block";
+  }
+
+  function closeConfirmPopup() {
+      console.log("closeConfirmPopup 실행됨");
+      document.getElementById("confirmPopup").style.display = "none";
+  }
+
   function closeAlertPopup() {
-      document.getElementById("alertPopup").style.display = "none";
       console.log("closeAlertPopup 실행됨");
+      document.getElementById("alertPopup").style.display = "none";
+      document.getElementById("confirmPopup").style.display = "none";
+
+      var storedAlertData = localStorage.getItem("alertData");
+    if (storedAlertData) {
+        var alertData = JSON.parse(storedAlertData);
+        var detectionId = alertData.detectionId;
+
+        // AJAX 요청으로 Spring Boot에 detectionId 전송
+        fetch('/resolveWarning?detectionId=' + detectionId, {
+            method: 'PUT'
+        })
+        .then(response => response.text())
+        .then(data => {
+            // 팝업을 띄운 후 localStorage에서 데이터 제거
+            localStorage.removeItem("alertData");
+            location.reload(true);
+
+        })
+        .catch(error => console.error('Error:', error));
+    }
   }
 
   const pageSize = 5;
@@ -169,7 +213,6 @@
     }
   });
 </script>
-
 
 </body>
 </html>

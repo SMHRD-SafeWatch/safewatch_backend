@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetectionAlert {
+    private Long detectionId;
     private byte[] imageUrl;
     private String cameraId;
     private LocalDateTime detectionTime;
