@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,9 +26,6 @@ public class Warning {
 
     @Column(name = "warning_time")
     private LocalDateTime warningTime;
-
-//    @Column(name = "warning_type")
-//    private String warningType;
 
     private String resolved;
 

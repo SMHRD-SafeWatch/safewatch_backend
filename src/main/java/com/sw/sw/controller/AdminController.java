@@ -14,14 +14,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AdminController {
     private final AdminService adminService;
 
-    // 홈 (test용)
+    // monitoring Test용 이동
+    @GetMapping("/monitoring")
+    public String monitoring(){
+        return "monitoring";
+    }
+
+    // events Test용 이동
+    @GetMapping("/events")
+    public String events(){
+        return "events";
+    }
+
+    // 홈
     @GetMapping("/home")
     public String home(){
 
         return "home";
     }
 
-    // 로그인 페이지
+    // 로그인 페이지 로딩
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("adm", null);
@@ -34,6 +46,7 @@ public class AdminController {
         Admin adm = adminService.login(admin.getAdminId(), admin.getPassword());
         if (adm != null) {
             session.setAttribute("adm", adm);
+            // System.out.println("Logged in Admin: " + adm);
             return "redirect:/home";
         } else {
             return "login";
