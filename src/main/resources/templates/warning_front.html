@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warning_front</title>
+  <link rel="stylesheet" href="css/warning.css">
+  <script src="js/warning_front.js"></script>
+</head>
+<body>
+<div class="button-container">
+  <button onclick="openModal('매우 위험')" class="alert-button">매우 위험</button>
+  <button onclick="openModal('위험')" class="alert-button">위험</button>
+  <button onclick="openModal('주의')" class="alert-button">주의</button>
+</div>
+
+<div id="alertModal" class="modal">
+  <div class="modal-content">
+    <h2 class="modal-title"><span class="alert-icon">️</span><span id="modalTitle"></span></h2>
+    <p class="modal-description">기기 작동 중 손 탐지</p>
+
+    <div class="modal-content-body">
+      <img src="img/example (1).jpg" alt="Alert Image" id="modalImage" class="modal-image">
+      <div class="modal-details">
+        <div class="detail-section">
+          <p class="section-title">알림 위치</p>
+          <div class="detail-row">
+            <div class="detail-item icon-location">Section_1</div>
+            <div class="detail-item icon-camera">CAM_001</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">알림 일시</p>
+          <div class="detail-row">
+            <div class="detail-item icon-calendar">2024-11-25</div>
+            <div class="detail-item icon-clock">10:07 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="confirm-btn" onclick="openConfirmAlert()">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmAlertModal" class="modal">
+  <div class="modal-content small-modal">
+    <p class="modal-confirm">확인하셨습니까?</p>
+    <div class="modal-footer">
+      <button class="confirm-btn" onclick="closeConfirmAlert()">확인</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AdminController {
     private final AdminService adminService;
 
+    // warning_front Test용 이동
+    @GetMapping("/warning_front")
+    public String warning_front(){
+        return "warning_front";
+    }
     // monitoring Test용 이동
     @GetMapping("/monitoring")
     public String monitoring(){
@@ -21,8 +26,8 @@ public class AdminController {
     }
 
     // events Test용 이동
-    @GetMapping("/events")
-    public String events(){
+    @GetMapping("/events_front")
+    public String events_front(){
         return "events_front";
     }
 
