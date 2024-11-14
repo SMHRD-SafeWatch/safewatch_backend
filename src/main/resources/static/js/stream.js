@@ -22,14 +22,15 @@ async function fetchCameraData() {
 // 페이지가 로드되면 데이터 가져오기
 window.onload = fetchCameraData;
 
-const modal = document.getElementById("myModal");
-const span = document.getElementsByClassName("close")[0];
+const modal = document.getElementById("alertModal");
+const span = document.getElementsByClassName("close-btn")[0];
 
 let modal_player = null;
 let modal_client = null;
 const modal_video = document.getElementById("stream");
+const title = document.getElementById("modal-title");
 
-function clickModal(port) {
+function clickModal(port, cameraId) {
     if (modal_player) {
         modal_player.stop();
         modal_player = null;
@@ -42,13 +43,16 @@ function clickModal(port) {
 
     const stream_video = document.createElement('canvas');
     stream_video.id = 'canvasModal';
-    stream_video.style.width = "640px";
+    stream_video.style.width = "700px";
     stream_video.style.height = "480px";
     modal_video.appendChild(stream_video);
+    title.textContent = cameraId;
 
     modal_client = new WebSocket('ws://localhost:' + port);
     modal_player = new jsmpeg(modal_client, { canvas: stream_video });
-    modal.style.display = "block";
+    const modal = document.getElementById("alertModal");
+    const modalImage = document.getElementById("modalImage");
+    modal.style.display = "flex"; // 모달 표시
 }
 
 // 모달 닫기 (X 버튼 클릭 시)
@@ -62,7 +66,9 @@ span.onclick = function() {
         modal_client = null;
     }
     modal_video.innerHTML = '';
+    const modal = document.getElementById("alertModal");
     modal.style.display = "none";
+
 }
 
 // 모달 닫기 (모달 외부 클릭 시)
@@ -117,7 +123,7 @@ function renderVideos() {
         canvas.style.height = "200px";
         canvas.classList.add('canvas-item');
         canvas.onclick = function() {
-            clickModal(portObj.wsPort);
+            clickModal(portObj.wsPort, portObj.cameraId);
         };
 
         const videoInfo = document.createElement('div');
