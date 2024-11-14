@@ -23,7 +23,7 @@ public class AdminController {
     // events Test용 이동
     @GetMapping("/events")
     public String events(){
-        return "events";
+        return "events_front";
     }
 
     // 홈

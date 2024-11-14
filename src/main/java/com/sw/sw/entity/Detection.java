@@ -46,4 +46,10 @@ public class Detection {
     @OneToOne
     @JoinColumn(name = "detection_id", referencedColumnName = "detection_id", insertable = false, updatable = false)
     private Warning warning;
+
+    @Transient
+    private String formattedDetectionTime;
+
+    @Transient
+    private String imageUrlBase64;
 }

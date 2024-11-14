@@ -40,4 +40,8 @@ public class CameraInstall {
 
     @OneToMany(mappedBy = "cameraInstall")
     private List<Detection> detections;
+
+    public CameraInstall(String cameraId) {
+        this.cameraId = cameraId;
+    }
 }

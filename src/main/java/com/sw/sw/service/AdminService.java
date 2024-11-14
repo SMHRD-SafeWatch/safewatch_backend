@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
-
+    @Autowired
     private AdminRepository adminRepository;
 
     public Admin login(String adminId, String password){
