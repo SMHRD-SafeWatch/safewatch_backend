@@ -15,5 +15,4 @@ public class AdminService {
     public Admin login(String adminId, String password){
         return adminRepository.findByAdminIdAndPassword(adminId, password);
     }
-
 }
