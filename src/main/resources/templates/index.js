@@ -13,6 +13,7 @@ app.use(express.json());
 const activeStreams = new Set(); // 중복 방지를 위한 스트림 관리 객체
 
 async function fetchData() {
+    console.log('fetchData called');
     try {
         // API 호출
         const response = await axios.get(apiUrl)
@@ -24,10 +25,10 @@ async function fetchData() {
             url: camera.cameraUrl,
             port: camera.port
         }));
-
+        console.log(activeStreams);
         // 각 스트림에 대해 openStream 함수 호출
         rtspList.forEach(camera => {
-            if (!activeStreams.has(camera.port)) {
+            if(!activeStreams.has(camera.port)){
                 openStream(camera);
             }
         });
@@ -38,10 +39,17 @@ async function fetchData() {
     }
 }
 
-setInterval(fetchData, 10000);
+//setInterval(fetchData, 10000);
+fetchData();
 
 // rtsp to websocket
 function openStream(obj){
+        if (activeStreams.has(obj.port)) {
+            console.log(`Port ${obj.port} is already active. Skipping stream creation.`);
+            return;
+        }
+
+        let isStreamStarted = false;
         let ffmpegOptions = {
                 '-stats': ''
             };
@@ -59,31 +67,53 @@ function openStream(obj){
                 ffmpegOptions: ffmpegOptions
             });
 
-            activeStreams.add(obj.port);
+            stream.on('camdata', () => {
+                console.log(`Successfully started stream for port ${obj.port}`);
+                isStreamStarted = true;
+                activeStreams.add(obj.port);
+            });
+
+            setTimeout(() => {
+                if (!isStreamStarted) {
+                    if (stream.wsServer && typeof stream.wsServer.close === 'function') {
+                        stream.wsServer.close();
+                    }
+                    retryConnection(obj); // 재연결 시도
+                }
+            }, 5000);
 
             // 에러 처리 및 스트림 재시작
             stream.mpeg1Muxer.on('exitWithError', () => {
                 activeStreams.delete(obj.port);
+                if (stream.wsServer && typeof stream.wsServer.close === 'function') {
+                    stream.wsServer.close();
+                }
                 retryConnection(obj);
             });
 
             stream.mpeg1Muxer.on('ffmpegStderr', (data) => {
                 data = data.toString();
                 if (data.includes('muxing overhead')) {
-                    stream.stop();
+                    console.log(`포트 ${obj.port}에서 'muxing overhead' 메시지로 인해 스트림이 중지됩니다.`);
                     activeStreams.delete(obj.port);
+                    if (stream.wsServer && typeof stream.wsServer.close === 'function') {
+                        stream.wsServer.close();
+                    }
                     retryConnection(obj);
                 }
             });
         }
-function retryConnection(obj) {
+function retryConnection(obj, retryCount = 0) {
+    const maxRetries = 100; // 최대 재시도 횟수 설정
     const retryInterval = 5000;
 
-    activeStreams.delete(obj.port);
-
-    setTimeout(() => {
-        openStream(obj);
-    }, retryInterval);
+    if (retryCount < maxRetries) {
+        setTimeout(() => {
+            openStream(obj, retryCount + 1);
+        }, retryInterval);
+    } else {
+        console.log(`포트 ${obj.port}에 대한 재시도가 최대 횟수를 초과했습니다.`);
+    }
 }
 
 // websocket 설정

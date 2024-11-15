@@ -116,11 +116,11 @@ function createWebSocketConnection(port, canvasElement) {
                 console.error('WebSocket error on port:', port, err);
             };
 
-            wsClient.onclose = function() {
-                setTimeout(() => {
-                    createWebSocketConnection(port, canvasElement);
-                }, 5000);
-            };
+//            wsClient.onclose = function() {
+//                setTimeout(() => {
+//                    createWebSocketConnection(port, canvasElement);
+//                }, 5000);
+//            };
 
             const wsPlayer = new jsmpeg(wsClient, {
                 canvas: canvasElement,
