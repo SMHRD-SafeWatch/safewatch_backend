@@ -7,37 +7,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/monitoring.css">
+    <script src="js/menu.js"></script>
+    <script src="js/monitoring.js"></script>
 </head>
 <body>
 <div class="container">
-    <div class="sidebar">
-        <div class="logo">
+  <div class="sidebar">
+    <div class="logo">
         <span class="logo-icon">
             <img src="icon/safewatch.svg" alt="Safe Watch Icon">
         </span>
-            <h2>Safe Watch</h2>
-        </div>
-        <div class="menu">
-            <ul>
-                <li class="menu-item active" onclick="selectMenu('monitoring')">
-                    <span class="menu-icon1"></span>
-                    <span class="menu-text">Monitoring</span>
-                </li>
-                <li class="menu-item" onclick="selectMenu('events')">
-                    <span class="menu-icon2"></span>
-                    <span class="menu-text">Events</span>
-                </li>
-                <li class="menu-item" onclick="selectMenu('analytics')">
-                    <span class="menu-icon3"></span>
-                    <span class="menu-text">Analytics</span>
-                </li>
-            </ul>
-        </div>
-        <div class="menu-item" onclick="selectMenu('settings')">
-            <span class="menu-icon4"></span>
-            <span class="menu-text">Settings</span>
-        </div>
+      <h2>Safe Watch</h2>
     </div>
+    <div class="menu">
+      <ul>
+        <li class="menu-item active" onclick="selectMenu('monitoring')">
+          <span class="menu-icon1"></span>
+          <span class="menu-text">Monitoring</span>
+        </li>
+        <li class="menu-item" onclick="selectMenu('events')">
+          <span class="menu-icon2"></span>
+          <span class="menu-text">Events</span>
+        </li>
+        <li class="menu-item" onclick="selectMenu('analytics')">
+          <span class="menu-icon3"></span>
+          <span class="menu-text">Analytics</span>
+        </li>
+      </ul>
+    </div>
+    <div class="menu-item" onclick="selectMenu('settings')">
+      <span class="menu-icon4"></span>
+      <span class="menu-text">Settings</span>
+    </div>
+  </div>
 
     <div class="main-content">
         <header>
