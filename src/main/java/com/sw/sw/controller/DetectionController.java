@@ -33,7 +33,7 @@ public class DetectionController {
 
         List<Detection> details = detectionService.getDetectionDetails(page, size);
         model.addAttribute("details", details);
-        return "events";
+        return "events_front";
     }
     @PutMapping("/resolveWarning")
     @ResponseBody

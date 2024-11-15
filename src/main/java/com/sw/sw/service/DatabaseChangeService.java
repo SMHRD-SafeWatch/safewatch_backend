@@ -22,9 +22,6 @@ public class DatabaseChangeService {
     private DetectionAlert alert2 = null;
 
 
-
-
-
     @Transactional
     @Scheduled(fixedRate = 5000) // 5초마다 실행 예제
     public void checkDatabaseChanges() {
