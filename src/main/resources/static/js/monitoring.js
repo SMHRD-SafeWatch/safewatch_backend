@@ -42,3 +42,4 @@ function closeModal() {
     const modal = document.getElementById("alertModal");
     modal.style.display = "none";
 }
+

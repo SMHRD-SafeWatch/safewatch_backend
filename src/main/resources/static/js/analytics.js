@@ -497,4 +497,6 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => console.error("교육 일정 데이터를 가져오는 중 오류 발생:", error));
     }
+
+
 });
