@@ -108,13 +108,13 @@
                     <h2>교육 일정 추가</h2>
                     <form id="addEduForm">
                         <label for="eduName">교육명</label>
-                        <input type="text" id="eduName" name="eduName" required>
+                        <input type="text" id="eduName" name="eduName" placeholder="교육명을 입력해주세요." required>
 
                         <label for="eduDate">교육일시</label>
                         <input type="datetime-local" id="eduDate" name="eduDate" required>
 
                         <label for="eduDuration">교육시간 (분)</label>
-                        <input type="number" id="eduDuration" name="eduDuration" required min="30">
+                        <input type="number" id="eduDuration" name="eduDuration" placeholder="교육시간을 입력해주세요." value="60" required min="30" step="10">
 
                         <button type="button" id="submitEduButton">등록</button>
                     </form>
