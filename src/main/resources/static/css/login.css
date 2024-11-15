@@ -1,0 +1,100 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+}
+
+.login-box {
+    width: 500px;
+    max-width: 90%;
+    padding: 45px;
+    border-radius: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.login-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #333;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.logo-icon {
+    margin-right: 10px;
+}
+
+.logo-icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.2;
+    text-align: left;
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    height: 50px;
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+}
+
+.form-control::placeholder {
+    color: #bbb;
+}
+
+/* 버튼 스타일 */
+.login-button {
+    width: 70%;
+    height: 50px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #00B8D4;
+    border: none;
+    border-radius: 15px;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.login-button:hover {
+    background-color: #1c8c99;
+    color: #fff;
+}
+
+.form-label {
+    font-size: 14px;
+    color: #333;
+    text-align: left;
+    display: block;
+    margin-bottom: 5px;
+}

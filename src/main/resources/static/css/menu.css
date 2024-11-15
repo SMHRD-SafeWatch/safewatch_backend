@@ -24,7 +24,6 @@ body {
 
 .logo {
     padding: 10px 20px;
-    text-align: center;
     font-size: 15px;
     font-weight: bold;
     display: flex;
@@ -65,7 +64,6 @@ body {
 
 .main-content {
     padding: 20px;
-    width: 100%;
     background-color: #ffffff;
     margin-left: 150px;
     width: calc(100% - 150px);

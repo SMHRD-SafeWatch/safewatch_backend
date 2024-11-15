@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Events_front</title>
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/events.css">
+    <script src="js/menu.js"></script>
+    <script src="js/events.js"></script>
+</head>
+<body>
+<div class="sidebar">
+  <div class="logo">
+          <span class="logo-icon">
+            <img src="icon/safewatch.svg" alt="Safe Watch Icon">
+          </span>
+    <h2>Safe Watch</h2>
+  </div>
+  <div class="menu">
+    <ul>
+      <li class="menu-item" onclick="selectMenu('monitoring')">
+        <span class="menu-icon1"></span>
+        <span class="menu-text">Monitoring</span>
+      </li>
+      <li class="menu-item active" onclick="selectMenu('events')">
+        <span class="menu-icon2"></span>
+        <span class="menu-text">Events</span>
+      </li>
+      <li class="menu-item" onclick="selectMenu('analytics')">
+        <span class="menu-icon3"></span>
+        <span class="menu-text">Analytics</span>
+      </li>
+    </ul>
+  </div>
+  <div class="menu-item" onclick="selectMenu('settings')">
+    <span class="menu-icon4"></span>
+    <span class="menu-text">Settings</span>
+  </div>
+</div>
+
+<div class="main-content">
+  <header>
+    <h1 class="main-text">Events</h1>
+    <p>날짜</p>
+  </header>
+  <div class="container">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>경고 단계</th>
+        <th>사진</th>
+        <th>일자</th>
+        <th>사건</th>
+        <th>구역</th>
+        <th>카메라</th>
+        <th>확인</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="detection : ${details}">
+        <td th:text="${detection?.riskLevel}"></td>
+        <td>
+          <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
+          <img th:if="${detection.imageUrlBase64 != null}"
+               th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
+               alt="Detection Image" width="175"/>
+          <!-- imageUrlBase64가 null일 때 기본 이미지를 표시 -->
+          <img th:if="${detection.imageUrlBase64 == null}"
+               th:src="@{/images/placeholder.png}"
+               alt="No Image Available" width="100"/>
+        </td>
+        <td th:text="${detection?.formattedDetectionTime}"></td>
+        <td th:text="${detection?.content}"></td>
+        <td th:text="${detection.cameraInstall?.location}"></td>
+        <td th:text="${detection.cameraInstall?.cameraId}"></td>
+        <td th:text="${detection.warning?.resolved}"></td>
+
+      </tr>
+      </tbody>
+    </table>
+    <ul class="pagination">
+      <li><a href="javascript:void(0);" onclick="previousPage()" id="prevButton">◀</a></li>
+      <li id="paginationNumbers"></li> <!-- 페이지 번호를 표시할 위치 -->
+      <li><a href="javascript:void(0);" onclick="nextPage()" id="nextButton">▶</a></li>
+    </ul>
+  </div>
+</div>
+
+<div id="alertModal" class="modal">
+  <div class="modal-content">
+    <h2 class="modal-title"><span class="alert-icon">️</span>매우 위험</h2>
+    <p class="modal-description">기기 작동 중 손 탐지</p>
+
+    <div class="modal-content-body">
+      <img src="img/ex_01.png" alt="Alert Image" id="modalImage" class="modal-image">
+      <div class="modal-details">
+        <div class="detail-section">
+          <p class="section-title">알림 위치</p>
+          <div class="detail-row">
+            <div class="detail-item icon-location">Section_1</div>
+            <div class="detail-item icon-camera">CAM_001</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">알림 일시</p>
+          <div class="detail-row">
+            <div class="detail-item icon-calendar">2024-11-25</div>
+            <div class="detail-item icon-clock">10:07 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="confirm-btn" onclick="closeModal()">확인</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

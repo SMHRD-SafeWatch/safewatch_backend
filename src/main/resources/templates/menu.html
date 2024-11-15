@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>menu</title>
+  <link rel="stylesheet" href="css/menu.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">
+          <span class="logo-icon">
+            <img src="icon/safewatch.svg" alt="Safe Watch Icon">
+          </span>
+    <h2>Safe Watch</h2>
+  </div>
+  <div class="menu">
+    <ul>
+      <li class="menu-item active" onclick="selectMenu('monitoring')">
+        <span class="menu-icon1"></span>
+        <span class="menu-text">Monitoring</span>
+      </li>
+      <li class="menu-item" onclick="selectMenu('events')">
+        <span class="menu-icon2"></span>
+        <span class="menu-text">Events</span>
+      </li>
+      <li class="menu-item" onclick="selectMenu('analytics')">
+        <span class="menu-icon3"></span>
+        <span class="menu-text">Analytics</span>
+      </li>
+    </ul>
+  </div>
+  <div class="menu-item" onclick="selectMenu('settings')">
+    <span class="menu-icon4"></span>
+    <span class="menu-text">Settings</span>
+  </div>
+</div>
+
+<div class="main-content">
+  <header>
+    <h1 class="main-text">Monitoring</h1>
+    <p>날짜</p>
+  </header>
+</div>
+<script src="js/menu.js"></script>
+</body>
+</html>

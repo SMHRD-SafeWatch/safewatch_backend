@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>analytics</title>
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/analytics.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/menu.js"></script>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">
+          <span class="logo-icon">
+            <img src="icon/safewatch.svg" alt="Safe Watch Icon">
+          </span>
+        <h2>Safe Watch</h2>
+    </div>
+    <div class="menu">
+        <ul>
+            <li class="menu-item" onclick="selectMenu('monitoring')">
+                <span class="menu-icon1"></span>
+                <span class="menu-text">Monitoring</span>
+            </li>
+            <li class="menu-item" onclick="selectMenu('events')">
+                <span class="menu-icon2"></span>
+                <span class="menu-text">Events</span>
+            </li>
+            <li class="menu-item active" onclick="selectMenu('analytics')">
+                <span class="menu-icon3"></span>
+                <span class="menu-text">Analytics</span>
+            </li>
+        </ul>
+    </div>
+    <div class="menu-item" onclick="selectMenu('settings')">
+        <span class="menu-icon4"></span>
+        <span class="menu-text">Settings</span>
+    </div>
+</div>
+
+<div class="main-content">
+    <header>
+        <h1 class="main-text">Analytics</h1>
+        <p>날짜</p>
+    </header>
+
+<div class="alert-wrapper">
+    <div class="top-row">
+        <div class="alert-container">
+            <h2 class="alert-title">일일 알림 건수</h2>
+            <div class="alert-box">
+                <div class="alert-content">
+                    <h5 class="alert-subtitle">금일 알림수</h5>
+                    <canvas id="dailyAlertsChart" width="220" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="weekly-alert-container">
+            <h2 class="weekly-alert-title">주별 알림 건수</h2>
+            <div class="weekly-alert-box">
+                <div class="weekly-alert-nav">
+                    <button id="prevWeek" class="alert-btn"></button>
+                    <div id="weeklyAlertDetails" class="weekly-alert-details">10월 첫째주</div>
+                    <button id="nextWeek" class="alert-btn"></button>
+                </div>
+                <canvas id="weeklyAlertChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-row">
+        <div class="education-container">
+            <h2 class="education-main-title">안전 교육 일정</h2>
+            <div class="education-box">
+                <div class="education-header">
+                    <h4 class="education-subtitle">교육 일정</h4>
+                    <div class="education-filter">
+                        <i class="calendar-icon"></i>
+                        <select id="eduArray" class="education-sort">
+                            <option value="latest" selected>최신순</option>
+                            <option value="earliest">오래된 순</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="educationTb" class="education-list">
+                    <!-- 교육 일정 항목 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="yearly-alert-container">
+            <h2 class="yearly-alert-title">연도별 알림 건수</h2>
+            <div class="yearly-alert-box">
+                <div class="yearly-alert-header">
+                    <span id="currentYearDisplay" class="current-year-display">2024년</span>
+                    <div class="form-group">
+                        <select id="yearSelect" class="select-group">
+                            <!-- 연도 옵션 -->
+                        </select>
+                    </div>
+                </div>
+                <canvas id="monthlyAlertsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

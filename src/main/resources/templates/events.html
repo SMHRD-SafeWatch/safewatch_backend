@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detection Data</title>
+</head>
+<body>
+<h1>Detection Data</h1>
+<table border="1">
+  <thead>
+  <tr>
+    <th>riskLevel</th>
+    <th>Image URL</th>
+    <th>detectionTime</th>
+    <th>Warning Type</th>
+    <th>Location</th>
+    <th>Camera ID</th>
+    <th>resolved</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- details 리스트의 데이터를 반복하여 테이블에 표시 -->
+  <tr th:each="detection : ${details}">
+    <td th:text="${detection?.riskLevel}"></td>
+    <td>
+      <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
+      <img th:if="${detection.imageUrlBase64 != null}"
+           th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
+           alt="Detection Image" width="100"/>
+      <!-- imageUrlBase64가 null일 때 기본 이미지를 표시 -->
+      <img th:if="${detection.imageUrlBase64 == null}"
+           th:src="@{/images/placeholder.png}"
+           alt="No Image Available" width="100"/>
+    </td>
+    <td th:text="${detection?.formattedDetectionTime}"></td>
+    <td th:text="${detection?.content}"></td>
+    <td th:text="${detection.cameraInstall?.location}"></td>
+    <td th:text="${detection.cameraInstall?.cameraId}"></td>
+    <td th:text="${detection.warning?.resolved}"></td>
+
+  </tr>
+
+  </tbody>
+</table>
+
+<input type="hidden" id="popupDetectionId" th:value="${detection?.detectionId}">
+
+<!-- 이전 및 다음 버튼 -->
+<div id="pagination-controls">
+  <button onclick="previousPage()" id="prevButton" disabled>이전</button>
+  <span>현재 페이지: <span id="currentPage">1</span></span>
+  <button onclick="nextPage()" id="nextButton">다음</button>
+</div>
+
+<!-- 팝업 HTML 구조 -->
+<div id="alertPopup" style="display: none; position: fixed; top: 20%; left: 50%; transform: translate(-50%, -20%); background: white; border: 2px solid red; padding: 20px; width: 300px; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  <h2>⚠️ 알림 - 매우 위험</h2>
+  <img id="popupImage" src="" alt="Detection Image" width="100%" style="margin-bottom: 10px;">
+  <p>카메라 ID: <span id="popupCameraId"></span></p>
+  <p>발생 시간: <span id="popupDetectionTime"></span></p>
+  <p>상황 설명: <span id="popupContent"></span></p>
+  <p>위치: <span id="popupLocation"></span></p>
+  <!-- Thymeleaf를 통해 detectionId를 숨겨진 필드로 전달 -->
+
+  <button onclick="showConfirmPopup()" style="margin-top: 10px;">확인</button>
+</div>
+
+<!-- 확인용 추가 팝업 -->
+<div id="confirmPopup" style="display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -30%); background: white; border: 2px solid black; padding: 20px; width: 250px; z-index: 1100; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+  <p>팝업을 닫으시겠습니까?</p>
+  <button onclick="closeAlertPopup()" style="margin-top: 10px;">예</button>
+  <button onclick="closeConfirmPopup()" style="margin-top: 10px;">아니요</button>
+</div>
+
+<!-- WebSocket Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script type="text/javascript">
+    var socket = new SockJS('/ws');
+  var stompClient = Stomp.over(socket);
+
+  stompClient.connect({}, function (frame) {
+      stompClient.subscribe('/topic/alerts', function (message) {
+          var alertData = JSON.parse(message.body);
+          console.log("새로운 알림 데이터:", alertData);
+
+          // 알림 데이터를 localStorage에 저장
+          localStorage.setItem("alertData", JSON.stringify(alertData));
+
+          // events.html로 화면 전환
+          window.location.href = "/detectevt";
+
+          setTimeout(function() {
+              location.reload(true);
+          }, 500);
+      });
+  });
+
+
+
+  // 페이지 로드 시 localStorage에서 alertData를 확인하고 팝업 표시
+  window.addEventListener("load", function () {
+      var storedAlertData = localStorage.getItem("alertData");
+      if (storedAlertData) {
+          var alertData = JSON.parse(storedAlertData);
+
+          // 알림 데이터를 화면에 표시
+          if (alertData.riskLevel === "HIGH" || alertData.riskLevel === "MEDIUM") {
+          document.getElementById("popupImage").src = alertData.imageUrl;
+          document.getElementById("popupCameraId").textContent = alertData.cameraId;
+          document.getElementById("popupDetectionTime").textContent = new Date(alertData.detectionTime).toLocaleString();
+          document.getElementById("popupContent").textContent = alertData.content;
+          document.getElementById("popupLocation").textContent = alertData.location;
+
+          // 팝업 표시
+          showAlertPopup();
+      }
+
+      }
+  });
+
+  function showAlertPopup() {
+      console.log("showAlertPopup 실행됨");
+      document.getElementById("alertPopup").style.display = "block";
+  }
+
+    function showConfirmPopup() {
+      console.log("showConfirmPopup 실행됨");
+      document.getElementById("confirmPopup").style.display = "block";
+  }
+
+  function closeConfirmPopup() {
+      console.log("closeConfirmPopup 실행됨");
+      document.getElementById("confirmPopup").style.display = "none";
+  }
+
+  function closeAlertPopup() {
+      console.log("closeAlertPopup 실행됨");
+      document.getElementById("alertPopup").style.display = "none";
+      document.getElementById("confirmPopup").style.display = "none";
+
+      var storedAlertData = localStorage.getItem("alertData");
+    if (storedAlertData) {
+        var alertData = JSON.parse(storedAlertData);
+        var detectionId = alertData.detectionId;
+
+        // AJAX 요청으로 Spring Boot에 detectionId 전송
+        fetch('/resolveWarning?detectionId=' + detectionId, {
+            method: 'PUT'
+        })
+        .then(response => response.text())
+        .then(data => {
+            // 팝업을 띄운 후 localStorage에서 데이터 제거
+            localStorage.removeItem("alertData");
+            location.reload(true);
+
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  }
+
+  const pageSize = 5;
+  let currentPage = 0;
+  const rows = document.querySelectorAll("tbody tr");
+  const totalRows = rows.length;
+  console.log("전체 데이터 개수:", totalRows);
+
+
+  const totalPages = Math.ceil(totalRows / pageSize);
+  console.log("총 페이지 수:", totalPages);
+
+  // 페이지 로드 시 처음 5개만 표시
+  function showPage(page) {
+    const rows = document.querySelectorAll("tbody tr");
+    rows.forEach((row, index) => {
+      row.style.display = (index >= page * pageSize && index < (page + 1) * pageSize) ? "" : "none";
+    });
+
+    // 페이지 번호 표시
+    document.getElementById("currentPage").textContent = page + 1;
+
+    // 버튼 활성화/비활성화 설정
+    document.getElementById("prevButton").disabled = (page === 0);
+    document.getElementById("nextButton").disabled = (page >= totalPages - 1);
+  }
+
+  // 이전 페이지로 이동
+  function previousPage() {
+    if (currentPage > 0) {
+      currentPage--;
+      showPage(currentPage);
+    }
+  }
+
+  // 다음 페이지로 이동
+  function nextPage() {
+    if (currentPage < totalPages - 1) {
+      currentPage++;
+      showPage(currentPage);
+    }
+  }
+
+  // 첫 페이지 표시
+  document.addEventListener("DOMContentLoaded", function () {
+    if (totalPages > 1) {
+      showPage(currentPage);
+    } else {
+      // 데이터가 5개 이하라면 페이지 버튼을 비활성화
+      document.getElementById("prevButton").disabled = true;
+      document.getElementById("nextButton").disabled = true;
+    }
+  });
+</script>
+
+</body>
+</html>

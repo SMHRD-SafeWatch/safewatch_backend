@@ -1,0 +1,313 @@
+.alert-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 5px 0px 0px 20px;
+    width: 100%;
+}
+
+.top-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px;
+    width: 100%;
+}
+
+.bottom-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 30px;
+    width: 100%;
+    align-items: center;
+}
+
+/* 일일 알림건수 컨테이너 */
+.alert-container {
+    flex: 1;
+    max-width: 350px;
+    padding: 0 10px;
+    text-align: center;
+}
+
+.alert-title {
+    font-size: 21px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+/* box */
+.alert-box {
+    height: 300px;
+    width: 90%;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+/* 콘텐츠 스타일 */
+.alert-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 부제목 스타일 */
+.alert-subtitle {
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+}
+
+/* 주별 알림 전체 컨테이너 */
+.weekly-alert-container {
+    max-width: 560px;
+    padding: 0 10px;
+    flex: 1;
+}
+
+/* 주별 알림 제목 스타일 */
+.weekly-alert-title {
+    font-size: 21px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #000000;
+}
+
+/* 주별 알림 박스 */
+.weekly-alert-box {
+    width: 90%;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* 주별 알림 차트의 canvas 크기 */
+#weeklyAlertChart {
+    height: 100px;
+    width: 100%;
+}
+
+/* 상단 네비게이션 바 */
+.weekly-alert-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* 주별 알림 버튼 스타일 */
+.alert-btn {
+    width: 25px;
+    height: 25px;
+    background-color: #000;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    cursor: pointer;
+}
+
+.alert-btn.hidden {
+    visibility: hidden;
+}
+
+/* 주차 정보 스타일 */
+.weekly-alert-details {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+}
+
+#prevWeek {
+    mask-image: url('../icon/prev.svg');
+    margin-right: 20px;
+}
+
+#nextWeek {
+    mask-image: url('../icon/next.svg');
+    margin-left: 20px;
+}
+
+/* 연도별 알림건수 컨테이너 */
+.yearly-alert-container {
+    max-width: 600px;
+    padding: 10px;
+    text-align: center;
+    flex: 1;
+}
+
+/* 연도별 알림건수 제목 스타일 */
+.yearly-alert-title {
+    font-size: 21px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+/* 연도 선택 */
+.yearly-alert-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.current-year-display {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 8px;
+}
+
+#yearSelect {
+    font-size: 13px;
+    height: 30px;
+    padding: 0 5px;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+}
+
+/* 연도별 알림 박스 */
+.yearly-alert-box {
+    width: 90%;
+    max-width: 550px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+#monthlyAlertsChart {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* 교육 일정 컨테이너 */
+.education-container {
+    width: 100%;
+    max-width: 350px;
+    padding: 10px;
+
+}
+
+.yearly-alert-container {
+    max-width: 580px;
+    padding: 10px;
+    text-align: center;
+    flex: 1;
+}
+/* 메인 제목 */
+.education-main-title {
+    font-size: 21px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #000000;
+}
+
+/* 교육 일정 박스 */
+.education-box {
+    width: 90%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 0 auto;
+}
+
+/* 부제목 */
+.education-subtitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 5px 0 10px 5px;
+    text-align: left;
+}
+
+/* 필터와 부제목을 포함한 헤더 */
+.education-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.education-sort {
+    font-size: 13px;
+    padding: 5px 3px;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+}
+
+/* 교육 일정 목록 스타일 */
+.education-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 카드 스타일 */
+.education-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 6px;
+    border: 0.7px solid #e0e0e0;
+}
+
+/* 날짜 스타일 */
+.education-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 35px;
+    padding: 2px 20px;
+    margin: 0 6px 0 8px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px 0px rgba(111, 111, 114, 0.12);
+}
+
+.day {
+    font-size: 14px;
+    font-weight: bold;
+    color: #e25cd0;
+}
+
+.weekday {
+    font-size: 11px;
+    color: #888888;
+}
+
+/* 교육 일정 카드 상세 내용 */
+.education-details {
+    flex: 1;
+    margin-left: 8px;
+}
+
+.edu-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333333;
+    margin-bottom: 2px;
+}
+
+.edu-time {
+    font-size: 11px;
+    color: #888888;
+    margin-bottom: 0px;
+}
+
