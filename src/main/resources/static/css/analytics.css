@@ -244,9 +244,36 @@
     margin-bottom: 10px;
 }
 
+/* 아이콘 버튼 스타일 */
+.icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-right: 8px;
+    cursor: pointer;
+    background-color: #fff; /* 배경색을 white로 설정 */
+}
+
+.pencil-icon {
+    width: 16px;
+    height: 16px;
+    background-image: url('../icon/pencil.svg');
+    background-size: cover;
+    display: inline-block;
+}
+
+.education-filter {
+    display: flex;
+    align-items: center;
+}
+
 .education-sort {
     font-size: 13px;
-    padding: 5px 3px;
+    padding: 6px 3px;
     border-radius: 5px;
     border: 1px solid #e0e0e0;
 }
@@ -283,13 +310,14 @@
 
 .day {
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 600;
     color: #e25cd0;
 }
 
 .weekday {
     font-size: 11px;
-    color: #888888;
+    font-weight: 600;
+    color: #565656;
 }
 
 /* 교육 일정 카드 상세 내용 */
@@ -301,13 +329,208 @@
 .edu-name {
     font-size: 13px;
     font-weight: 500;
-    color: #333333;
+    color: #2d2d2d !important;
     margin-bottom: 2px;
 }
 
 .edu-time {
-    font-size: 11px;
-    color: #888888;
+    font-size: 11px !important;
+    color: #888888 !important;
     margin-bottom: 0px;
 }
 
+#addEduForm input::placeholder {
+    color: #a2a2a2;
+    opacity: 1;
+}
+
+/* 드롭다운 아이콘 스타일 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.dropdown .dropdown-menu .dropdown-item {
+    display: block;
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    text-align: center;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+.dropdown .dropdown-menu .dropdown-item:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.delete-icon {
+    cursor: pointer;
+}
+
+/* 교육 일정 삭제시 모달 alert창 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.small-modal {
+    width: 350px;
+    height: 170px;
+    padding: 30px;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.modal-confirm {
+    margin: 20px 0px 30px 0;
+    font-size: 17px !important;
+    font-weight: 500;
+    color: #171717 !important;
+    text-align: center;
+}
+
+.confirm-btn {
+    background-color: #00B8D4;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.cancel-btn {
+    background-color: #dcdcdc;
+    color: #333;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+
+
+/* 일정 등록 모달 */
+#addEduModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    padding: 20px 35px;
+    border-radius: 8px;
+    width: 320px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    text-align: center;
+}
+
+#closeEduModalButton {
+    position: absolute;
+    top: 7px;
+    right: 14px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.modal-content label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #222222;
+    margin: 10px 0 5px;
+    text-align: left;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="datetime-local"],
+.modal-content input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+.modal-content input[type="text"]:focus,
+.modal-content input[type="datetime-local"]:focus,
+.modal-content input[type="number"]:focus {
+    border-color: #00dcff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 184, 212, 0.5);
+}
+#submitEduButton {
+    width: 65px;
+    padding: 10px;
+    font-size: 14px;
+    color: #ffffff;
+    background-color: #00B8D4;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+
+}
+
+#submitEduButton:hover {
+    background-color: #1c8c99;
+}

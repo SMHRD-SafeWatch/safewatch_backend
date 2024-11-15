@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                         size: 10,
                                     },
                                     padding: 15,
-                                    generateLabels: function(chart) {
+                                    generateLabels: function (chart) {
                                         let datasets = chart.data.datasets;
                                         return datasets[0].data.map((value, index) => {
                                             return {
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         return `${context.label}: ${context.raw}건`;
                                     }
                                 }
@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => console.error("일일 알림 데이터를 가져오는 중 오류 발생:", error));
     }
-
 
 
     // 주별 이동 버튼 표시 상태
@@ -164,8 +163,8 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(data => {
                 const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
-                const riskLevels = { 'LOW': [], 'MEDIUM': [], 'HIGH': [] };
-                const totalCountsByRiskLevel = { 'LOW': 0, 'MEDIUM': 0, 'HIGH': 0 };
+                const riskLevels = {'LOW': [], 'MEDIUM': [], 'HIGH': []};
+                const totalCountsByRiskLevel = {'LOW': 0, 'MEDIUM': 0, 'HIGH': 0};
 
                 dayLabels.forEach(day => {
                     const countsByRiskLevel = data[day] || {};
@@ -183,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     weeklyAlertChart.data.datasets[0].data = riskLevels['HIGH'];
                     weeklyAlertChart.data.datasets[1].data = riskLevels['MEDIUM'];
                     weeklyAlertChart.data.datasets[2].data = riskLevels['LOW'];
-                    weeklyAlertChart.options.plugins.legend.labels.generateLabels = function(chart) {
+                    weeklyAlertChart.options.plugins.legend.labels.generateLabels = function (chart) {
                         let datasets = chart.data.datasets;
                         return datasets.map((dataset, index) => {
                             const meta = chart.getDatasetMeta(index);
@@ -231,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                     labels: {
                                         usePointStyle: true,
                                         padding: 20,
-                                        generateLabels: function(chart) {
+                                        generateLabels: function (chart) {
                                             let datasets = chart.data.datasets;
                                             return datasets.map((dataset, index) => {
                                                 const meta = chart.getDatasetMeta(index);
@@ -249,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 },
                                 tooltip: {
                                     callbacks: {
-                                        label: function(context) {
+                                        label: function (context) {
                                             return `${context.dataset.label}: ${context.raw}회`;
                                         }
                                     }
@@ -268,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 }
                             },
                             layout: {
-                                padding: { top: 5, bottom: 3 }
+                                padding: {top: 5, bottom: 3}
                             }
                         }
                     });
@@ -284,7 +283,6 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => console.error("주간 알림 데이터를 가져오는 중 오류 발생:", error));
     }
-
 
 
     // 주차 계산
@@ -348,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
     initializeYearOptions(yearSelect, currentYear);
 
     // 연도 선택
-    yearSelect.addEventListener("change", function() {
+    yearSelect.addEventListener("change", function () {
         const selectedYear = parseInt(yearSelect.value, 10);
         currentYearDisplay.textContent = `${selectedYear}년`; // 선택된 연도로 업데이트
         loadMonthlyAlerts(selectedYear);
@@ -371,8 +369,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-
-
     // 월별 알림건수 - 연도
     let monthlyAlertsChart; // 기존 차트를 저장할 변수
 
@@ -387,7 +383,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 // 각 월별 데이터 정리 및 기본값 설정
                 for (let month = 1; month <= 12; month++) {
-                    const monthData = data[month] || { HIGH: 0, MEDIUM: 0, LOW: 0 };
+                    const monthData = data[month] || {HIGH: 0, MEDIUM: 0, LOW: 0};
                     highData.push(monthData.HIGH || 0);
                     mediumData.push(monthData.MEDIUM || 0);
                     lowData.push(monthData.LOW || 0);
@@ -408,11 +404,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 monthlyAlertsChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: Array.from({ length: 12 }, (_, i) => `${i + 1}월`),
+                        labels: Array.from({length: 12}, (_, i) => `${i + 1}월`),
                         datasets: [
-                            { label: 'HIGH', data: highData, backgroundColor: '#F44336' },
-                            { label: 'MEDIUM', data: mediumData, backgroundColor: '#FF9800' },
-                            { label: 'LOW', data: lowData, backgroundColor: '#FFEB3B' }
+                            {label: 'HIGH', data: highData, backgroundColor: '#F44336'},
+                            {label: 'MEDIUM', data: mediumData, backgroundColor: '#FF9800'},
+                            {label: 'LOW', data: lowData, backgroundColor: '#FFEB3B'}
                         ]
                     },
                     options: {
@@ -423,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 labels: {
                                     usePointStyle: true,
                                     padding: 20,
-                                    generateLabels: function(chart) {
+                                    generateLabels: function (chart) {
                                         let datasets = chart.data.datasets;
                                         return datasets.map((dataset, index) => {
                                             const meta = chart.getDatasetMeta(index);
@@ -441,22 +437,22 @@ document.addEventListener("DOMContentLoaded", function() {
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         return `${context.dataset.label}: ${context.raw}회`;
                                     }
                                 }
                             }
                         },
                         scales: {
-                            x: { stacked: true },
+                            x: {stacked: true},
                             y: {
                                 stacked: true,
                                 beginAtZero: true,
-                                ticks: { stepSize: 10 }
+                                ticks: {stepSize: 10}
                             }
                         },
                         layout: {
-                            padding: { top:10,bottom:3 }
+                            padding: {top: 10, bottom: 3}
                         }
                     }
                 });
@@ -465,38 +461,203 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-    // 교육 일정
+    // 일정등록 관련 변수
+    const openEduModalButton = document.getElementById("openEduModalButton");
+    const closeEduModalButton = document.getElementById("closeEduModalButton");
+    const addEduModal = document.getElementById("addEduModal");
+    const addEduForm = document.getElementById("addEduForm");
+    // 일정등록 폼 모달 열기
+    openEduModalButton.addEventListener("click", function() {
+        addEduModal.style.display = "flex";
+    });
+
+    // 일정등록 폼 모달 닫기
+    closeEduModalButton.addEventListener("click", function() {
+        addEduModal.style.display = "none";
+    });
+
+    // 일정등록 모달 외부 클릭 시 닫기
+    window.addEventListener("click", function(event) {
+        if (event.target === addEduModal) {
+            addEduModal.style.display = "none";
+        }
+    });
+
+    // 등록 버튼 클릭 이벤트
+    const submitEduButton = document.getElementById("submitEduButton");
+    submitEduButton.addEventListener("click", function() {
+        const eduName = document.getElementById("eduName").value;
+        const eduDate = document.getElementById("eduDate").value;
+        const eduDuration = parseInt(document.getElementById("eduDuration").value, 10);
+
+
+        if (eduName && eduDate && eduDuration) {
+
+            const educationData = {
+                eduName: eduName,
+                eduDate: eduDate,
+                eduDuration: eduDuration
+            };
+
+            fetch("/education", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(educationData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("addEduForm").reset();
+                        addEduModal.style.display = "none";
+                        loadEducationSchedules(document.getElementById("eduArray").value);
+                    } else {
+                        console.error("교육 일정 등록에 실패했습니다.");
+                        alert("교육 일정 등록에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("서버 오류:", error);
+                });
+        } else {
+            alert("모든 필드를 입력해주세요.");
+        }
+    });
+
+
+
+    // 교육 일정 드롭다운 변경 시 로드 함수 호출
     document.getElementById("eduArray").addEventListener("change", function() {
         loadEducationSchedules(this.value);
     });
 
+    // 화면의 다른 부분 클릭 시 드롭다운 닫기
+    document.addEventListener("click", function(event) {
+        if (activeDropdown && !event.target.closest(".dropdown")) {
+            activeDropdown.style.display = "none";
+            activeDropdown = null;
+        }
+    });
 
-    // 교육 일정 로드 함수
-    function loadEducationSchedules(sortOption) {
-        fetch(`/api/analytics/educationSchedules?sortOption=${sortOption}`)
-            .then(response => response.json())
-            .then(data => {
-                const educationList = document.getElementById("educationTb");
-                educationList.innerHTML = ""; // 기존 항목 초기화
-                data.forEach(education => {
-                    const card = document.createElement("div");
-                    card.classList.add("education-card");
+    document.getElementById("confirmDeleteBtn").addEventListener("click", deleteItem);
+    document.getElementById("cancelDeleteBtn").addEventListener("click", closeDeleteConfirm);
 
-                    card.innerHTML = `
-                        <div class="education-day">
-                            <span class="day">${education.day}</span>
-                            <span class="weekday">${education.weekday}</span>
-                        </div>
-                        <div class="education-details">
-                            <p class="edu-name">${education.eduName}</p>
-                            <p class="edu-time">${education.formattedDate}</p>
-                        </div> 
-                    `;
-                    educationList.appendChild(card);
-                });
-            })
-            .catch(error => console.error("교육 일정 데이터를 가져오는 중 오류 발생:", error));
+
+});
+
+
+// 교육 일정 삭제 Dropdown
+let activeDropdown = null;
+
+function toggleDropdown(icon) {
+    const dropdownMenu = icon.nextElementSibling;
+
+    if (activeDropdown && activeDropdown !== dropdownMenu) {
+        activeDropdown.style.display = "none";
+    }
+
+    // 현재 드롭다운 메뉴 열고 닫기
+    dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+
+    // 현재 드롭다운 메뉴를 활성 드롭다운으로 저장
+    activeDropdown = dropdownMenu.style.display === "block" ? dropdownMenu : null;
+}
+
+// 삭제 확인 모달
+function showDeleteConfirm(eduId) {
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+    deleteConfirmModal.style.display = "flex";
+    deleteConfirmModal.setAttribute("data-edu-id", eduId);
+}
+
+function closeDeleteConfirm() {
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+    deleteConfirmModal.style.display = "none";
+}
+
+// 모달 외부를 클릭하면 모달 닫기
+window.addEventListener("click", function(event) {
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+
+    // 모달이 열려 있고, 클릭한 대상이 모달 내부가 아닌 경우에만 모달 닫기
+    if (deleteConfirmModal.style.display === "flex" && event.target === deleteConfirmModal) {
+        closeDeleteConfirm();
     }
 
 
 });
+
+// 항목 삭제
+function deleteItem() {
+    const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+    const eduId = deleteConfirmModal.getAttribute("data-edu-id");
+
+    fetch(`/deleteEducation`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `eduId=${eduId}`,
+    })
+        .then(response => {
+            if (response.ok) {
+                alert("교육 일정이 삭제되었습니다.");
+                loadEducationSchedules(document.getElementById("eduArray").value);
+            } else {
+                alert("삭제 중 오류가 발생했습니다.");
+            }
+        })
+        .catch(error => {
+            console.error("삭제 요청 실패:", error);
+            alert("삭제 요청에 실패했습니다.");
+        });
+
+    deleteConfirmModal.style.display = "none";
+}
+
+// 교육 일정 로드 함수
+function loadEducationSchedules(sortOption) {
+    fetch(`/api/analytics/educationSchedules?sortOption=${sortOption}`)
+        .then(response => response.json())
+        .then(data => {
+            const educationList = document.getElementById("educationTb");
+            educationList.innerHTML = ""; // 기존 항목 초기화
+            data.forEach(education => {
+                const card = document.createElement("div");
+                card.classList.add("education-card");
+
+                card.innerHTML = `
+                    <div class="education-day">
+                        <span class="day">${education.day}</span>
+                        <span class="weekday">${education.weekday}</span>
+                    </div>
+                    <div class="education-details">
+                        <p class="edu-name">${education.eduName}</p>
+                        <p class="edu-time">${education.formattedDate}</p>
+                    </div>
+                    <div class="dropdown dropright">
+                        <img src="icon/delete.svg" alt="delete_icon" class="delete-icon">
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item">삭제</button>
+                        </div>
+                    </div>
+                `;
+
+                // 드롭다운 아이콘에 클릭 이벤트 리스너 추가
+                const deleteIcon = card.querySelector(".delete-icon");
+                deleteIcon.addEventListener("click", function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 방지
+                    toggleDropdown(deleteIcon);
+                });
+
+                // 삭제 버튼에 삭제 확인 모달 열기 이벤트 리스너 추가
+                const deleteButton = card.querySelector(".dropdown-item");
+                deleteButton.addEventListener("click", () => showDeleteConfirm(education.eduId));
+
+                educationList.appendChild(card);
+            });
+        })
+        .catch(error => console.error("교육 일정 데이터를 가져오는 중 오류 발생:", error));
+}
+
+
