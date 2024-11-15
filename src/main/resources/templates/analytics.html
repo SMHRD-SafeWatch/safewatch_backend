@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/analytics.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/analytics.js"></script>
     <script src="js/menu.js"></script>
 </head>
 <body>
@@ -46,67 +45,100 @@
         <p>날짜</p>
     </header>
 
-<div class="alert-wrapper">
-    <div class="top-row">
-        <div class="alert-container">
-            <h2 class="alert-title">일일 알림 건수</h2>
-            <div class="alert-box">
-                <div class="alert-content">
-                    <h5 class="alert-subtitle">금일 알림수</h5>
-                    <canvas id="dailyAlertsChart" width="220" height="220"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="weekly-alert-container">
-            <h2 class="weekly-alert-title">주별 알림 건수</h2>
-            <div class="weekly-alert-box">
-                <div class="weekly-alert-nav">
-                    <button id="prevWeek" class="alert-btn"></button>
-                    <div id="weeklyAlertDetails" class="weekly-alert-details">10월 첫째주</div>
-                    <button id="nextWeek" class="alert-btn"></button>
-                </div>
-                <canvas id="weeklyAlertChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class="bottom-row">
-        <div class="education-container">
-            <h2 class="education-main-title">안전 교육 일정</h2>
-            <div class="education-box">
-                <div class="education-header">
-                    <h4 class="education-subtitle">교육 일정</h4>
-                    <div class="education-filter">
-                        <i class="calendar-icon"></i>
-                        <select id="eduArray" class="education-sort">
-                            <option value="latest" selected>최신순</option>
-                            <option value="earliest">오래된 순</option>
-                        </select>
+    <div class="alert-wrapper">
+        <div class="top-row">
+            <div class="alert-container">
+                <h2 class="alert-title">일일 알림 건수</h2>
+                <div class="alert-box">
+                    <div class="alert-content">
+                        <h5 class="alert-subtitle">금일 알림수</h5>
+                        <canvas id="dailyAlertsChart" width="220" height="220"></canvas>
                     </div>
                 </div>
-                <div id="educationTb" class="education-list">
-                    <!-- 교육 일정 항목 -->
+            </div>
+
+            <div class="weekly-alert-container">
+                <h2 class="weekly-alert-title">주별 알림 건수</h2>
+                <div class="weekly-alert-box">
+                    <div class="weekly-alert-nav">
+                        <button id="prevWeek" class="alert-btn"></button>
+                        <div id="weeklyAlertDetails" class="weekly-alert-details">10월 첫째주</div>
+                        <button id="nextWeek" class="alert-btn"></button>
+                    </div>
+                    <canvas id="weeklyAlertChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="yearly-alert-container">
-            <h2 class="yearly-alert-title">연도별 알림 건수</h2>
-            <div class="yearly-alert-box">
-                <div class="yearly-alert-header">
-                    <span id="currentYearDisplay" class="current-year-display">2024년</span>
-                    <div class="form-group">
-                        <select id="yearSelect" class="select-group">
-                            <!-- 연도 옵션 -->
-                        </select>
+        <div class="bottom-row">
+            <div class="education-container">
+                <h2 class="education-main-title">안전 교육 일정</h2>
+                <div class="education-box">
+                    <div class="education-header">
+                        <h4 class="education-subtitle">교육 일정</h4>
+                        <div class="education-filter">
+                            <div class="icon-button" id="openEduModalButton">
+                                <i class="pencil-icon"></i>
+                            </div>
+                            <select id="eduArray" class="education-sort">
+                                <option value="latest" selected>최신순</option>
+                                <option value="earliest">오래된 순</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="educationTb" class="education-list">
+                        <!-- 교육 일정 항목 -->
                     </div>
                 </div>
-                <canvas id="monthlyAlertsChart"></canvas>
+            </div>
+            <!-- 일정 삭제 -->
+            <div id="deleteConfirmModal" class="modal">
+                <div class="modal-content small-modal">
+                    <p class="modal-confirm">일정을 삭제하시겠습니까?</p>
+                    <div class="modal-footer">
+                        <button class="confirm-btn" id="confirmDeleteBtn">확인</button>
+                        <button class="cancel-btn" id="cancelDeleteBtn">취소</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 일정 등록 -->
+            <div id="addEduModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeEduModalButton">&times;</span>
+                    <h2>교육 일정 추가</h2>
+                    <form id="addEduForm">
+                        <label for="eduName">교육명</label>
+                        <input type="text" id="eduName" name="eduName" required>
+
+                        <label for="eduDate">교육일시</label>
+                        <input type="datetime-local" id="eduDate" name="eduDate" required>
+
+                        <label for="eduDuration">교육시간 (분)</label>
+                        <input type="number" id="eduDuration" name="eduDuration" required min="30">
+
+                        <button type="button" id="submitEduButton">등록</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="yearly-alert-container">
+                <h2 class="yearly-alert-title">연도별 알림 건수</h2>
+                <div class="yearly-alert-box">
+                    <div class="yearly-alert-header">
+                        <span id="currentYearDisplay" class="current-year-display">2024년</span>
+                        <div class="form-group">
+                            <select id="yearSelect" class="select-group">
+                                <!-- 연도 옵션 -->
+                            </select>
+                        </div>
+                    </div>
+                    <canvas id="monthlyAlertsChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
-</div>
+
+<script src="js/analytics.js"></script>
 </body>
 </html>
