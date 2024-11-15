@@ -1,4 +1,20 @@
 function selectMenu(menuId) {
+
+    switch(menuId) {
+        case 'monitoring':
+            window.location.href = 'monitoring';
+            break;
+        case 'events':
+            window.location.href = 'detectevt';
+            break;
+        case 'analytics':
+            window.location.href = 'analytics';
+            break;
+        case 'settings':
+            window.location.href = 'settings';
+            break;
+    }
+
     // 모든 메뉴 항목에서 active 클래스 제거
     const menuItems = document.querySelectorAll(".menu-item");
     menuItems.forEach(item => item.classList.remove("active"));
