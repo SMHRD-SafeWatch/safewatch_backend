@@ -18,6 +18,7 @@ public interface WarningRepository extends JpaRepository<Warning, Integer> {
 
     @Query("SELECT w FROM Warning w WHERE w.detection.detectionId = :detectionId")
     Warning findByDetectionId(@Param("detectionId") Long detectionId);
+//    Warning findByDetection_DetectionId(Long detectionId);
 
 
 }

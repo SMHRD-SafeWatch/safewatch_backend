@@ -112,7 +112,9 @@ img.thumbnail {
     height: 435px;
     max-width: 90%;
     position: relative;
+
 }
+
 
 .modal-content::before {
     content: "";

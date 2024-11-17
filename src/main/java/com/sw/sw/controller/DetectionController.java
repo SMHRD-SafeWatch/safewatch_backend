@@ -38,11 +38,12 @@ public class DetectionController {
     @PutMapping("/resolveWarning")
     @ResponseBody
     public ResponseEntity<String> resolveWarning(@RequestParam("detectionId") Long detectionId) {
+        System.out.println("Received detectionId: " + detectionId);
         boolean updated = detectionService.updateResolvedStatus(detectionId);
         if (updated) {
-            databaseChangeService.clearAlert(detectionId);
             return ResponseEntity.ok("Warning resolved successfully.");
         } else {
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Warning not found.");
         }
     }
