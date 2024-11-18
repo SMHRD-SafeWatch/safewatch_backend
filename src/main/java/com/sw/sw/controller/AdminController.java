@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AdminController {
     private final AdminService adminService;
 
+    // menu Test용 이동
+    @GetMapping("/menu")
+    public String menu(){
+        return "menu";
+    }
+
     // warning_front Test용 이동
     @GetMapping("/warning_front")
     public String warning_front(){

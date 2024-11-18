@@ -20,5 +20,7 @@ public interface WarningRepository extends JpaRepository<Warning, Integer> {
     Warning findByDetectionId(@Param("detectionId") Long detectionId);
 //    Warning findByDetection_DetectionId(Long detectionId);
 
+    @Query("SELECT COUNT(w) > 0 FROM Warning w WHERE w.resolved = 'N'")
+    boolean existsUnresolvedWarnings();
 
 }

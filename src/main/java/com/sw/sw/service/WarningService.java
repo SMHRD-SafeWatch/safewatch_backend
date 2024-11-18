@@ -102,4 +102,9 @@ public class WarningService {
         }
         return monthlyAlerts;
     }
+
+    // 확인 안 된(Resolved = 'N') 경고 알림 여부 확인
+    public boolean hasUnresolvedWarnings() {
+        return warningRepository.existsUnresolvedWarnings();
+    }
 }
