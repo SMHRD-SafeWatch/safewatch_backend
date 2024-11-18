@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Events_front</title>
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/events.css">
-    <script src="js/menu.js"></script>
-    <script src="js/events.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+
 </head>
 <body>
 <div class="sidebar">
@@ -57,46 +57,88 @@
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>HIGH</td>
-        <td><img src="img/ex_01.png" alt="thumbnail" class="thumbnail"></td>
-        <td>2024-11-12 11:00:00</td>
-        <td>손 탐지</td>
-        <td>Section_01</td>
-        <td>CAM_01</td>
-        <td>N</td>
+      <tr th:each="detection : ${details}">
+        <td th:text="${detection?.riskLevel}"></td>
+        <td>
+          <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
+          <img th:if="${detection.imageUrlBase64 != null}"
+               th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
+               alt="Detection Image" width="175"/>
+          <!-- imageUrlBase64가 null일 때 기본 이미지를 표시 -->
+          <img th:if="${detection.imageUrlBase64 == null}"
+               th:src="@{/images/placeholder.png}"
+               alt="No Image Available" width="100"/>
+        </td>
+        <td th:text="${detection?.formattedDetectionTime}"></td>
+        <td th:text="${detection?.content}"></td>
+        <td th:text="${detection.cameraInstall?.location}"></td>
+        <td th:text="${detection.cameraInstall?.cameraId}"></td>
+        <td th:text="${detection.warning?.resolved}"></td>
+
       </tr>
-      <tr>
-        <td>MEDIUM</td>
-        <td><img src="img/ex_02.png" alt="thumbnail" class="thumbnail"></td>
-        <td>2024-11-12 12:00:00</td>
-        <td>적재물 기울기 위험</td>
-        <td>Section_02</td>
-        <td>CAM_02</td>
-        <td>Y</td>
-      </tr>
-      <tr>
-        <td>LOW</td>
-        <td><img src="img/ex_01.png" alt="thumbnail" class="thumbnail"></td>
-        <td>2024-11-12 13:00:00</td>
-        <td>안전조끼 미착용</td>
-        <td>Section_03</td>
-        <td>CAM_03</td>
-        <td>Y</td>
-      </tr>
+      <!--디버깅 추가-->
+
       </tbody>
     </table>
     <ul class="pagination">
-      <li><a href="#">◀</a></li>
-      <li><a href="#" class="active">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">...</a></li>
-      <li><a href="#">▶</a></li>
+      <li><a href="javascript:void(0);" onclick="previousPage()" id="prevButton">◀</a></li>
+      <li id="paginationNumbers"></li> <!-- 페이지 번호를 표시할 위치 -->
+      <li><a href="javascript:void(0);" onclick="nextPage()" id="nextButton">▶</a></li>
     </ul>
   </div>
 </div>
 
-<div id="alertModal" class="modal">
+<!-- Alert Popup -->
+<div id="alertPopup" class="alert-popup modal">
+  <div class="modal-content">
+    <h2 class="popup-title">
+      <span class="alert-icon">⚠️</span> <span>매우 위험</span>
+    </h2>
+    <p id="popupContent" class="popup-description">기기 작동 중 손 탐지</p>
+    <div class="popup-content-body">
+      <div class="popup-image-section">
+        <img id="popupImage" src="../img/ex_01.png" alt="Detection Image" class="popup-image">
+      </div>
+      <div class="popup-details">
+        <div class="detail-section">
+          <p class="section-title">알림 위치</p>
+          <div class="detail-row">
+            <div id="popupLocation" class="detail-item icon-location">Section_1</div>
+            <div id="popupCameraId" class="detail-item icon-camera">CAM_001</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">알림 일시</p>
+          <div class="detail-row">
+            <div id="popupDetectionDate" class="detail-item icon-calendar">2024-11-25</div>
+            <div id="popupDetectionTime" class="detail-item icon-clock">10:07 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="popup-footer">
+      <button onclick="showConfirmPopup()" class="confirm-btn">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Second Confirm Modal -->
+<div id="secondConfirmModal" class="second-confirm-modal">
+  <h2 class="second-confirm-title">확인하셨습니까?</h2>
+  <div class="second-confirm-btn">
+    <button onclick="closeSecondConfirmModal()">확인</button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<!--사용하지 않는 모달-->
+<div id="alertModal" class="alert-modal modal">
   <div class="modal-content">
     <h2 class="modal-title"><span class="alert-icon">️</span>매우 위험</h2>
     <p class="modal-description">기기 작동 중 손 탐지</p>
@@ -107,15 +149,15 @@
         <div class="detail-section">
           <p class="section-title">알림 위치</p>
           <div class="detail-row">
-            <div class="detail-item icon-location">Section_1</div>
-            <div class="detail-item icon-camera">CAM_001</div>
+            <div class="detail-item icon-location"></div>
+            <div class="detail-item icon-camera"></div>
           </div>
         </div>
         <div class="detail-section">
           <p class="section-title">알림 일시</p>
           <div class="detail-row">
-            <div class="detail-item icon-calendar">2024-11-25</div>
-            <div class="detail-item icon-clock">10:07 AM</div>
+            <div class="detail-item icon-calendar"></div>
+            <div class="detail-item icon-clock"></div>
           </div>
         </div>
       </div>
@@ -126,5 +168,10 @@
     </div>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/events.js"></script>
+
 </body>
 </html>

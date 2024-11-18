@@ -50,11 +50,17 @@ img.thumbnail {
 
 .pagination {
     display: flex;
-    justify-content: right;
+    justify-content: center;
     padding: 20px 0 0 0;
     list-style: none;
     gap: 4px;
     font-size: 14px;
+}
+
+/*숫자 가로로 정렬*/
+#paginationNumbers {
+    display: flex;
+    gap: 4px;
 }
 
 .pagination li {
@@ -106,7 +112,9 @@ img.thumbnail {
     height: 435px;
     max-width: 90%;
     position: relative;
+
 }
+
 
 .modal-content::before {
     content: "";

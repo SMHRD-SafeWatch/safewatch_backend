@@ -34,6 +34,7 @@ public class AdminController {
     // 홈
     @GetMapping("/home")
     public String home(){
+
         return "home";
     }
 
@@ -56,5 +57,7 @@ public class AdminController {
             return "login";
         }
     }
+
+
 }
 

@@ -43,8 +43,7 @@ public class Detection {
     @JoinColumn(name = "camera_id", insertable = false, updatable = false)
     private CameraInstall cameraInstall;
 
-    @OneToOne
-    @JoinColumn(name = "detection_id", referencedColumnName = "detection_id", insertable = false, updatable = false)
+    @OneToOne(mappedBy = "detection", fetch = FetchType.EAGER)
     private Warning warning;
 
     @Transient

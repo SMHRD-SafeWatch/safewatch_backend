@@ -21,16 +21,13 @@ public class Warning {
     @Column(name = "warning_id")
     private Long warningId;
 
-//    @Column(name = "detection_id", insertable = false, updatable = false)  // 중복 매핑 방지
-//    private Long detectionId;
-
     @Column(name = "warning_time")
     private LocalDateTime warningTime;
 
     private String resolved;
 
-    @OneToOne
-    @JoinColumn(name = "detection_id")
+    @ManyToOne
+    @JoinColumn(name = "detection_id", referencedColumnName = "detection_id")
     private Detection detection;
 
 }
