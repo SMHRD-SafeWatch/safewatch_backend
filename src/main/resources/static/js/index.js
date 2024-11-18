@@ -55,9 +55,9 @@ function openStream(obj, isStreamStarted){
             };
 
             if (obj.port===3008) {
-                ffmpegOptions['-b:v'] = '1000k';
-                ffmpegOptions['-maxrate'] = '1000k';
-                ffmpegOptions['-bufsize'] = '2000k';
+                ffmpegOptions['-b:v'] = '1500k';
+                ffmpegOptions['-maxrate'] = '1500k';
+                ffmpegOptions['-bufsize'] = '3000k';
             }
 
             var stream = new Stream({

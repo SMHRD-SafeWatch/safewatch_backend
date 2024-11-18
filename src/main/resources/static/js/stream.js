@@ -70,7 +70,7 @@ window.onload = async () => {
   await fetchResolvedData();
   await fetchCameraData();
 
-  setInterval(fetchCameraData, 3000);
+//  setInterval(fetchCameraData, 3000);
 };
 
 
