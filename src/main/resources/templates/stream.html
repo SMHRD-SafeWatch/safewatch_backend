@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal 예제</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
+  <style>
+    #streams {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 한 행에 3개의 비디오 */
+        gap: 10px;
+    }
+    #pagination-controls {
+        margin-top: 20px;
+        text-align: center;
+    }
+  </style>
+  <link rel="stylesheet" href="/css/streamModal.css">
+  <link rel="stylesheet" href="/css/stream.css">
+</head>
+<body>
+
+<div id="streams" style="width:700px"></div>
+<div id="pagination-controls">
+  <span id="page-info"></span>
+</div>
+
+<!-- Modal 구조 -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>모달 제목</h2>
+    <div id="stream"></div>
+  </div>
+</div>
+
+<script> // 모달 열기
+  let portList = [];
+
+  // 데이터를 가져오는 함수
+  async function fetchCameraData() {
+    try {
+      // API 요청
+      const response = await fetch('http://localhost:8084/api/portget');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      // JSON 데이터로 변환
+      const cameras = await response.json();
+
+      portList = cameras.map(camera => ({ wsPort: camera.port }));
+      renderVideos(); // 데이터가 로드된 후 비디오 렌더링
+    } catch (error) {
+      console.error('Error fetching camera data:', error);
+    }
+  }
+
+  // 페이지가 로드되면 데이터 가져오기
+  window.onload = fetchCameraData;
+
+  const modal = document.getElementById("myModal");
+  const span = document.getElementsByClassName("close")[0];
+
+  let modal_player = null;
+  let modal_client = null;
+  const modal_video = document.getElementById("stream");
+
+  function clickModal(port) {
+      if (modal_player) {
+          modal_player.stop();
+          modal_player = null;
+      }
+      if (modal_client) {
+          modal_client.close();
+          modal_client = null;
+      }
+      modal_video.innerHTML = '';
+
+      const stream_video = document.createElement('canvas');
+      stream_video.id = 'canvasModal';
+      stream_video.style.width = "640px";
+      stream_video.style.height = "480px";
+      modal_video.appendChild(stream_video);
+
+      modal_client = new WebSocket('ws://localhost:' + port);
+      modal_player = new jsmpeg(modal_client, { canvas: stream_video });
+      modal.style.display = "block";
+  }
+
+  // 모달 닫기 (X 버튼 클릭 시)
+  span.onclick = function() {
+      if (modal_player) {
+          modal_player.stop();
+          modal_player = null;
+      }
+      if (modal_client) {
+          modal_client.close();
+          modal_client = null;
+      }
+      modal_video.innerHTML = '';
+      modal.style.display = "none";
+  }
+
+  // 모달 닫기 (모달 외부 클릭 시)
+  window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+          if (modal_player) {
+              modal_player.stop();
+              modal_player = null;
+          }
+          if (modal_client) {
+              modal_client.close();
+              modal_client = null;
+          }
+          modal_video.innerHTML = '';
+      }
+  }
+
+  let currentPage = 1;
+  const itemsPerPage = 6;
+  const container = document.getElementById('streams');
+
+  let players = [];
+  let clients = [];
+
+  function clearExistingResources() {
+    // WebSocket 연결 닫기
+    if (clients.length > 0) {
+        clients.forEach(client => {
+            if (client && client.readyState === WebSocket.OPEN) {
+                client.close();
+            }
+        });
+        clients = [];
+    }
+
+    // jsmpeg 인스턴스 중지
+    if (players.length > 0) {
+        players.forEach(player => {
+            if (player && typeof player.stop === 'function') {
+                player.stop();
+                player = null; // 명시적으로 null로 설정하여 메모리 해제 유도
+            }
+        });
+        players = [];
+    }
+  }
+
+
+
+  function renderVideos() {
+      container.innerHTML = '';
+      clearExistingResources();
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const currentItems = portList.slice(startIndex, endIndex);
+
+      currentItems.forEach((portObj, index) => {
+          const divContainer = document.createElement('div');
+          divContainer.classList.add('canvas-container');
+          divContainer.id = 'divContainer' + index;
+
+          const canvas = document.createElement('canvas');
+          canvas.id = 'canvas' + index;
+          canvas.classList.add('canvas-item')
+          canvas.onclick = function() {
+              clickModal(portObj.wsPort);
+          };
+
+          divContainer.appendChild(canvas);
+          container.appendChild(divContainer);
+
+          const client = new WebSocket('ws://localhost:' + portObj.wsPort);
+          clients.push(client);
+
+          const player = new jsmpeg(client, {
+              canvas: canvas,
+          });
+          players.push(player);
+      });
+
+      updatePageInfo();
+  }
+
+  function updatePageInfo() {
+    const pageInfo = document.getElementById('page-info');
+    pageInfo.innerHTML = ''; // 기존 내용 제거
+
+    const totalPages = Math.ceil(portList.length / itemsPerPage);
+
+    // 페이지 1개 이하면
+    if (totalPages <= 1) {
+        return; // 페이지네이션 버튼을 생성하지 않고 종료
+    }
+
+    // 이전 버튼 추가
+    const prevButton = document.createElement('button');
+    prevButton.textContent = '이전';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderVideos();
+            updatePageInfo(); // 페이지 정보 갱신
+        }
+    };
+    pageInfo.appendChild(prevButton);
+
+    // 페이지 번호 버튼 추가
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('page-button');
+        if (i === currentPage) {
+            pageButton.disabled = true; // 현재 페이지는 비활성화
+            pageButton.classList.add('active'); // 활성 페이지 스타일 추가 아직안함
+        }
+        pageButton.onclick = () => {
+            currentPage = i;
+            renderVideos();
+            updatePageInfo(); // 페이지 정보 갱신
+        };
+        pageInfo.appendChild(pageButton);
+    }
+
+    // 다음 버튼 추가
+    const nextButton = document.createElement('button');
+    nextButton.textContent = '다음';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderVideos();
+            updatePageInfo(); // 페이지 정보 갱신
+        }
+    };
+    pageInfo.appendChild(nextButton);
+}
+
+</script>
+
+</body>
+</html>

@@ -42,4 +42,3 @@ function setTodayDate() {
 }
 document.addEventListener("DOMContentLoaded", setTodayDate);
 
-
