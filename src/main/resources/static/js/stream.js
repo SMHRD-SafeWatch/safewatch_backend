@@ -1,4 +1,5 @@
 let portList = [];
+let resolvedList = [];
 
 // 데이터를 가져오는 함수
 async function fetchCameraData() {
@@ -30,7 +31,6 @@ async function fetchResolvedData() {
     // JSON 데이터로 변환
     const resolveds = await response.json();
 
-    let resolvedList = [];
     resolvedList = resolveds.map(resolved => ({
       cameraId: resolved.cameraId,
       detectionId: resolved.detectionId,
@@ -66,8 +66,13 @@ async function fetchResolvedData() {
   }
 }
 // 페이지가 로드되면 데이터 가져오기
-window.onload = fetchCameraData;
-setInterval(fetchResolvedData, 3000);
+window.onload = async () => {
+  await fetchResolvedData();
+  await fetchCameraData();
+
+  setInterval(fetchCameraData, 3000);
+};
+
 
 const modal = document.getElementById("alertModal");
 const span = document.getElementsByClassName("close-btn")[0];
@@ -76,8 +81,9 @@ let modal_player = null;
 let modal_client = null;
 const modal_video = document.getElementById("stream");
 const title = document.getElementById("modal-title");
+const modal_icon = document.getElementById("modal-icon");
 
-function clickModal(port, cameraId) {
+function clickModal(port, cameraId, cameraUrl) {
     if (modal_player) {
         modal_player.stop();
         modal_player = null;
@@ -88,15 +94,34 @@ function clickModal(port, cameraId) {
     }
     modal_video.innerHTML = '';
 
-    const stream_video = document.createElement('canvas');
-    stream_video.id = 'canvasModal';
-    stream_video.style.width = "700px";
-    stream_video.style.height = "480px";
-    modal_video.appendChild(stream_video);
-    title.textContent = cameraId;
+    let stream_video;
+    if(!cameraId.includes("API")){
+        stream_video = document.createElement('canvas');
+        stream_video.id = 'canvasModal';
+        stream_video.style.width = "700px";
+        stream_video.style.height = "480px";
+        modal_video.appendChild(stream_video);
 
-    modal_client = new WebSocket('ws://localhost:' + port);
-    modal_player = new jsmpeg(modal_client, { canvas: stream_video });
+        modal_client = new WebSocket('ws://localhost:' + port);
+        modal_player = new jsmpeg(modal_client, { canvas: stream_video });
+    }else{
+        stream_video = document.createElement("img");
+        stream_video.id = 'canvasModal';
+        stream_video.style.width = "700px";
+        stream_video.style.height = "480px";
+        modal_video.appendChild(stream_video);
+        title.textContent = cameraId;
+
+        stream_video.src = cameraUrl;
+        };
+
+    title.textContent = cameraId;
+    const hasResolvedY = resolvedList.some(item => item.cameraId === cameraId && item.resolved === 'Y');
+    if (hasResolvedY) {
+        modal_icon.src = 'icon/notification_warning.svg'; // 경고 아이콘
+    } else {
+        modal_icon.src = 'icon/notification.svg'; // 기본 아이콘
+    }
     const modal = document.getElementById("alertModal");
     const modalImage = document.getElementById("modalImage");
     modal.style.display = "flex"; // 모달 표시
@@ -199,7 +224,7 @@ function renderVideos() {
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
             canvas.onclick = function() {
-            clickModal(portObj.wsPort, portObj.cameraId);
+            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl);
             };
             createWebSocketConnection(portObj.wsPort, canvas);
         }else{
@@ -210,7 +235,7 @@ function renderVideos() {
             canvas.classList.add('canvas-item');
             canvas.src = portObj.cameraUrl;
             canvas.onclick = function() {
-            clickModal(portObj.wsPort, portObj.cameraId);
+            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl);
 
             };
         }
@@ -231,7 +256,12 @@ function renderVideos() {
 
         const videoIcon = document.createElement('img');
         videoIcon.id = portObj.cameraId + "-icon"
-        videoIcon.src = 'icon/notification.svg';
+        const hasResolvedY = resolvedList.some(item => item.cameraId === portObj.cameraId && item.resolved === 'Y');
+        if (hasResolvedY) {
+            videoIcon.src = 'icon/notification_warning.svg'; // 경고 아이콘
+        } else {
+            videoIcon.src = 'icon/notification.svg'; // 기본 아이콘
+        }
         videoIcon.alt = 'Notification Icon';
         videoIcon.classList.add('video-icon');
 
