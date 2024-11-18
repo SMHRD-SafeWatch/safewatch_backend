@@ -42,6 +42,7 @@ async function fetchData() {
 //setInterval(fetchData, 10000);
 fetchData();
 let isStreamStarted = false;
+
 // rtsp to websocket
 function openStream(obj, isStreamStarted){
         if (activeStreams.has(obj.port)) {
@@ -106,7 +107,6 @@ function openStream(obj, isStreamStarted){
             });
         }
 function retryConnection(obj, isStreamStarted) {
-//    const maxRetries = 100; // 최대 재시도 횟수 설정
     const retryInterval = 5000;
     if (isStreamStarted){
         return;
@@ -114,13 +114,6 @@ function retryConnection(obj, isStreamStarted) {
     setTimeout(() => {
                 openStream(obj, isStreamStarted);
             }, retryInterval);
-//    if (retryCount < maxRetries) {
-//        setTimeout(() => {
-//            openStream(obj, isStreamStarted);
-//        }, retryInterval);
-//    } else {
-//        console.log(`포트 ${obj.port}에 대한 재시도가 최대 횟수를 초과했습니다.`);
-//    }
 }
 
 // websocket 설정
@@ -159,5 +152,5 @@ app.listen(PORT, () => {
 // npm install axios
 // npm install ws
 
-// node src/main/resources/templates/index.js
+// node src/main/resources/static/js/index.js
 // 터미널에 입력 node 실행

@@ -12,7 +12,7 @@ async function fetchCameraData() {
     // JSON 데이터로 변환
     const cameras = await response.json();
 
-    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId }));
+    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId, cameraUrl: camera.cameraUrl }));
     renderVideos();
   } catch (error) {
     console.error('Error fetching camera data:', error);
@@ -144,14 +144,37 @@ function renderVideos() {
         const divContainer = document.createElement('div');
         divContainer.classList.add('video-card');
 
-        const canvas = document.createElement('canvas');
-        canvas.id = 'canvas' + index;
-        canvas.style.width = "400px";
-        canvas.style.height = "200px";
-        canvas.classList.add('canvas-item');
-        canvas.onclick = function() {
+        let canvas;
+        if(!portObj.cameraId.includes("API")){
+            canvas = document.createElement('canvas');
+            canvas.id = 'canvas' + index;
+            canvas.style.width = "400px";
+            canvas.style.height = "200px";
+            canvas.classList.add('canvas-item');
+            canvas.onclick = function() {
             clickModal(portObj.wsPort, portObj.cameraId);
-        };
+            };
+            createWebSocketConnection(portObj.wsPort, canvas);
+        }else{
+            canvas = document.createElement("img");
+            canvas.id = 'img' + index;
+            canvas.style.width = "300px";
+            canvas.style.height = "200px";
+            canvas.classList.add('canvas-item');
+            canvas.src = portObj.cameraUrl;
+            canvas.onclick = function() {
+            clickModal(portObj.wsPort, portObj.cameraId);
+
+            };
+        }
+//        const canvas = document.createElement('canvas');
+//        canvas.id = 'canvas' + index;
+//        canvas.style.width = "400px";
+//        canvas.style.height = "200px";
+//        canvas.classList.add('canvas-item');
+//        canvas.onclick = function() {
+//            clickModal(portObj.wsPort, portObj.cameraId);
+//        };
 
         const videoInfo = document.createElement('div');
         videoInfo.classList.add('video-info');
@@ -176,7 +199,7 @@ function renderVideos() {
         divContainer.appendChild(videoInfo);
         container.appendChild(divContainer);
 
-        createWebSocketConnection(portObj.wsPort, canvas);
+//        createWebSocketConnection(portObj.wsPort, canvas);
 
     });
 
