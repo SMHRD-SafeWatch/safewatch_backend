@@ -583,6 +583,8 @@ window.addEventListener("click", function(event) {
     if (deleteConfirmModal.style.display === "flex" && event.target === deleteConfirmModal) {
         closeDeleteConfirm();
     }
+
+
 });
 
 // 항목 삭제

@@ -41,3 +41,14 @@ function setTodayDate() {
     }
 }
 document.addEventListener("DOMContentLoaded", setTodayDate);
+
+
+function selectMenu(menu) {
+    if (menu === 'monitoring') {
+      window.location.href = '/monitoring'; // 모니터링 페이지의 실제 URL로 변경하세요
+    } else if (menu === 'events') {
+      window.location.href = '/detectevt'; // 이벤트 페이지의 실제 URL로 변경하세요
+    } else if (menu === 'analytics') {
+      window.location.href = '/analytics'; // 분석 페이지의 실제 URL로 변경하세요
+    }
+  }
