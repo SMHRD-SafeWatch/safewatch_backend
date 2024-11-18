@@ -19,8 +19,26 @@ async function fetchCameraData() {
   }
 }
 
+async function fetchResolvedData() {
+  try {
+    // API 요청
+    const response = await fetch('http://localhost:8090/api/resolved');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    // JSON 데이터로 변환
+    const cameras = await response.json();
+
+    resolvedList = resolveds.map(resolved => ({ cameraId: resolved.cameraId, detectionId: resolved.detectionId, resolved: resolved.resolved }));
+    renderVideos();
+  } catch (error) {
+    console.error('Error fetching camera data:', error);
+  }
+}
 // 페이지가 로드되면 데이터 가져오기
 window.onload = fetchCameraData;
+setInterval(fetchResolvedData, 5000);
 
 const modal = document.getElementById("alertModal");
 const span = document.getElementsByClassName("close-btn")[0];
