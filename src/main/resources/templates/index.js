@@ -41,15 +41,14 @@ async function fetchData() {
 
 //setInterval(fetchData, 10000);
 fetchData();
-
+let isStreamStarted = false;
 // rtsp to websocket
-function openStream(obj){
+function openStream(obj, isStreamStarted){
         if (activeStreams.has(obj.port)) {
             console.log(`Port ${obj.port} is already active. Skipping stream creation.`);
             return;
         }
-
-        let isStreamStarted = false;
+        console.log(activeStreams);
         let ffmpegOptions = {
                 '-stats': ''
             };
@@ -68,7 +67,7 @@ function openStream(obj){
             });
 
             stream.on('camdata', () => {
-                console.log(`Successfully started stream for port ${obj.port}`);
+//                console.log(`Successfully started stream for port ${obj.port}`);
                 isStreamStarted = true;
                 activeStreams.add(obj.port);
             });
@@ -78,7 +77,8 @@ function openStream(obj){
                     if (stream.wsServer && typeof stream.wsServer.close === 'function') {
                         stream.wsServer.close();
                     }
-                    retryConnection(obj); // 재연결 시도
+                    isStreamStarted = false;
+                    retryConnection(obj, isStreamStarted); // 재연결 시도
                 }
             }, 5000);
 
@@ -88,7 +88,8 @@ function openStream(obj){
                 if (stream.wsServer && typeof stream.wsServer.close === 'function') {
                     stream.wsServer.close();
                 }
-                retryConnection(obj);
+                isStreamStarted = false
+                retryConnection(obj, isStreamStarted);
             });
 
             stream.mpeg1Muxer.on('ffmpegStderr', (data) => {
@@ -99,21 +100,27 @@ function openStream(obj){
                     if (stream.wsServer && typeof stream.wsServer.close === 'function') {
                         stream.wsServer.close();
                     }
-                    retryConnection(obj);
+                    isStreamStarted = false
+                    retryConnection(obj, isStreamStarted);
                 }
             });
         }
-function retryConnection(obj, retryCount = 0) {
-    const maxRetries = 100; // 최대 재시도 횟수 설정
+function retryConnection(obj, isStreamStarted) {
+//    const maxRetries = 100; // 최대 재시도 횟수 설정
     const retryInterval = 5000;
-
-    if (retryCount < maxRetries) {
-        setTimeout(() => {
-            openStream(obj, retryCount + 1);
-        }, retryInterval);
-    } else {
-        console.log(`포트 ${obj.port}에 대한 재시도가 최대 횟수를 초과했습니다.`);
+    if (isStreamStarted){
+        return;
     }
+    setTimeout(() => {
+                openStream(obj, isStreamStarted);
+            }, retryInterval);
+//    if (retryCount < maxRetries) {
+//        setTimeout(() => {
+//            openStream(obj, isStreamStarted);
+//        }, retryInterval);
+//    } else {
+//        console.log(`포트 ${obj.port}에 대한 재시도가 최대 횟수를 초과했습니다.`);
+//    }
 }
 
 // websocket 설정
