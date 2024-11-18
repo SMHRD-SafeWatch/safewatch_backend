@@ -48,48 +48,6 @@ img.thumbnail {
     object-fit: cover;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0 0 0;
-    list-style: none;
-    gap: 4px;
-    font-size: 14px;
-}
-
-/*숫자 가로로 정렬*/
-#paginationNumbers {
-    display: flex;
-    gap: 4px;
-}
-
-.pagination li {
-    display: inline;
-}
-
-.pagination a {
-    display: block;
-    padding: 6px 10px;
-    text-decoration: none;
-    color: #767676;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.pagination a:hover {
-    background-color: #a3a3a3;
-    color: #ffffff;
-}
-
-.pagination .active {
-    background-color: #767676;
-    color: #ffffff;
-    border-color: #767676;
-}
-
-
-
 /* Warning */
 .modal {
     display: none;
@@ -112,9 +70,7 @@ img.thumbnail {
     height: 435px;
     max-width: 90%;
     position: relative;
-
 }
-
 
 .modal-content::before {
     content: "";
@@ -253,4 +209,44 @@ img.thumbnail {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 0 0;
+    list-style: none;
+    gap: 4px;
+    font-size: 14px;
+}
+
+/*숫자 가로로 정렬*/
+#paginationNumbers {
+    display: flex;
+    gap: 4px;
+}
+
+.pagination li {
+    display: inline;
+}
+
+.pagination a {
+    display: block;
+    padding: 6px 10px;
+    text-decoration: none;
+    color: #767676;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #a3a3a3;
+    color: #ffffff;
+}
+
+.pagination .active {
+    background-color: #767676;
+    color: #ffffff;
+    border-color: #767676;
 }

@@ -61,9 +61,20 @@
         <td th:text="${detection?.riskLevel}"></td>
         <td>
           <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
-          <img th:if="${detection.imageUrlBase64 != null}"
-               th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
-               alt="Detection Image" width="175"/>
+          <img
+              th:if="${detection.imageUrlBase64 != null}"
+              th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
+              alt="Detection Image"
+              width="175"
+              th:attr="data-risk-level=${detection.riskLevel},
+             data-detection-time=${detection.formattedDetectionTime},
+             data-location=${detection.cameraInstall?.location},
+             data-camera-id=${detection.cameraInstall?.cameraId},
+             data-content=${detection.content}"
+                  onclick="handleImageClick(this)"
+          />
+
+
           <!-- imageUrlBase64가 null일 때 기본 이미지를 표시 -->
           <img th:if="${detection.imageUrlBase64 == null}"
                th:src="@{/images/placeholder.png}"
@@ -92,7 +103,8 @@
 <div id="alertPopup" class="alert-popup modal">
   <div class="modal-content">
     <h2 class="popup-title">
-      <span class="alert-icon">⚠️</span> <span>매우 위험</span>
+<!--      <span id="alertIcon" class="alert-icon"></span>-->
+      <span id="alertText">위험</span>
     </h2>
     <p id="popupContent" class="popup-description">기기 작동 중 손 탐지</p>
     <div class="popup-content-body">
@@ -130,41 +142,36 @@
   </div>
 </div>
 
-
-
-
-
-
-
-
-<!--사용하지 않는 모달-->
-<div id="alertModal" class="alert-modal modal">
+<div id="alertModal" class="modal alert-modal">
   <div class="modal-content">
-    <h2 class="modal-title"><span class="alert-icon">️</span>매우 위험</h2>
-    <p class="modal-description">기기 작동 중 손 탐지</p>
+    <h2 class="modal-title" id="alertText2">
+<!--      <span id="alertIcon2" class="alert-icon"></span>-->
+<!--      <span >알림</span>-->
+    </h2>
+
+    <p id="modalContent" class="modal-description">기기 작동 중 손 탐지</p>
 
     <div class="modal-content-body">
-      <img src="img/ex_01.png" alt="Alert Image" id="modalImage" class="modal-image">
+      <img src="" alt="Alert Image" id="modalImage" class="modal-image">
       <div class="modal-details">
         <div class="detail-section">
           <p class="section-title">알림 위치</p>
           <div class="detail-row">
-            <div class="detail-item icon-location"></div>
-            <div class="detail-item icon-camera"></div>
+            <div class="detail-item icon-location" id="modalLocation"></div>
+            <div class="detail-item icon-camera" id="modalCameraId"></div>
           </div>
         </div>
         <div class="detail-section">
           <p class="section-title">알림 일시</p>
           <div class="detail-row">
-            <div class="detail-item icon-calendar"></div>
-            <div class="detail-item icon-clock"></div>
+            <div class="detail-item icon-calendar" id="modalDate"></div>
+            <div class="detail-item icon-clock" id="modalTime"></div>
           </div>
         </div>
       </div>
     </div>
-
     <div class="modal-footer">
-      <button class="confirm-btn" onclick="closeModal()">확인</button>
+      <button class="confirm-btn" onclick="closeAlertModal()">확인</button>
     </div>
   </div>
 </div>

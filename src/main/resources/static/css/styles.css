@@ -19,6 +19,8 @@
     animation: fadeIn 0.3s ease-in-out; /* 팝업 애니메이션 */
 }
 
+
+
 /* 팝업 애니메이션 */
 @keyframes fadeIn {
     from {
@@ -35,7 +37,7 @@
 .popup-title {
     font-size: 24px;
     font-weight: bold;
-    color: #ff4d4d; /* 강조 빨강 */
+    color: #555;
     text-align: left;
     padding-top: 0;
     padding-bottom: 10px;
@@ -45,6 +47,29 @@
     width: 100%;
     gap: 10px;
 }
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #555;
+    text-align: left;
+    padding-top: 0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.modal-description {
+    font-size: 16px;
+    font-weight: bold; /* 두껍게 설정 */
+    color: #555;
+    margin: 10px 0 20px;
+    text-align: left;
+}
+
 
 /* 설명 텍스트 */
 .popup-description {
@@ -67,7 +92,24 @@
 
 }
 
+.modal-content-body {
+    display: flex;
+    flex-direction: row; /* 세로 정렬 */
+    justify-content: space-between; /* 이미지와 텍스트 간 간격 유지 */
+    align-items: center;
+    gap: 30px; /* 이미지와 텍스트 사이 간격 */
+    width: 100%;
+    flex-wrap: nowrap; /* 요소가 줄 바꿈되지 않도록 설정 */
+
+}
+
 .popup-image-section {
+    flex: 1; /* 이미지가 적절히 크기를 차지하도록 설정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-image-section {
     flex: 1; /* 이미지가 적절히 크기를 차지하도록 설정 */
     display: flex;
     justify-content: center;
@@ -75,6 +117,13 @@
 }
 
 .popup-footer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* 버튼을 오른쪽 정렬 */
+    margin-top: 20px; /* 버튼 위 공간 추가 */
+}
+
+.modal-footer {
     width: 100%;
     display: flex;
     justify-content: flex-end; /* 버튼을 오른쪽 정렬 */
@@ -92,8 +141,25 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.modal-image {
+    width: 100%; /* 가로 크기 채우기 */
+    max-width: 300px; /* 최대 크기 제한 */
+    height: auto; /* 이미지 비율 유지 */
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* 상세 정보 섹션 */
 .popup-details {
+    flex: 1; /* 텍스트가 더 많은 공간 차지 */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-details {
     flex: 1; /* 텍스트가 더 많은 공간 차지 */
     display: flex;
     flex-direction: column;
@@ -221,9 +287,24 @@ table {
 
 
 .alert-modal {
-    z-index: 500; /* 필요하다면 낮은 z-index로 설정 */
     display: none; /* 기본적으로 숨김 */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 500;
+        width: 800px; /* 가로 크기 비율 설정 */
+        height: auto; /* 기본 높이를 자동으로 설정 */
+        max-height: 90%; /* 세로 크기를 브라우저 높이의 90%로 제한 */
+        max-width: 90%; /* 모바일 대응 */
+        padding: 20px;
+        animation: fadeIn 0.3s ease-in-out;
 }
+
+
 
 /* Second Confirm Modal 전체 레이아웃 */
 .second-confirm-modal {
