@@ -5,8 +5,8 @@
     <title>Events_front</title>
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/events.css">
-    <script src="js/menu.js"></script>
-    <script src="js/events.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+
 </head>
 <body>
 <div class="sidebar">
@@ -76,6 +76,8 @@
         <td th:text="${detection.warning?.resolved}"></td>
 
       </tr>
+      <!--디버깅 추가-->
+
       </tbody>
     </table>
     <ul class="pagination">
@@ -86,7 +88,57 @@
   </div>
 </div>
 
-<div id="alertModal" class="modal">
+<!-- Alert Popup -->
+<div id="alertPopup" class="alert-popup modal">
+  <div class="modal-content">
+    <h2 class="popup-title">
+      <span class="alert-icon">⚠️</span> <span>매우 위험</span>
+    </h2>
+    <p id="popupContent" class="popup-description">기기 작동 중 손 탐지</p>
+    <div class="popup-content-body">
+      <div class="popup-image-section">
+        <img id="popupImage" src="../img/ex_01.png" alt="Detection Image" class="popup-image">
+      </div>
+      <div class="popup-details">
+        <div class="detail-section">
+          <p class="section-title">알림 위치</p>
+          <div class="detail-row">
+            <div id="popupLocation" class="detail-item icon-location">Section_1</div>
+            <div id="popupCameraId" class="detail-item icon-camera">CAM_001</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">알림 일시</p>
+          <div class="detail-row">
+            <div id="popupDetectionDate" class="detail-item icon-calendar">2024-11-25</div>
+            <div id="popupDetectionTime" class="detail-item icon-clock">10:07 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="popup-footer">
+      <button onclick="showConfirmPopup()" class="confirm-btn">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Second Confirm Modal -->
+<div id="secondConfirmModal" class="second-confirm-modal">
+  <h2 class="second-confirm-title">확인하셨습니까?</h2>
+  <div class="second-confirm-btn">
+    <button onclick="closeSecondConfirmModal()">확인</button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<!--사용하지 않는 모달-->
+<div id="alertModal" class="alert-modal modal">
   <div class="modal-content">
     <h2 class="modal-title"><span class="alert-icon">️</span>매우 위험</h2>
     <p class="modal-description">기기 작동 중 손 탐지</p>
@@ -97,15 +149,15 @@
         <div class="detail-section">
           <p class="section-title">알림 위치</p>
           <div class="detail-row">
-            <div class="detail-item icon-location">Section_1</div>
-            <div class="detail-item icon-camera">CAM_001</div>
+            <div class="detail-item icon-location"></div>
+            <div class="detail-item icon-camera"></div>
           </div>
         </div>
         <div class="detail-section">
           <p class="section-title">알림 일시</p>
           <div class="detail-row">
-            <div class="detail-item icon-calendar">2024-11-25</div>
-            <div class="detail-item icon-clock">10:07 AM</div>
+            <div class="detail-item icon-calendar"></div>
+            <div class="detail-item icon-clock"></div>
           </div>
         </div>
       </div>
@@ -116,5 +168,10 @@
     </div>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/events.js"></script>
+
 </body>
 </html>

@@ -504,18 +504,20 @@
 .modal-content input[type="number"] {
     width: 100%;
     padding: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border: 1px solid #e0e0e0;
     border-radius: 5px;
     font-size: 13px;
     box-sizing: border-box;
 }
+.modal-content input[type="number"] {
+    margin-bottom: 20px;
+}
 .modal-content input[type="text"]:focus,
 .modal-content input[type="datetime-local"]:focus,
 .modal-content input[type="number"]:focus {
-    border-color: #00dcff;
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 184, 212, 0.5);
+    border: 2px solid #00B8D4;
 }
 #submitEduButton {
     width: 65px;

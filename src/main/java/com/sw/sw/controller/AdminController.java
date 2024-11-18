@@ -31,12 +31,6 @@ public class AdminController {
         return "events_front";
     }
 
-    // 홈
-    @GetMapping("/home")
-    public String home(){
-        return "home";
-    }
-
     // 로그인 페이지 로딩
     @GetMapping("/login")
     public String showLoginPage(Model model) {
@@ -50,8 +44,7 @@ public class AdminController {
         Admin adm = adminService.login(admin.getAdminId(), admin.getPassword());
         if (adm != null) {
             session.setAttribute("adm", adm);
-            // System.out.println("Logged in Admin: " + adm);
-            return "redirect:/home";
+            return "redirect:/monitoring";
         } else {
             return "login";
         }

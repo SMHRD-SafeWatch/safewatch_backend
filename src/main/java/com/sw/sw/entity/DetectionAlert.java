@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class DetectionAlert {
     private Long detectionId;
-    private byte[] imageUrl;
+    private String imageUrl; // Base64로 인코딩된 이미지 URL
     private String cameraId;
     private LocalDateTime detectionTime;
     private String content;

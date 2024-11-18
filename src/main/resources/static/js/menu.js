@@ -1,4 +1,20 @@
 function selectMenu(menuId) {
+
+    switch(menuId) {
+        case 'monitoring':
+            window.location.href = 'monitoring';
+            break;
+        case 'events':
+            window.location.href = 'detectevt';
+            break;
+        case 'analytics':
+            window.location.href = 'analytics';
+            break;
+        case 'settings':
+            window.location.href = 'settings';
+            break;
+    }
+
     // 모든 메뉴 항목에서 active 클래스 제거
     const menuItems = document.querySelectorAll(".menu-item");
     menuItems.forEach(item => item.classList.remove("active"));
@@ -26,13 +42,3 @@ function setTodayDate() {
 }
 document.addEventListener("DOMContentLoaded", setTodayDate);
 
-
-function selectMenu(menu) {
-    if (menu === 'monitoring') {
-      window.location.href = '/monitoring'; // 모니터링 페이지의 실제 URL로 변경하세요
-    } else if (menu === 'events') {
-      window.location.href = '/detectevt'; // 이벤트 페이지의 실제 URL로 변경하세요
-    } else if (menu === 'analytics') {
-      window.location.href = '/analytics'; // 분석 페이지의 실제 URL로 변경하세요
-    }
-  }

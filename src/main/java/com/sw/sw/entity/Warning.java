@@ -26,8 +26,8 @@ public class Warning {
 
     private String resolved;
 
-    @OneToOne
-    @JoinColumn(name = "detection_id")
+    @ManyToOne
+    @JoinColumn(name = "detection_id", referencedColumnName = "detection_id")
     private Detection detection;
 
 }

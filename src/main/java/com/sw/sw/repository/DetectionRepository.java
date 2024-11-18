@@ -16,6 +16,10 @@ public interface DetectionRepository extends JpaRepository<Detection, Long> {
             "ORDER BY d.detectionId DESC")
     List<Detection> findAllWithDetails();
 
-    @Query("SELECT d FROM Detection d WHERE d.detectionId = (SELECT MAX(d2.detectionId) FROM Detection d2)")
-    Detection findLatest();
+    @Query("SELECT d FROM Detection d " +
+            "JOIN FETCH d.cameraInstall c " +
+            "LEFT JOIN FETCH d.warning w " +
+            "WHERE w.resolved = 'N' OR w IS NULL " +
+            "ORDER BY d.detectionId DESC")
+    List<Detection> findAllUnresolvedWithDetails();
 }

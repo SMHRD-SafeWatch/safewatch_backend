@@ -152,5 +152,5 @@ app.listen(PORT, () => {
 // npm install axios
 // npm install ws
 
-// node src/main/resources/static/js/index.js
+// node src/main/resources/templates/index.js
 // 터미널에 입력 node 실행
