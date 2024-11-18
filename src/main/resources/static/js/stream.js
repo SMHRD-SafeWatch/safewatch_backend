@@ -28,17 +28,46 @@ async function fetchResolvedData() {
     }
 
     // JSON 데이터로 변환
-    const cameras = await response.json();
+    const resolveds = await response.json();
 
-    resolvedList = resolveds.map(resolved => ({ cameraId: resolved.cameraId, detectionId: resolved.detectionId, resolved: resolved.resolved }));
-    renderVideos();
+    let resolvedList = [];
+    resolvedList = resolveds.map(resolved => ({
+      cameraId: resolved.cameraId,
+      detectionId: resolved.detectionId,
+      resolved: resolved.resolved
+    }));
+
+    // `resolvedList`에서 cameraId별로 그룹화
+    const cameraStatusMap = {};
+    resolvedList.forEach(item => {
+      if (!cameraStatusMap[item.cameraId]) {
+        cameraStatusMap[item.cameraId] = { hasResolvedY: false };
+      }
+      if (item.resolved === 'Y') {
+        cameraStatusMap[item.cameraId].hasResolvedY = true;
+      }
+    });
+
+    // 각 cameraId에 대해 아이콘 변경
+    Object.keys(cameraStatusMap).forEach(cameraId => {
+      const iconElement = document.getElementById(cameraId + '-icon');
+      if (iconElement) {
+        if (cameraStatusMap[cameraId].hasResolvedY) {
+          // `resolved` 값이 'Y'인 항목이 하나라도 있으면 경고 아이콘으로 변경
+          iconElement.src = 'icon/notification_warning.svg'; // 예시 아이콘 경로
+        } else {
+          // 모두 'N'인 경우 기본 아이콘으로 유지
+          iconElement.src = 'icon/notification.svg'; // 예시 아이콘 경로
+        }
+      }
+    });
   } catch (error) {
     console.error('Error fetching camera data:', error);
   }
 }
 // 페이지가 로드되면 데이터 가져오기
 window.onload = fetchCameraData;
-setInterval(fetchResolvedData, 5000);
+setInterval(fetchResolvedData, 3000);
 
 const modal = document.getElementById("alertModal");
 const span = document.getElementsByClassName("close-btn")[0];
@@ -165,7 +194,7 @@ function renderVideos() {
         let canvas;
         if(!portObj.cameraId.includes("API")){
             canvas = document.createElement('canvas');
-            canvas.id = 'canvas' + index;
+            canvas.id = portObj.cameraId;
             canvas.style.width = "400px";
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
@@ -175,7 +204,7 @@ function renderVideos() {
             createWebSocketConnection(portObj.wsPort, canvas);
         }else{
             canvas = document.createElement("img");
-            canvas.id = 'img' + index;
+            canvas.id = portObj.cameraId;
             canvas.style.width = "300px";
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
@@ -201,6 +230,7 @@ function renderVideos() {
         videoIconContainer.classList.add('video-icon-container');
 
         const videoIcon = document.createElement('img');
+        videoIcon.id = portObj.cameraId + "-icon"
         videoIcon.src = 'icon/notification.svg';
         videoIcon.alt = 'Notification Icon';
         videoIcon.classList.add('video-icon');
