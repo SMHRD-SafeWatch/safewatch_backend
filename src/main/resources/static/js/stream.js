@@ -66,7 +66,13 @@ async function fetchResolvedData() {
   }
 }
 // 페이지가 로드되면 데이터 가져오기
-window.onload = fetchCameraData;
+window.onload = async () => {
+  await fetchResolvedData();
+  await fetchCameraData();
+
+//  setInterval(fetchCameraData, 3000);
+};
+
 
 const modal = document.getElementById("alertModal");
 const span = document.getElementsByClassName("close-btn")[0];
