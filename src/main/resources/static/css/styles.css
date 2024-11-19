@@ -80,16 +80,25 @@
     text-align: left;
 }
 
-/* 팝업 본문 내용 */
+/* 팝업 본문 내용
 .popup-content-body {
     display: flex;
-    flex-direction: row; /* 세로 정렬 */
-    justify-content: space-between; /* 이미지와 텍스트 간 간격 유지 */
+    flex-direction: row; *//* 세로 정렬 *//*
+    justify-content: space-between; *//* 이미지와 텍스트 간 간격 유지 *//*
     align-items: center;
-    gap: 30px; /* 이미지와 텍스트 사이 간격 */
+    gap: 30px; *//* 이미지와 텍스트 사이 간격 *//*
     width: 100%;
-    flex-wrap: nowrap; /* 요소가 줄 바꿈되지 않도록 설정 */
+    flex-wrap: nowrap; *//* 요소가 줄 바꿈되지 않도록 설정 *//*
 
+}*/
+
+.modal-content,
+.popup-content-body {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    text-align: center; /* 텍스트 중앙 정렬 */
 }
 
 .modal-content-body {
@@ -131,10 +140,10 @@
 }
 
 /* 이미지 */
-.popup-image {
-    width: 100%; /* 가로 크기 채우기 */
-    max-width: 300px; /* 최대 크기 제한 */
-    height: auto; /* 이미지 비율 유지 */
+/*.popup-image {
+    width: 100%; *//* 가로 크기 채우기 *//*
+    max-width: 300px; *//* 최대 크기 제한 *//*
+    height: auto; *//* 이미지 비율 유지 *//*
     max-height: 200px;
     object-fit: cover;
     border-radius: 8px;
@@ -142,28 +151,46 @@
 }
 
 .modal-image {
-    width: 100%; /* 가로 크기 채우기 */
-    max-width: 300px; /* 최대 크기 제한 */
-    height: auto; /* 이미지 비율 유지 */
+    width: 100%; *//* 가로 크기 채우기 *//*
+    max-width: 300px; *//* 최대 크기 제한 *//*
+    height: auto; *//* 이미지 비율 유지 *//*
     max-height: 200px;
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}*/
+
+.popup-image,
+.modal-image {
+    max-width: 100%; /* 이미지를 컨테이너에 맞춤 */
+    max-height: 300px; /* 최대 높이 제한 */
+    margin: 0 auto; /* 중앙 정렬 */
+    display: block;
+    object-fit: cover; /* 비율 유지하며 자름 */
 }
 
 /* 상세 정보 섹션 */
-.popup-details {
-    flex: 1; /* 텍스트가 더 많은 공간 차지 */
+/*.popup-details {
+    flex: 1; *//* 텍스트가 더 많은 공간 차지 *//*
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
 .modal-details {
-    flex: 1; /* 텍스트가 더 많은 공간 차지 */
+    flex: 1; *//* 텍스트가 더 많은 공간 차지 *//*
     display: flex;
     flex-direction: column;
     gap: 10px;
+}*/
+
+.popup-details,
+.modal-details {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    gap: 15px; /* 요소 간 간격 */
 }
 
 .detail-section {

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Events_front</title>
-    <link rel="stylesheet" href="css/menu.css">
-    <link rel="stylesheet" href="css/events.css">
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <title>Events_front</title>
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/events.css">
+<!--  <link rel="stylesheet" href="css/styles.css">-->
 
 </head>
 <body>
@@ -62,11 +62,11 @@
         <td>
           <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
           <img
-              th:if="${detection.imageUrlBase64 != null}"
-              th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
-              alt="Detection Image"
-              width="175"
-              th:attr="data-risk-level=${detection.riskLevel},
+                  th:if="${detection.imageUrlBase64 != null}"
+                  th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
+                  alt="Detection Image"
+                  width="175"
+                  th:attr="data-risk-level=${detection.riskLevel},
              data-detection-time=${detection.formattedDetectionTime},
              data-location=${detection.cameraInstall?.location},
              data-camera-id=${detection.cameraInstall?.cameraId},
@@ -99,57 +99,18 @@
   </div>
 </div>
 
-<!-- Alert Popup -->
-<div id="alertPopup" class="alert-popup modal">
-  <div class="modal-content">
-    <h2 class="popup-title">
-<!--      <span id="alertIcon" class="alert-icon"></span>-->
-      <span id="alertText">위험</span>
-    </h2>
-    <p id="popupContent" class="popup-description">기기 작동 중 손 탐지</p>
-    <div class="popup-content-body">
-      <div class="popup-image-section">
-        <img id="popupImage" src="../img/ex_01.png" alt="Detection Image" class="popup-image">
-      </div>
-      <div class="popup-details">
-        <div class="detail-section">
-          <p class="section-title">알림 위치</p>
-          <div class="detail-row">
-            <div id="popupLocation" class="detail-item icon-location">Section_1</div>
-            <div id="popupCameraId" class="detail-item icon-camera">CAM_001</div>
-          </div>
-        </div>
-        <div class="detail-section">
-          <p class="section-title">알림 일시</p>
-          <div class="detail-row">
-            <div id="popupDetectionDate" class="detail-item icon-calendar">2024-11-25</div>
-            <div id="popupDetectionTime" class="detail-item icon-clock">10:07 AM</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="popup-footer">
-      <button onclick="showConfirmPopup()" class="confirm-btn">확인</button>
-    </div>
-  </div>
-</div>
+<audio id="alertSound01" src="sounds/sound_01.mp3" preload="auto"></audio>
+<audio id="alertSound02" src="sounds/sound_02.mp3" preload="auto"></audio>
+<audio id="alertSound03" src="sounds/sound_03.mp3" preload="auto"></audio>
 
-<!-- Second Confirm Modal -->
-<div id="secondConfirmModal" class="second-confirm-modal">
-  <h2 class="second-confirm-title">확인하셨습니까?</h2>
-  <div class="second-confirm-btn">
-    <button onclick="closeSecondConfirmModal()">확인</button>
-  </div>
-</div>
-
-<div id="alertModal" class="modal alert-modal">
+<div id="alertModal" class="alert-modal">
   <div class="modal-content">
     <h2 class="modal-title" id="alertText2">
-<!--      <span id="alertIcon2" class="alert-icon"></span>-->
-<!--      <span >알림</span>-->
+      <!--      <span id="alertIcon2" class="alert-icon"></span>-->
+      <!--      <span >알림</span>-->
     </h2>
 
-    <p id="modalContent" class="modal-description">기기 작동 중 손 탐지</p>
+    <p id="modalContent" class="modal-description"></p>
 
     <div class="modal-content-body">
       <img src="" alt="Alert Image" id="modalImage" class="modal-image">
@@ -175,6 +136,48 @@
     </div>
   </div>
 </div>
+
+<!--새로 만든 모달 -->
+<div id="alertPopup" class="alert-popup">
+  <div class="modal-content">
+    <h2 class="modal-title" id="popupText2">
+      <!--      <span id="popupIcon2" class="alert-icon"></span>-->
+      <!--      <span >팝업 알림</span>-->
+    </h2>
+    <p id="popupContent" class="modal-description"></p>
+    <div class="modal-content-body">
+      <img src="" alt="Popup Image" id="popupImage" class="modal-image">
+      <div class="modal-details">
+        <div class="detail-section">
+          <p class="section-title">팝업 위치</p>
+          <div class="detail-row">
+            <div class="detail-item icon-location" id="popupLocation"></div>
+            <div class="detail-item icon-camera" id="popupCameraId"></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">팝업 일시</p>
+          <div class="detail-row">
+            <div class="detail-item icon-calendar" id="popupDetectionDate"></div>
+            <div class="detail-item icon-clock" id="popupDetectionTime"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="confirm-btn" onclick="showConfirmPopup()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Second Confirm Modal -->
+<div id="secondConfirmModal" class="second-confirm-modal">
+  <h2 class="second-confirm-title">확인하셨습니까?</h2>
+  <div class="second-confirm-btn">
+    <button onclick="closeSecondConfirmModal()">확인</button>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="js/menu.js"></script>

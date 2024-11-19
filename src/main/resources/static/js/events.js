@@ -4,42 +4,19 @@ var stompClient = Stomp.over(socket);
 var currentDetectionId = null;
 var detectionTimeout = null; // 타이머를 저장할 변수
 
+let currentAlertSound = null; // 현재 재생 중인 소리 변수
+let userInteracted = false; // 사용자가 상호작용했는지 여부 추적
+
+// 사용자 상호작용 감지 (한 번만 실행됨)
+document.body.addEventListener("click", () => {
+    userInteracted = true; // 사용자 상호작용 플래그 설정
+  });
+
 // 타이머를 이용해 currentDetectionId를 초기화하는 함수
 function resetCurrentDetectionId() {
     currentDetectionId = null;
 }
 
-function updatePopupContent(alertData) {
-    const modalContent = document.querySelector(".modal-content");
-    const popupTitle = document.querySelector(".popup-title");
-    const alertText = document.getElementById("alertText");
-//    const alertIcon = document.querySelector(".alert-icon"); // alert-icon 요소 선택
-
-    // riskLevel에 따라 클래스와 텍스트 변경
-    if (alertData.riskLevel === "HIGH") {
-        modalContent.classList.remove("medium");
-        modalContent.classList.add("high");
-        popupTitle.classList.remove("medium");
-        popupTitle.classList.add("high");
-//        alertIcon.classList.remove("medium"); // MEDIUM 클래스 제거
-//        alertIcon.classList.add("high"); // HIGH 클래스 추가
-        alertText.textContent = "매우 위험"; // HIGH일 때 텍스트
-    } else if (alertData.riskLevel === "MEDIUM") {
-        modalContent.classList.remove("high");
-        modalContent.classList.add("medium");
-        popupTitle.classList.remove("high");
-        popupTitle.classList.add("medium");
-//        alertIcon.classList.remove("high"); // HIGH 클래스 제거
-//        alertIcon.classList.add("medium"); // MEDIUM 클래스 추가
-        alertText.textContent = "위험"; // MEDIUM일 때 텍스트
-    } else {
-        // 기본 상태
-        modalContent.classList.remove("high", "medium");
-        popupTitle.classList.remove("high", "medium");
-//        alertIcon.classList.remove("high", "medium"); // 모든 클래스 제거
-        alertText.textContent = "알림"; // 기본 텍스트
-    }
-}
 
 function handleImageClick(imgElement) {
     // 이미지 데이터와 기타 속성 읽기
@@ -57,43 +34,7 @@ function handleImageClick(imgElement) {
 function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel) {
     // 모달 DOM 요소 가져오기
     const modal = document.getElementById('alertModal'); // 'alertModal' ID를 가진 요소 가져오기
-    const modalContent = modal.querySelector('.modal-content'); // 모달 컨텐츠 요소
-    const modalTitle = modal.querySelector('.modal-title'); // 모달 제목 요소
     const modalImage = modal.querySelector('#modalImage'); // 모달의 이미지 요소
-//    const alertIcon = document.getElementById('alertIcon2'); // ID가 'alertIcon2'인 요소 가져오기
-
-    if (!modal || !modalContent || !modalTitle || !modalImage) {
-        console.error("Modal or required elements not found.");
-        return;
-    }
-
-    // riskLevel에 따라 스타일 및 텍스트 변경
-    if (riskLevel === "HIGH") {
-        modalContent.classList.remove("medium", "low");
-        modalContent.classList.add("high");
-        modalTitle.classList.remove("medium", "low");
-        modalTitle.classList.add("high");
-        modalTitle.textContent = "매우 위험";
-//        alertIcon.classList.remove("medium");
-//        alertIcon.classList.add("high");
-    } else if (riskLevel === "MEDIUM") {
-        modalContent.classList.remove("high", "low");
-        modalContent.classList.add("medium");
-        modalTitle.classList.remove("high", "low");
-        modalTitle.classList.add("medium");
-        modalTitle.textContent = "위험";
-//        alertIcon.classList.remove("high");
-//        alertIcon.classList.add("medium");
-
-    } else {
-        modalContent.classList.remove("high", "medium");
-        modalContent.classList.add("low");
-        modalTitle.classList.remove("high", "medium");
-        modalTitle.classList.add("low");
-        modalTitle.textContent = "안전";
-//        alertIcon.classList.remove("high", "medium");
-    }
-
     // 모달 업데이트
     modalImage.src = imageUrl; // Base64 이미지 설정
     document.getElementById('modalContent').textContent = content || 'N/A';
@@ -103,21 +44,27 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
     document.getElementById('modalTime').textContent = detectionTime ? detectionTime.split(' ')[1] : 'N/A';
 
     // 모달 표시
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
 }
 
-
+// 새로 고침시 localStorage 데이터 초기화
+window.addEventListener("load", () => {
+    // localStorage 초기화
+    localStorage.removeItem("alertData");
+    console.log("localStorage 초기화 완료");
+});
 
 stompClient.connect({}, function (frame) {
     stompClient.subscribe('/topic/alerts', function (message) {
         console.log("수신된 메시지:", message.body);
 
         var alertData = JSON.parse(message.body);
+        localStorage.removeItem("alertData");
 
-        if (alertData.resolved === 'Y') {
-                console.log("이미 처리된 데이터 무시:", alertData.detectionId);
-                return;
-            }
+        if (!alertData || !alertData.riskLevel || !alertData.imageUrl) {
+            console.log("유효하지 않은 WebSocket 데이터:", alertData);
+            return; // 데이터가 유효하지 않으면 처리 중단
+        }
 
         console.log("새로운 알림 데이터:", alertData);
 
@@ -134,25 +81,83 @@ stompClient.connect({}, function (frame) {
 
         localStorage.setItem("alertData", JSON.stringify(alertData));
 
-        // riskLevel에 따라 팝업 업데이트
-        updatePopupContent(alertData);
+
+        if(alertData.riskLevel === 'LOW') return;
 
         // 팝업에 데이터 표시
         document.getElementById("popupImage").src = "data:image/jpeg;base64," + alertData.imageUrl;
         document.getElementById("popupCameraId").textContent = alertData.cameraId;
         document.getElementById("popupCameraId").setAttribute("data-detection-id", alertData.detectionId);
-        document.getElementById("popupDetectionTime").textContent = new Date(alertData.detectionTime).toLocaleString();
+        const dateTimeParts = new Date(alertData.detectionTime).toLocaleString().split(' ');
+
+        const date = `${dateTimeParts[0]} ${dateTimeParts[1]} ${dateTimeParts[2]}`;
+        const time = `${dateTimeParts[3]} ${dateTimeParts[4]}`;
+
+        document.getElementById('popupDetectionDate').textContent = date;
+        document.getElementById("popupDetectionTime").textContent = time;
+
         document.getElementById("popupContent").textContent = alertData.content;
         document.getElementById("popupLocation").textContent = alertData.location;
 
+        const level = alertData.riskLevel;
+        const popupTitle = document.getElementById("popupText2");
+        popupTitle.textContent = `위험 수준: ${level}`;
+        const popupTitle2 = document.getElementById("alertText2");
+        popupTitle2.textContent = `위험 수준: ${level}`;
 
+        if (popupTitle && level) {
+            if (level === "HIGH") {
+                document.documentElement.style.setProperty('--modal-before-color', '#FF4500'); // 빨강
+            } else if (level === "MEDIUM") {
+                document.documentElement.style.setProperty('--modal-before-color', '#FFD700'); // 노랑
+            } else {
+                document.documentElement.style.setProperty('--modal-before-color', 'gray');
+            }
+        }
 
-        showAlertPopup();
-    });
+        setTimeout(() => {
+                showAlertPopup();
+            }, 100);
+
+     });
 });
 
 
 function showAlertPopup() {
+        // 모달을 열기 전에 데이터 유효성 검사
+    const popupContent = document.getElementById("popupContent").textContent.trim();
+    const popupImage = document.getElementById("popupImage").src;
+
+    if (!popupContent || popupContent === "N/A") {
+        console.log("유효하지 않은 데이터로 인해 모달을 표시하지 않습니다.");
+        return; // 유효하지 않은 데이터면 모달 열지 않음
+    }
+
+    if (!popupImage || popupImage.includes("placeholder.png")) {
+        console.log("이미지가 없어서 모달을 표시하지 않습니다.");
+        return; // 이미지가 없을 경우에도 모달 열지 않음
+    }
+
+
+    const level = document.getElementById("popupText2").textContent.split(':')[1].trim(); // 위험 수준 추출
+    if (level === "HIGH") {
+        currentAlertSound = document.getElementById("alertSound01");
+    } else if (level === "MEDIUM") {
+        currentAlertSound = document.getElementById("alertSound02");
+    } else {
+        currentAlertSound = document.getElementById("alertSound03");
+    }
+
+    // 사용자 상호작용이 발생한 경우에만 play() 호출
+    if (userInteracted && currentAlertSound) {
+        currentAlertSound.loop = true;
+        currentAlertSound.currentTime = 0;
+        currentAlertSound.play().catch((error) => {
+            console.error("오디오 재생 오류:", error);
+        });
+    }
+
+
     document.getElementById("alertPopup").style.display = "flex"; // alertPopup 표시
 }
 
@@ -162,38 +167,58 @@ function showConfirmPopup() {
 
 function closeSecondConfirmModal() {
     document.getElementById("secondConfirmModal").style.display = "none"; // secondConfirmModal 숨김
+
+    if (currentAlertSound) {
+        currentAlertSound.pause(); // 소리 정지
+        currentAlertSound.currentTime = 0; // 초기화
+        currentAlertSound.loop = false; // 반복 제거
+        currentAlertSound = null; // 변수 초기화
+    }
+
+
     var storedAlertData = localStorage.getItem("alertData");
     if (storedAlertData) {
         var alertData = JSON.parse(storedAlertData);
-
-        if (alertData.resolved === 'Y') {
+        if (!alertData.detectionId || alertData.resolved === 'Y') {
+            console.log("유효하지 않은 데이터, 처리 중지");
             localStorage.removeItem("alertData");
-            currentDetectionId = null; // 초기화
             return;
-        } else {
-            var detectionId = document.getElementById("popupCameraId").getAttribute("data-detection-id");
+        }
 
-            // AJAX 요청으로 Spring Boot에 detectionId 전송
-            fetch('/resolveWarning?detectionId=' + detectionId, {
-                method: 'PUT'
-            })
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                    currentDetectionId = null;
-                    localStorage.removeItem("alertData"); // 처리된 데이터 제거
-                    document.getElementById("alertPopup").style.display = "none";
+
+        var detectionId = document.getElementById("popupCameraId").getAttribute("data-detection-id");
+
+         if (currentDetectionId === detectionId) {
+            console.log("중복 요청 방지: " + detectionId);
+            return; // 이미 처리 중인 요청이라면 실행 중단
+        }
+        currentDetectionId = detectionId;
+
+
+        // AJAX 요청으로 Spring Boot에 detectionId 전송
+        fetch('/resolveWarning?detectionId=' + detectionId, {
+            method: 'PUT'
+        })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                localStorage.removeItem("alertData"); // 처리된 데이터 제거
+                document.getElementById("alertPopup").style.display = "none";
 //                    location.reload(true); // 새로고침
 
-                })
-                .catch(error => {
-                    console.error("AJAX 요청 오류:", error);
-                    // 오류 발생 시 currentDetectionId 초기화
-                    currentDetectionId = null;
-                });
+
+            })
+            .catch(error => {
+                console.error("AJAX 요청 오류:", error);
+                // 오류 발생 시 currentDetectionId 초기화
+                currentDetectionId = null;
+            })
+            .finally(()=>{
+               currentDetectionId = null;
+            });
         }
     }
-}
+
 
 function closeAlertModal(){
     document.getElementById("alertModal").style.display = "none";
