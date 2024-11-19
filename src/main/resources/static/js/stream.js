@@ -177,6 +177,9 @@ function clearExistingResources() {
     }
 }
 
+let reconnectInterval = 3000; // 재연결 간격 (밀리초)
+let maxReconnectAttempts = Infinity; // 무한 재연결
+let reconnectAttempts = 0;
 function createWebSocketConnection(port, canvasElement) {
             const wsClient = new WebSocket('ws://localhost:' + port);
 
@@ -188,11 +191,15 @@ function createWebSocketConnection(port, canvasElement) {
                 console.error('WebSocket error on port:', port, err);
             };
 
-//            wsClient.onclose = function() {
-//                setTimeout(() => {
-//                    createWebSocketConnection(port, canvasElement);
-//                }, 5000);
-//            };
+            wsClient.onclose = function() {
+                // 재연결 시도
+                if (reconnectAttempts < maxReconnectAttempts) {
+                  reconnectAttempts++;
+                  setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
+                } else {
+                  console.error('재연결 시도 횟수를 초과했습니다.');
+                }
+            };
 
             const wsPlayer = new jsmpeg(wsClient, {
                 canvas: canvasElement,
@@ -203,6 +210,7 @@ function createWebSocketConnection(port, canvasElement) {
             clients.push(wsClient);
             players.push(wsPlayer);
         }
+
 
 function renderVideos() {
     container.innerHTML = '';
@@ -239,14 +247,6 @@ function renderVideos() {
 
             };
         }
-//        const canvas = document.createElement('canvas');
-//        canvas.id = 'canvas' + index;
-//        canvas.style.width = "400px";
-//        canvas.style.height = "200px";
-//        canvas.classList.add('canvas-item');
-//        canvas.onclick = function() {
-//            clickModal(portObj.wsPort, portObj.cameraId);
-//        };
 
         const videoInfo = document.createElement('div');
         videoInfo.classList.add('video-info');
@@ -277,7 +277,6 @@ function renderVideos() {
         divContainer.appendChild(videoInfo);
         container.appendChild(divContainer);
 
-//        createWebSocketConnection(portObj.wsPort, canvas);
 
     });
 

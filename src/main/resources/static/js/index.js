@@ -10,7 +10,7 @@ const PORT = 3000;
 
 app.use(express.json());
 
-const activeStreams = new Set(); // 중복 방지를 위한 스트림 관리 객체
+const activeStreams = new Map(); // 중복 방지를 위한 스트림 관리 객체
 
 async function fetchData() {
     console.log('fetchData called');
@@ -39,17 +39,16 @@ async function fetchData() {
     }
 }
 
-//setInterval(fetchData, 10000);
 fetchData();
-let isStreamStarted = false;
 
 // rtsp to websocket
-function openStream(obj, isStreamStarted){
-        if (activeStreams.has(obj.port)) {
-            console.log(`Port ${obj.port} is already active. Skipping stream creation.`);
-            return;
-        }
-        console.log(activeStreams);
+function openStream(obj){
+        if (activeStreams.has(obj.port) && activeStreams.get(obj.port).isStreamStarted) {
+                console.log(`Port ${obj.port} is already active. Skipping stream creation.`);
+                return;
+            }
+        let isStreamStarted = false;
+//        console.log(activeStreams);
         let ffmpegOptions = {
                 '-stats': ''
             };
@@ -70,7 +69,7 @@ function openStream(obj, isStreamStarted){
             stream.on('camdata', () => {
 //                console.log(`Successfully started stream for port ${obj.port}`);
                 isStreamStarted = true;
-                activeStreams.add(obj.port);
+                activeStreams.set(obj.port, { isStreamStarted, stream });
             });
 
             setTimeout(() => {
@@ -79,7 +78,7 @@ function openStream(obj, isStreamStarted){
                         stream.wsServer.close();
                     }
                     isStreamStarted = false;
-                    retryConnection(obj, isStreamStarted); // 재연결 시도
+                    retryConnection(obj); // 재연결 시도
                 }
             }, 5000);
 
@@ -90,7 +89,7 @@ function openStream(obj, isStreamStarted){
                     stream.wsServer.close();
                 }
                 isStreamStarted = false
-                retryConnection(obj, isStreamStarted);
+                retryConnection(obj);
             });
 
             stream.mpeg1Muxer.on('ffmpegStderr', (data) => {
@@ -102,17 +101,14 @@ function openStream(obj, isStreamStarted){
                         stream.wsServer.close();
                     }
                     isStreamStarted = false
-                    retryConnection(obj, isStreamStarted);
+                    retryConnection(obj);
                 }
             });
         }
-function retryConnection(obj, isStreamStarted) {
+function retryConnection(obj) {
     const retryInterval = 5000;
-    if (isStreamStarted){
-        return;
-    }
     setTimeout(() => {
-                openStream(obj, isStreamStarted);
+                openStream(obj);
             }, retryInterval);
 }
 
