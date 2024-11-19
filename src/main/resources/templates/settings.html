@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>settings</title>
+    <link rel="stylesheet" href="css/menu.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">
+          <span class="logo-icon">
+            <img src="icon/safewatch.svg" alt="Safe Watch Icon">
+          </span>
+        <h2>Safe Watch</h2>
+    </div>
+    <div class="menu">
+        <ul>
+            <li class="menu-item" onclick="selectMenu('monitoring')">
+                <span class="menu-icon1"></span>
+                <span class="menu-text">Monitoring</span>
+            </li>
+            <li class="menu-item" onclick="selectMenu('events')">
+                <img class="menu-icon2" src="../icon/events.svg" alt="Events Icon">
+                <span class="menu-text">Events</span>
+            </li>
+            <li class="menu-item" onclick="selectMenu('analytics')">
+                <span class="menu-icon3"></span>
+                <span class="menu-text">Analytics</span>
+            </li>
+        </ul>
+    </div>
+    <div class="menu-item active" onclick="selectMenu('settings')">
+        <span class="menu-icon4"></span>
+        <span class="menu-text">Settings</span>
+    </div>
+</div>
+
+<div class="main-content">
+    <header>
+        <h1 class="main-text">Settings</h1>
+        <p>날짜</p>
+    </header>
+    <div class="logout">
+        <p>로그아웃</p>
+        <form action="/logout" method="post">
+            <button type="submit" class="btn-logout">logout</button>
+        </form>
+    </div>
+
+
+
+</div>
+<script src="js/menu.js"></script>
+</body>
+</html>
