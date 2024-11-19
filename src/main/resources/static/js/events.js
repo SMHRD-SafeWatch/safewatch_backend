@@ -17,7 +17,7 @@ function resetCurrentDetectionId() {
     currentDetectionId = null;
 }
 
-
+let imgEvent;
 function handleImageClick(imgElement) {
     // 이미지 데이터와 기타 속성 읽기
     const imageUrl = imgElement.getAttribute("src"); // Base64 이미지 URL
@@ -30,6 +30,8 @@ function handleImageClick(imgElement) {
     // 이미지 클릭 처리 로직 실행
     updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel);
 }
+
+
 
 function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel) {
     // 모달 DOM 요소 가져오기
@@ -45,6 +47,7 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
 
     // 모달 표시
     modal.style.display = 'flex';
+    imgEvent = riskLevel;
 }
 
 // 새로 고침시 localStorage 데이터 초기화
@@ -103,16 +106,24 @@ stompClient.connect({}, function (frame) {
         const popupTitle = document.getElementById("popupText2");
         popupTitle.textContent = `위험 수준: ${level}`;
         const popupTitle2 = document.getElementById("alertText2");
-        popupTitle2.textContent = `위험 수준: ${level}`;
+        popupTitle2.textContent = `위험 수준: ${imgEvent}`;
 
         if (popupTitle && level) {
+
+            let textColor;
             if (level === "HIGH") {
                 document.documentElement.style.setProperty('--modal-before-color', '#FF4500'); // 빨강
+                textColor = "#FF4500";
             } else if (level === "MEDIUM") {
                 document.documentElement.style.setProperty('--modal-before-color', '#FFD700'); // 노랑
+                textColor = "#FFD700";
             } else {
                 document.documentElement.style.setProperty('--modal-before-color', 'gray');
+                textColor = "gray";
             }
+            // 텍스트 색상 적용
+            popupTitle.style.color = textColor;
+            popupTitle2.style.color = textColor;
         }
 
         setTimeout(() => {
