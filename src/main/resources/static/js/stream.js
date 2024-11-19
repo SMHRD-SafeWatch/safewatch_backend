@@ -360,11 +360,11 @@ function updatePageInfo() {
 }
 
 document.getElementById('events-button').addEventListener('click', function() {
-    window.location.replace('http://localhost:8090/events_front');
+    window.location.replace('http://localhost:8090/detectevt');
 });
 
 document.getElementById('video-container').addEventListener('click', function(event) {
     if (event.target && event.target.id === 'notificationwarning') {
-        window.location.href = 'http://localhost:8090/events_front';
+        window.location.href = 'http://localhost:8090/detectevt';
     }
 });
