@@ -1,6 +1,5 @@
 package com.sw.sw.controller;
 
-import com.sw.sw.entity.CameraInstall;
 import com.sw.sw.repository.CameraInstallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
