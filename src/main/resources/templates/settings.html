@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>settings</title>
     <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/settings.css">
 </head>
 <body>
 <div class="sidebar">
@@ -41,16 +42,42 @@
         <h1 class="main-text">Settings</h1>
         <p>날짜</p>
     </header>
-    <div class="logout">
-        <p>로그아웃</p>
-        <form action="/logout" method="post">
-            <button type="submit" class="btn-logout">logout</button>
-        </form>
+    <div class="settings">
+        <!-- 소리 알림 -->
+        <div class="setting-item">
+            <span class="setting-label">소리 알림</span>
+            <label class="toggle-switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- 음량 조절 -->
+        <div class="setting-item">
+            <label for="volume-control" class="setting-label">음량 조절</label>
+            <input type="range" id="volume-control" class="volume-range" min="0" max="100" value="50">
+        </div>
+
+        <!-- 로그아웃 -->
+        <div class="setting-item logout-item" onclick="showLogoutModal()">
+            <span class="setting-label">로그아웃</span>
+            <span class="arrow-button">&gt;</span>
+        </div>
     </div>
-
-
-
 </div>
+
+<!-- 로그아웃 모달 -->
+<div id="logout-modal" class="modal">
+    <div class="modal-content small-modal">
+        <p class="modal-confirm">로그아웃하시겠습니까?</p>
+        <div class="modal-footer">
+            <button class="confirm-btn" id="logoutConfirmBtn">확인</button>
+            <button class="cancel-btn" id="logoutCancelBtn">취소</button>
+        </div>
+    </div>
+</div>
+
 <script src="js/menu.js"></script>
+<script src="js/settings.js"></script>
 </body>
 </html>
