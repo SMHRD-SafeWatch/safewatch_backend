@@ -92,9 +92,9 @@ img.thumbnail {
     padding: 22px 28px;
     border-radius: 4px;
     width: 800px;
-/*
-    height: 435px;
-*/
+    /*
+        height: 435px;
+    */
     max-width: 90%;
     position: relative;
     justify-content: center;
