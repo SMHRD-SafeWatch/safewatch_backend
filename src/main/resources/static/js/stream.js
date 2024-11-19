@@ -54,10 +54,10 @@ async function fetchResolvedData() {
       if (iconElement) {
         if (cameraStatusMap[cameraId].hasResolvedY) {
           // `resolved` 값이 'Y'인 항목이 하나라도 있으면 경고 아이콘으로 변경
-          iconElement.src = 'icon/notification_warning.svg'; // 예시 아이콘 경로
+          iconElement.src = 'icon/notification_warning.svg';
         } else {
           // 모두 'N'인 경우 기본 아이콘으로 유지
-          iconElement.src = 'icon/notification.svg'; // 예시 아이콘 경로
+          iconElement.src = 'icon/notification.svg';
         }
       }
     });
@@ -69,8 +69,6 @@ async function fetchResolvedData() {
 window.onload = async () => {
   await fetchResolvedData();
   await fetchCameraData();
-
-//  setInterval(fetchCameraData, 3000);
 };
 
 
@@ -83,6 +81,7 @@ const modal_video = document.getElementById("stream");
 const title = document.getElementById("modal-title");
 const modal_icon = document.getElementById("modal-icon");
 
+// 모달 canvas
 function clickModal(port, cameraId, cameraUrl) {
     if (modal_player) {
         modal_player.stop();
@@ -166,6 +165,7 @@ const container = document.getElementById('video-container');
 let players = [];
 let clients = [];
 
+// ws닫기
 function clearExistingResources() {
     if (players.length > 0) {
         players.forEach(player => player.stop());
@@ -177,14 +177,17 @@ function clearExistingResources() {
     }
 }
 
-let reconnectInterval = 3000; // 재연결 간격 (밀리초)
-let maxReconnectAttempts = Infinity; // 무한 재연결
-let reconnectAttempts = 0;
+// ws 핸들러
+let reconnectInterval = 3000;
+let maxReconnectAttempts = 100;
+let wsPlayer = null;
 function createWebSocketConnection(port, canvasElement) {
             const wsClient = new WebSocket('ws://localhost:' + port);
+            let reconnectAttempts = 0;
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
+                reconnectAttempts = 0;
             };
 
             wsClient.onerror = function(err) {
@@ -196,12 +199,13 @@ function createWebSocketConnection(port, canvasElement) {
                 if (reconnectAttempts < maxReconnectAttempts) {
                   reconnectAttempts++;
                   setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
+
                 } else {
                   console.error('재연결 시도 횟수를 초과했습니다.');
                 }
             };
 
-            const wsPlayer = new jsmpeg(wsClient, {
+            wsPlayer = new jsmpeg(wsClient, {
                 canvas: canvasElement,
                 autoplay: true,
             });
@@ -228,7 +232,7 @@ function renderVideos() {
         if(!portObj.cameraId.includes("API")){
             canvas = document.createElement('canvas');
             canvas.id = portObj.cameraId;
-            canvas.style.width = "400px";
+            canvas.style.width = "306.66px";
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
             canvas.onclick = function() {
@@ -238,7 +242,7 @@ function renderVideos() {
         }else{
             canvas = document.createElement("img");
             canvas.id = portObj.cameraId;
-            canvas.style.width = "300px";
+            canvas.style.width = "306.66px";
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
             canvas.src = portObj.cameraUrl;
