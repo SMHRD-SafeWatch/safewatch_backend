@@ -40,4 +40,20 @@ public class RestAPIController {
         return response;
     }
 
+    @GetMapping("/resolved")
+    public List<Map<String, Object>> resolvedGet(){
+        List<Object[]> results = camerainstallRepository.findWarningResolved();
+        List<Map<String, Object>> response = new ArrayList<>();
+
+        for (Object[] row : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("cameraId", row[0]);
+            map.put("detectionId", row[1]);
+            map.put("resolved", row[2]);
+            response.add(map);
+        }
+
+        return response;
+    }
+
 }

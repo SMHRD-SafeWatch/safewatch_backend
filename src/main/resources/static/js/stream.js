@@ -1,4 +1,5 @@
 let portList = [];
+let resolvedList = [];
 
 // 데이터를 가져오는 함수
 async function fetchCameraData() {
@@ -12,13 +13,58 @@ async function fetchCameraData() {
     // JSON 데이터로 변환
     const cameras = await response.json();
 
-    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId }));
+    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId, cameraUrl: camera.cameraUrl }));
     renderVideos();
   } catch (error) {
     console.error('Error fetching camera data:', error);
   }
 }
 
+async function fetchResolvedData() {
+  try {
+    // API 요청
+    const response = await fetch('http://localhost:8090/api/resolved');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    // JSON 데이터로 변환
+    const resolveds = await response.json();
+
+    resolvedList = resolveds.map(resolved => ({
+      cameraId: resolved.cameraId,
+      detectionId: resolved.detectionId,
+      resolved: resolved.resolved
+    }));
+
+    // `resolvedList`에서 cameraId별로 그룹화
+    const cameraStatusMap = {};
+    resolvedList.forEach(item => {
+      if (!cameraStatusMap[item.cameraId]) {
+        cameraStatusMap[item.cameraId] = { hasResolvedY: false };
+      }
+      if (item.resolved === 'Y') {
+        cameraStatusMap[item.cameraId].hasResolvedY = true;
+      }
+    });
+
+    // 각 cameraId에 대해 아이콘 변경
+    Object.keys(cameraStatusMap).forEach(cameraId => {
+      const iconElement = document.getElementById(cameraId + '-icon');
+      if (iconElement) {
+        if (cameraStatusMap[cameraId].hasResolvedY) {
+          // `resolved` 값이 'Y'인 항목이 하나라도 있으면 경고 아이콘으로 변경
+          iconElement.src = 'icon/notification_warning.svg'; // 예시 아이콘 경로
+        } else {
+          // 모두 'N'인 경우 기본 아이콘으로 유지
+          iconElement.src = 'icon/notification.svg'; // 예시 아이콘 경로
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching camera data:', error);
+  }
+}
 // 페이지가 로드되면 데이터 가져오기
 window.onload = fetchCameraData;
 
@@ -29,8 +75,9 @@ let modal_player = null;
 let modal_client = null;
 const modal_video = document.getElementById("stream");
 const title = document.getElementById("modal-title");
+const modal_icon = document.getElementById("modal-icon");
 
-function clickModal(port, cameraId) {
+function clickModal(port, cameraId, cameraUrl) {
     if (modal_player) {
         modal_player.stop();
         modal_player = null;
@@ -41,15 +88,34 @@ function clickModal(port, cameraId) {
     }
     modal_video.innerHTML = '';
 
-    const stream_video = document.createElement('canvas');
-    stream_video.id = 'canvasModal';
-    stream_video.style.width = "700px";
-    stream_video.style.height = "480px";
-    modal_video.appendChild(stream_video);
-    title.textContent = cameraId;
+    let stream_video;
+    if(!cameraId.includes("API")){
+        stream_video = document.createElement('canvas');
+        stream_video.id = 'canvasModal';
+        stream_video.style.width = "700px";
+        stream_video.style.height = "480px";
+        modal_video.appendChild(stream_video);
 
-    modal_client = new WebSocket('ws://localhost:' + port);
-    modal_player = new jsmpeg(modal_client, { canvas: stream_video });
+        modal_client = new WebSocket('ws://localhost:' + port);
+        modal_player = new jsmpeg(modal_client, { canvas: stream_video });
+    }else{
+        stream_video = document.createElement("img");
+        stream_video.id = 'canvasModal';
+        stream_video.style.width = "700px";
+        stream_video.style.height = "480px";
+        modal_video.appendChild(stream_video);
+        title.textContent = cameraId;
+
+        stream_video.src = cameraUrl;
+        };
+
+    title.textContent = cameraId;
+    const hasResolvedY = resolvedList.some(item => item.cameraId === cameraId && item.resolved === 'Y');
+    if (hasResolvedY) {
+        modal_icon.src = 'icon/notification_warning.svg'; // 경고 아이콘
+    } else {
+        modal_icon.src = 'icon/notification.svg'; // 기본 아이콘
+    }
     const modal = document.getElementById("alertModal");
     const modalImage = document.getElementById("modalImage");
     modal.style.display = "flex"; // 모달 표시
@@ -105,6 +171,9 @@ function clearExistingResources() {
     }
 }
 
+let reconnectInterval = 3000; // 재연결 간격 (밀리초)
+let maxReconnectAttempts = Infinity; // 무한 재연결
+let reconnectAttempts = 0;
 function createWebSocketConnection(port, canvasElement) {
             const wsClient = new WebSocket('ws://localhost:' + port);
 
@@ -116,11 +185,15 @@ function createWebSocketConnection(port, canvasElement) {
                 console.error('WebSocket error on port:', port, err);
             };
 
-//            wsClient.onclose = function() {
-//                setTimeout(() => {
-//                    createWebSocketConnection(port, canvasElement);
-//                }, 5000);
-//            };
+            wsClient.onclose = function() {
+                // 재연결 시도
+                if (reconnectAttempts < maxReconnectAttempts) {
+                  reconnectAttempts++;
+                  setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
+                } else {
+                  console.error('재연결 시도 횟수를 초과했습니다.');
+                }
+            };
 
             const wsPlayer = new jsmpeg(wsClient, {
                 canvas: canvasElement,
@@ -131,6 +204,7 @@ function createWebSocketConnection(port, canvasElement) {
             clients.push(wsClient);
             players.push(wsPlayer);
         }
+
 
 function renderVideos() {
     container.innerHTML = '';
@@ -144,14 +218,29 @@ function renderVideos() {
         const divContainer = document.createElement('div');
         divContainer.classList.add('video-card');
 
-        const canvas = document.createElement('canvas');
-        canvas.id = 'canvas' + index;
-        canvas.style.width = "400px";
-        canvas.style.height = "200px";
-        canvas.classList.add('canvas-item');
-        canvas.onclick = function() {
-            clickModal(portObj.wsPort, portObj.cameraId);
-        };
+        let canvas;
+        if(!portObj.cameraId.includes("API")){
+            canvas = document.createElement('canvas');
+            canvas.id = portObj.cameraId;
+            canvas.style.width = "400px";
+            canvas.style.height = "200px";
+            canvas.classList.add('canvas-item');
+            canvas.onclick = function() {
+            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl);
+            };
+            createWebSocketConnection(portObj.wsPort, canvas);
+        }else{
+            canvas = document.createElement("img");
+            canvas.id = portObj.cameraId;
+            canvas.style.width = "300px";
+            canvas.style.height = "200px";
+            canvas.classList.add('canvas-item');
+            canvas.src = portObj.cameraUrl;
+            canvas.onclick = function() {
+            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl);
+
+            };
+        }
 
         const videoInfo = document.createElement('div');
         videoInfo.classList.add('video-info');
@@ -160,7 +249,13 @@ function renderVideos() {
         videoIconContainer.classList.add('video-icon-container');
 
         const videoIcon = document.createElement('img');
-        videoIcon.src = 'icon/notification.svg';
+        videoIcon.id = portObj.cameraId + "-icon"
+        const hasResolvedY = resolvedList.some(item => item.cameraId === portObj.cameraId && item.resolved === 'Y');
+        if (hasResolvedY) {
+            videoIcon.src = 'icon/notification_warning.svg'; // 경고 아이콘
+        } else {
+            videoIcon.src = 'icon/notification.svg'; // 기본 아이콘
+        }
         videoIcon.alt = 'Notification Icon';
         videoIcon.classList.add('video-icon');
 
@@ -176,7 +271,6 @@ function renderVideos() {
         divContainer.appendChild(videoInfo);
         container.appendChild(divContainer);
 
-        createWebSocketConnection(portObj.wsPort, canvas);
 
     });
 

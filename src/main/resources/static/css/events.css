@@ -48,50 +48,8 @@ img.thumbnail {
     object-fit: cover;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0 0 0;
-    list-style: none;
-    gap: 4px;
-    font-size: 14px;
-}
-
-/*숫자 가로로 정렬*/
-#paginationNumbers {
-    display: flex;
-    gap: 4px;
-}
-
-.pagination li {
-    display: inline;
-}
-
-.pagination a {
-    display: block;
-    padding: 6px 10px;
-    text-decoration: none;
-    color: #767676;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.pagination a:hover {
-    background-color: #a3a3a3;
-    color: #ffffff;
-}
-
-.pagination .active {
-    background-color: #767676;
-    color: #ffffff;
-    border-color: #767676;
-}
-
-
-
 /* Warning */
-.modal {
+.alert-modal {
     display: none;
     position: fixed;
     z-index: 1000;
@@ -104,7 +62,20 @@ img.thumbnail {
     align-items: center;
 }
 
-.modal-content {
+.alert-popup {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.alert-popup .modal-content {
     background-color: white;
     padding: 22px 28px;
     border-radius: 4px;
@@ -112,7 +83,21 @@ img.thumbnail {
     height: 435px;
     max-width: 90%;
     position: relative;
+    justify-content: center;
+}
 
+
+.modal-content {
+    background-color: white;
+    padding: 22px 28px;
+    border-radius: 4px;
+    width: 800px;
+/*
+    height: 435px;
+*/
+    max-width: 90%;
+    position: relative;
+    justify-content: center;
 }
 
 
@@ -123,7 +108,7 @@ img.thumbnail {
     left: 0;
     width: 100%;
     height: 6px;
-    background-color: red;
+    background-color: var(--modal-before-color, gray); /* 기본값은 빨강 */
 }
 
 .close-btn {
@@ -253,4 +238,92 @@ img.thumbnail {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 0 0;
+    list-style: none;
+    gap: 4px;
+    font-size: 14px;
+}
+
+/*숫자 가로로 정렬*/
+#paginationNumbers {
+    display: flex;
+    gap: 4px;
+}
+
+.pagination li {
+    display: inline;
+}
+
+.pagination a {
+    display: block;
+    padding: 6px 10px;
+    text-decoration: none;
+    color: #767676;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #a3a3a3;
+    color: #ffffff;
+}
+
+.pagination .active {
+    background-color: #767676;
+    color: #ffffff;
+    border-color: #767676;
+}
+
+
+/* Second Confirm Modal 전체 레이아웃 */
+.second-confirm-modal {
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2000; /* alertPopup보다 높은 z-index */
+    padding: 30px;
+    width: 400px; /* 가로 크기 설정 */
+    animation: fadeIn 0.3s ease-in-out; /* 팝업 애니메이션 */
+}
+
+/* Second Confirm Modal 제목 */
+.second-confirm-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333; /* 다소 부드러운 색상 */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Second Confirm Modal 버튼 */
+.second-confirm-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.second-confirm-btn button {
+    background-color: black;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.second-confirm-btn button:hover {
+    background-color: #444;
 }
