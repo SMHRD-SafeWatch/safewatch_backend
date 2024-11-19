@@ -255,12 +255,13 @@ function renderVideos() {
         videoIconContainer.classList.add('video-icon-container');
 
         const videoIcon = document.createElement('img');
-        videoIcon.id = portObj.cameraId + "-icon"
         const hasResolvedY = resolvedList.some(item => item.cameraId === portObj.cameraId && item.resolved === 'Y');
         if (hasResolvedY) {
             videoIcon.src = 'icon/notification_warning.svg'; // 경고 아이콘
+            videoIcon.id = "notificationwarning"
         } else {
             videoIcon.src = 'icon/notification.svg'; // 기본 아이콘
+            videoIcon.id = "notification"
         }
         videoIcon.alt = 'Notification Icon';
         videoIcon.classList.add('video-icon');
@@ -357,3 +358,13 @@ function updatePageInfo() {
   nextButton.appendChild(nextLink);
   pageInfo.appendChild(nextButton);
 }
+
+document.getElementById('events-button').addEventListener('click', function() {
+    window.location.replace('http://localhost:8090/detectevt');
+});
+
+document.getElementById('video-container').addEventListener('click', function(event) {
+    if (event.target && event.target.id === 'notificationwarning') {
+        window.location.href = 'http://localhost:8090/detectevt';
+    }
+});
