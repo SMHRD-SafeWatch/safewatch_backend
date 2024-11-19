@@ -68,7 +68,7 @@ input:checked + .slider:before {
 
 /* Volume Range */
 .volume-range {
-    width: 60%;
+    width: 20%;
     height: 5px;
     border-radius: 5px;
     background: linear-gradient(to right, #00B8D4 50%, #ddd 50%);
