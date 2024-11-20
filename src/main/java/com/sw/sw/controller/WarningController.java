@@ -22,5 +22,9 @@ public class WarningController {
         return ResponseEntity.ok(hasUnresolved);
     }
 
-
+    @GetMapping("/unresolved/count")
+    public ResponseEntity<Long> countUnresolvedWarnings() {
+        long unresolvedCount = warningService.countUnresolvedWarnings();
+        return ResponseEntity.ok(unresolvedCount);
+    }
 }

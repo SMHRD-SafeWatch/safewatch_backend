@@ -17,40 +17,6 @@ function resetCurrentDetectionId() {
     currentDetectionId = null;
 }
 
-function updatePopupContent(alertData) {
-    const modalContent = document.querySelector(".modal-content");
-    const popupTitle = document.querySelector(".popup-title");
-    const alertText = document.getElementById("alertText");
-//    const alertIcon = document.querySelector(".alert-icon"); // alert-icon 요소 선택
-
-
-
-    // riskLevel에 따라 클래스와 텍스트 변경
-    if (alertData.riskLevel === "HIGH") {
-        modalContent.classList.remove("medium");
-        modalContent.classList.add("high");
-        popupTitle.classList.remove("medium");
-        popupTitle.classList.add("high");
-//        alertIcon.classList.remove("medium"); // MEDIUM 클래스 제거
-//        alertIcon.classList.add("high"); // HIGH 클래스 추가
-        alertText.textContent = "매우 위험"; // HIGH일 때 텍스트
-    } else if (alertData.riskLevel === "MEDIUM") {
-        modalContent.classList.remove("high");
-        modalContent.classList.add("medium");
-        popupTitle.classList.remove("high");
-        popupTitle.classList.add("medium");
-//        alertIcon.classList.remove("high"); // HIGH 클래스 제거
-//        alertIcon.classList.add("medium"); // MEDIUM 클래스 추가
-        alertText.textContent = "위험"; // MEDIUM일 때 텍스트
-    } else {
-        // 기본 상태
-        modalContent.classList.remove("high", "medium");
-        popupTitle.classList.remove("high", "medium");
-//        alertIcon.classList.remove("high", "medium"); // 모든 클래스 제거
-        alertText.textContent = "알림"; // 기본 텍스트
-    }
-}
-
 function handleImageClick(imgElement) {
     // 이미지 데이터와 기타 속성 읽기
     const imageUrl = imgElement.getAttribute("src"); // Base64 이미지 URL
@@ -63,6 +29,8 @@ function handleImageClick(imgElement) {
     // 이미지 클릭 처리 로직 실행
     updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel);
 }
+
+
 
 function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel) {
     // 모달 DOM 요소 가져오기
@@ -78,6 +46,27 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
 
     // 모달 표시
     modal.style.display = 'flex';
+
+    const popupTitle2 = document.getElementById("alertText2");
+    popupTitle2.textContent = `위험 수준: ${riskLevel}`;
+
+    if (popupTitle2 && riskLevel) {
+        let beforeColor;
+        let textColor2;
+        if (riskLevel === "HIGH") {
+            beforeColor = "#FF4500"; // 빨강
+            textColor2 = "#FF4500"; // 텍스트 색상
+        } else if (riskLevel === "MEDIUM") {
+            beforeColor = "rgb(255,149,55,1)";
+            textColor2 = "rgb(255,149,55,1)";
+        } else {
+            beforeColor = "gray"; // 기본 회색
+            textColor2 = "gray";
+        }
+    modal.style.setProperty('--modal-before-color', beforeColor);
+
+    popupTitle2.style.color = textColor2;
+    }
 }
 
 // 새로 고침시 localStorage 데이터 초기화
@@ -89,10 +78,11 @@ window.addEventListener("load", () => {
 
 stompClient.connect({}, function (frame) {
     stompClient.subscribe('/topic/alerts', function (message) {
-        console.log("수신된 메시지:", message.body);
 
         var alertData = JSON.parse(message.body);
         localStorage.removeItem("alertData");
+
+        console.log("전체 메시지 데이터:", alertData); // 메시지 전체 확인
 
         if (!alertData || !alertData.riskLevel || !alertData.imageUrl) {
             console.log("유효하지 않은 WebSocket 데이터:", alertData);
@@ -134,30 +124,42 @@ stompClient.connect({}, function (frame) {
 
         const level = alertData.riskLevel;
         const popupTitle = document.getElementById("popupText2");
+        const modalElement = document.getElementById("alertPopup"); // 다른 모달 컨테이너
+
         popupTitle.textContent = `위험 수준: ${level}`;
-        const popupTitle2 = document.getElementById("alertText2");
-        popupTitle2.textContent = `위험 수준: ${level}`;
 
         if (popupTitle && level) {
+            let textColor;
+            let beforeColor;
+
             if (level === "HIGH") {
-                document.documentElement.style.setProperty('--modal-before-color', '#FF4500'); // 빨강
+                beforeColor = "#FF4500"; // 빨강
+                textColor = "#FF4500";
             } else if (level === "MEDIUM") {
-                document.documentElement.style.setProperty('--modal-before-color', '#FFD700'); // 노랑
+                beforeColor = "rgb(255,149,55,1)"; // 노랑
+                textColor = "rgb(255,149,55,1)";
             } else {
-                document.documentElement.style.setProperty('--modal-before-color', 'gray');
+                beforeColor = "gray"; // 기본 회색
+                textColor = "gray";
             }
+
+            // 특정 모달 컨테이너에만 스타일 적용
+            modalElement.style.setProperty('--modal-before-color', beforeColor);
+
+            // 텍스트 색상 적용
+            popupTitle.style.color = textColor;
         }
-
-        setTimeout(() => {
-                showAlertPopup();
-            }, 100);
-
+            showAlertPopup();
      });
 });
 
 
 function showAlertPopup() {
-        // 모달을 열기 전에 데이터 유효성 검사
+    // 소리 알림 상태 확인
+    const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
+    const volumeLevel = localStorage.getItem('volumeLevel') || 50;
+
+    // 모달을 열기 전에 데이터 유효성 검사
     const popupContent = document.getElementById("popupContent").textContent.trim();
     const popupImage = document.getElementById("popupImage").src;
 
@@ -171,6 +173,11 @@ function showAlertPopup() {
         return; // 이미지가 없을 경우에도 모달 열지 않음
     }
 
+    if (!soundEnabled) {
+        console.log("소리 알림이 꺼져 있으므로 소리를 재생하지 않습니다.");
+        document.getElementById("alertPopup").style.display = "flex";
+        return;
+    }
 
     const level = document.getElementById("popupText2").textContent.split(':')[1].trim(); // 위험 수준 추출
     if (level === "HIGH") {
@@ -183,6 +190,7 @@ function showAlertPopup() {
 
     // 사용자 상호작용이 발생한 경우에만 play() 호출
     if (userInteracted && currentAlertSound) {
+        currentAlertSound.volume = volumeLevel / 100; // 설정된 볼륨 적용
         currentAlertSound.loop = true;
         currentAlertSound.currentTime = 0;
         currentAlertSound.play().catch((error) => {
@@ -238,7 +246,7 @@ function closeSecondConfirmModal() {
                 localStorage.removeItem("alertData"); // 처리된 데이터 제거
                 document.getElementById("alertPopup").style.display = "none";
 //                    location.reload(true); // 새로고침
-
+//                refreshTable()
 
             })
             .catch(error => {

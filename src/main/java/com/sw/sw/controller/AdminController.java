@@ -14,30 +14,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AdminController {
     private final AdminService adminService;
 
-    // Settings 이동
+    // Settings page 이동
     @GetMapping("/settings")
     public String settings(Model model) { return "settings"; }
 
-    // warning_front Test용 이동
-    @GetMapping("/warning_front")
-    public String warning_front(){ return "warning_front"; }
-
-    // monitoring Test용 이동
+    // monitoring page 이동
     @GetMapping("/monitoring")
     public String monitoring(){
         return "monitoring";
     }
 
-    // events Test용 이동
+    // events page 이동
     @GetMapping("/events_front")
     public String events_front(){ return "events_front"; }
 
-    // 로그인 페이지 로딩
+    // login page 이동
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("adm", null);
         return "login";
     }
+
+    // main page 이동
+    @GetMapping("/safewatch")
+    public String showMainPage() { return "main"; }
 
     // 로그인
     @PostMapping("/login")

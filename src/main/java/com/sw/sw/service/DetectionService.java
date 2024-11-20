@@ -5,7 +5,6 @@ import com.sw.sw.entity.Warning;
 import com.sw.sw.repository.DetectionRepository;
 import com.sw.sw.repository.WarningRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -55,15 +54,12 @@ public class DetectionService {
         System.out.println("Warning Entity: " + warning);
 
         if (warning == null) {
-            System.out.println("No Warning found for detectionId: " + detectionId); // 로그 확인
             return false;
         }
-        System.out.println("Resolved Value Before Update: " + warning.getResolved());
 
         if ("N".equals(warning.getResolved())) { // 대소문자나 공백이 잘못된 경우 매칭 실패
             warning.setResolved("Y");
             warningRepository.save(warning);
-            System.out.println("Resolved Value After Update: " + warning.getResolved());
 
             return true;
         }
