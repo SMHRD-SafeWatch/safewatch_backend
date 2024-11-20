@@ -56,8 +56,8 @@
         <th>확인</th>
       </tr>
       </thead>
-      <tbody>
-      <tr th:each="detection : ${details}">
+      <tbody th:fragment="tableBody" th:each="detection : ${details}">
+      <tr>
         <td th:text="${detection?.riskLevel}"></td>
         <td>
           <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
