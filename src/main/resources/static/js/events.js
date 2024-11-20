@@ -17,6 +17,8 @@ function resetCurrentDetectionId() {
     currentDetectionId = null;
 }
 
+
+
 function handleImageClick(imgElement) {
     // 이미지 데이터와 기타 속성 읽기
     const imageUrl = imgElement.getAttribute("src"); // Base64 이미지 URL
@@ -76,6 +78,7 @@ window.addEventListener("load", () => {
     console.log("localStorage 초기화 완료");
 });
 
+
 stompClient.connect({}, function (frame) {
     stompClient.subscribe('/topic/alerts', function (message) {
 
@@ -97,8 +100,6 @@ stompClient.connect({}, function (frame) {
 
         console.log("WebSocket 연결 상태:", stompClient.connected);
 
-        if (currentDetectionId === alertData.detectionId) return;
-
         currentDetectionId = alertData.detectionId;
 
         if (detectionTimeout) clearTimeout(detectionTimeout);
@@ -111,6 +112,7 @@ stompClient.connect({}, function (frame) {
 
         if(alertData.riskLevel === 'LOW') return;
 
+         try {
         // 팝업에 데이터 표시
         document.getElementById("popupImage").src = "data:image/jpeg;base64," + alertData.imageUrl;
         document.getElementById("popupCameraId").textContent = alertData.cameraId;
@@ -152,8 +154,13 @@ stompClient.connect({}, function (frame) {
 
             // 텍스트 색상 적용
             popupTitle.style.color = textColor;
-        }
+            }
             showAlertPopup();
+
+            } catch (error) {
+            console.error("모달 데이터 처리 중 오류 발생. 다음 데이터로 넘어감:", error);
+            currentDetectionId = null; // 다음 데이터 처리 준비
+        }
      });
 });
 
@@ -201,9 +208,29 @@ function showConfirmPopup() {
 }
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    // 초기 데이터 로드
+    fetch('/detections')
+        .then(response => response.json())  // 서버에서 데이터를 JSON 형식으로 받음
+        .then(data => {
+            updateTable(data);  // 테이블 업데이트
+        })
+        .catch(error => console.error("Error fetching detections:", error));
+});
+
 function closeSecondConfirmModal() {
     document.getElementById("secondConfirmModal").style.display = "none"; // secondConfirmModal 숨김
 
+    fetch('/detections') // 서버에서 데이터를 가져올 엔드포인트
+        .then(response => response.json()) // JSON으로 응답 처리
+        .then(data => {
+            setTimeout(() => {
+            updateTable(data);
+        }, 0);
+        })
+        .catch(error => {
+            console.error('Error fetching detections:', error);
+        });
 
     if (currentAlertSound) {
         currentAlertSound.pause(); // 소리 정지
@@ -222,8 +249,16 @@ function closeSecondConfirmModal() {
             return;
         }
 
+        ;
 
         var detectionId = document.getElementById("popupCameraId").getAttribute("data-detection-id");
+
+        console.log("DetectionId from popup:", detectionId);
+
+        if (!detectionId) {
+                console.error("DetectionId is null or undefined.");
+                return;
+            }
 
          if (currentDetectionId === detectionId) {
             console.log("중복 요청 방지: " + detectionId);
@@ -238,7 +273,7 @@ function closeSecondConfirmModal() {
         })
             .then(response => response.text())
             .then(data => {
-                console.log(data);
+                console.log("Resolve Warning Response:", data);
                 localStorage.removeItem("alertData"); // 처리된 데이터 제거
                 document.getElementById("alertPopup").style.display = "none";
 //                    location.reload(true); // 새로고침
@@ -260,11 +295,6 @@ function closeSecondConfirmModal() {
 function closeAlertModal(){
     document.getElementById("alertModal").style.display = "none";
 }
-
-
-
-
-
 
 
 // "확인" 컬럼이 N인 행에 클래스 추가
@@ -302,7 +332,7 @@ let currentPage = 0;
 let rows = [];
 let totalPages;
 
-document.addEventListener("DOMContentLoaded", function () {
+function resetPagination() {
   rows = document.querySelectorAll("tbody tr");
   const totalRows = rows.length;
   totalPages = Math.ceil(totalRows / pageSize);
@@ -314,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("prevButton").disabled = true;
     document.getElementById("nextButton").disabled = true;
   }
-});
+}
 
 // 페이지를 표시하는 함수
 function showPage(page) {
@@ -376,3 +406,43 @@ function nextPage() {
     showPageGroup(currentPage);
   }
 }
+
+
+
+// 테이블 업데이트 함수
+function updateTable(detections) {
+    const tableBody = document.querySelector('tbody'); // tbody 요소 선택
+    tableBody.innerHTML = ''; // 기존 테이블 내용 초기화
+
+    detections.forEach(detection => {
+        // 새로운 행 생성
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${detection.riskLevel || ''}</td>
+            <td>
+                ${
+                    detection.imageUrlBase64
+                            ? `<img src="data:image/jpeg;base64,${detection.imageUrlBase64}" alt="Detection Image" width="175"
+                                   data-risk-level="${detection.riskLevel || ''}"
+                                   data-detection-time="${detection.formattedDetectionTime || ''}"
+                                   data-location="${detection.cameraInstall?.location || ''}"
+                                   data-camera-id="${detection.cameraInstall?.cameraId || ''}"
+                                   data-content="${detection.content || ''}"
+                                   onclick="handleImageClick(this)" />`
+                            : `<img src="/images/placeholder.png" alt="No Image Available" width="100" />`
+                        }
+                    </td>
+                    <td>${detection.formattedDetectionTime || ''}</td>
+                    <td>${detection.content || ''}</td>
+                    <td>${detection.location || ''}</td>
+                    <td>${detection.cameraId || ''}</td>
+                    <td>${detection.resolved || ''}</td>
+                `;
+
+
+
+                tableBody.appendChild(row);
+            });
+             resetPagination();
+        }

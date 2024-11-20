@@ -1,6 +1,7 @@
 package com.sw.sw.controller;
 
 import com.sw.sw.entity.Detection;
+import com.sw.sw.entity.DetectionAsys;
 import com.sw.sw.service.DatabaseChangeService;
 import com.sw.sw.service.DetectionService;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +37,19 @@ public class DetectionController {
         return "events_front";
     }
 
- /*   @GetMapping("/api/detectionDetails")
+    @GetMapping("/detections")
     @ResponseBody
-    public ResponseEntity<List<Detection>> getDetectionDetails(@RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "100") int size) {
-        List<Detection> details = detectionService.getDetectionDetails(page, size);
-        return ResponseEntity.ok(details);
-    }*/
+    public List<DetectionAsys> getDetections(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "100") int size,Model model) {
+        // Detection 엔티티를 DTO로 변환하여 반환
+        List<DetectionAsys> detections = detectionService.getAllDetections(page, size);
+
+        System.out.println("Returning detections: " + detections);
+
+        return detections;
+
+    }
+
 
     @PutMapping("/resolveWarning")
     @ResponseBody
@@ -56,6 +63,8 @@ public class DetectionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Warning not found.");
         }
     }
+
+
 
 }
 
