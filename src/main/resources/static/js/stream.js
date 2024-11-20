@@ -5,7 +5,7 @@ let resolvedList = [];
 async function fetchCameraData() {
   try {
     // API 요청
-    const response = await fetch('http://localhost:8090/api/portget');
+    const response = await fetch('http://192.168.20.51:8090/api/portget');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -23,7 +23,7 @@ async function fetchCameraData() {
 async function fetchResolvedData() {
   try {
     // API 요청
-    const response = await fetch('http://localhost:8090/api/resolved');
+    const response = await fetch('http://192.168.20.51:8090/api/resolved');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -101,7 +101,7 @@ function clickModal(port, cameraId, cameraUrl) {
         stream_video.style.height = "480px";
         modal_video.appendChild(stream_video);
 
-        modal_client = new WebSocket('ws://localhost:' + port);
+        modal_client = new WebSocket('ws://192.168.20.51:' + port);
         modal_player = new jsmpeg(modal_client, { canvas: stream_video });
     }else{
         stream_video = document.createElement("img");
@@ -182,7 +182,7 @@ let reconnectInterval = 3000;
 let maxReconnectAttempts = 100;
 let wsPlayer = null;
 function createWebSocketConnection(port, canvasElement) {
-            const wsClient = new WebSocket('ws://localhost:' + port);
+            const wsClient = new WebSocket('ws://192.168.20.51:' + port);
             let reconnectAttempts = 0;
 
             wsClient.onopen = function() {
@@ -199,7 +199,6 @@ function createWebSocketConnection(port, canvasElement) {
                 if (reconnectAttempts < maxReconnectAttempts) {
                   reconnectAttempts++;
                   setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
-
                 } else {
                   console.error('재연결 시도 횟수를 초과했습니다.');
                 }

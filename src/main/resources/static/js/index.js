@@ -31,7 +31,6 @@ async function fetchData() {
                 return null;
             }
         }).filter(item => item !== null); // null 값 제거
-        console.log(activeStreams);
         // 각 스트림에 대해 openStream 함수 호출
         rtspList.forEach(camera => {
             if(!activeStreams.has(camera.port)){
