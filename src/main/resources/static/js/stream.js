@@ -5,7 +5,7 @@ let resolvedList = [];
 async function fetchCameraData() {
   try {
     // API 요청
-    const response = await fetch('http://192.168.20.51:8090/api/portget');
+    const response = await fetch('http://localhost:8090/api/portget');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -23,7 +23,7 @@ async function fetchCameraData() {
 async function fetchResolvedData() {
   try {
     // API 요청
-    const response = await fetch('http://192.168.20.51:8090/api/resolved');
+    const response = await fetch('http://localhost:8090/api/resolved');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -65,10 +65,18 @@ async function fetchResolvedData() {
     console.error('Error fetching camera data:', error);
   }
 }
+
+function startPollingResolvedData(interval = 5000) { // 5000ms (5초) 기본값
+    setInterval(async () => {
+        await fetchResolvedData();
+    }, interval);
+}
+
 // 페이지가 로드되면 데이터 가져오기
 window.onload = async () => {
   await fetchResolvedData();
   await fetchCameraData();
+  startPollingResolvedData();
 };
 
 
@@ -101,7 +109,7 @@ function clickModal(port, cameraId, cameraUrl) {
         stream_video.style.height = "480px";
         modal_video.appendChild(stream_video);
 
-        modal_client = new WebSocket('ws://192.168.20.51:' + port);
+        modal_client = new WebSocket('ws://localhost:' + port);
         modal_player = new jsmpeg(modal_client, { canvas: stream_video });
     }else{
         stream_video = document.createElement("img");
@@ -180,15 +188,14 @@ function clearExistingResources() {
 // ws 핸들러
 let reconnectInterval = 3000;
 let maxReconnectAttempts = 100;
-let wsPlayer = null;
 function createWebSocketConnection(port, canvasElement) {
-            const wsClient = new WebSocket('ws://192.168.20.51:' + port);
+            const wsClient = new WebSocket('ws://localhost:' + port);
             let reconnectAttempts = 0;
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
                 reconnectAttempts = 0;
-            };
+                };
 
             wsClient.onerror = function(err) {
                 console.error('WebSocket error on port:', port, err);
