@@ -59,7 +59,7 @@ function setTodayDate() {
 
 // 알림 개수 가져오기 및 메뉴 업데이트
 function updateDetectionSize() {
-    fetch('/api/warnings/unresolved/count') // API 호출
+    fetch('/api/warnings/unresolved/count')
         .then(response => response.json())
         .then(detectionSize => {
             const detectionSizeDisplays = document.querySelectorAll(".menu-detection-size");
@@ -95,5 +95,5 @@ function updateDetectionSize() {
 document.addEventListener("DOMContentLoaded", () => {
     setTodayDate(); // 오늘 날짜 설정
     updateDetectionSize(); // 알림 개수 업데이트
-    setInterval(updateDetectionSize, 5000); // 5초 간격
+    setInterval(updateDetectionSize, 5000); // 간격
 });
