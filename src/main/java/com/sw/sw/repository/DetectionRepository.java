@@ -16,10 +16,16 @@ public interface DetectionRepository extends JpaRepository<Detection, Long> {
             "ORDER BY d.detectionId DESC")
     List<Detection> findAllWithDetails();
 
+//    @Query("SELECT d FROM Detection d " +
+//            "JOIN FETCH d.cameraInstall c " +
+//            "LEFT JOIN FETCH d.warning w " +
+//            "WHERE w.resolved = 'N' OR w IS NULL " +
+//            "ORDER BY d.detectionId DESC")
+//    List<Detection> findAllUnresolvedWithDetails();
     @Query("SELECT d FROM Detection d " +
             "JOIN FETCH d.cameraInstall c " +
             "LEFT JOIN FETCH d.warning w " +
-            "WHERE w.resolved = 'N' OR w IS NULL " +
+            "WHERE (w.resolved = 'N' OR w IS NULL) AND d.riskLevel <> 'LOW' " +
             "ORDER BY d.detectionId DESC")
     List<Detection> findAllUnresolvedWithDetails();
 }

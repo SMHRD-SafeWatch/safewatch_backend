@@ -34,7 +34,7 @@ public class DatabaseChangeService {
     public void checkDatabaseChanges() {
         // Warning 테이블에서 미처리된(RESOLVED = 'N') Detection 가져오기
         List<Detection> detections = detectionRepository.findAllUnresolvedWithDetails();
-        System.out.println("미처리 알림: " + detections);
+        System.out.println("총 미처리 알림 갯수: " + detections.size());
 
         // detections가 비어 있으면 아무 작업도 하지 않음
         if (detections == null || detections.isEmpty()) {

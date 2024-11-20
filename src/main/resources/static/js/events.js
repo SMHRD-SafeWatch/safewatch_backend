@@ -17,7 +17,6 @@ function resetCurrentDetectionId() {
     currentDetectionId = null;
 }
 
-let imgEvent;
 function handleImageClick(imgElement) {
     // 이미지 데이터와 기타 속성 읽기
     const imageUrl = imgElement.getAttribute("src"); // Base64 이미지 URL
@@ -47,7 +46,27 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
 
     // 모달 표시
     modal.style.display = 'flex';
-    imgEvent = riskLevel;
+
+    const popupTitle2 = document.getElementById("alertText2");
+    popupTitle2.textContent = `위험 수준: ${riskLevel}`;
+
+    if (popupTitle2 && riskLevel) {
+        let beforeColor;
+        let textColor2;
+        if (riskLevel === "HIGH") {
+            beforeColor = "#FF4500"; // 빨강
+            textColor2 = "#FF4500"; // 텍스트 색상
+        } else if (riskLevel === "MEDIUM") {
+            beforeColor = "#FFD700"; // 노랑
+            textColor2 = "#FFD700";
+        } else {
+            beforeColor = "gray"; // 기본 회색
+            textColor2 = "gray";
+        }
+    modal.style.setProperty('--modal-before-color', beforeColor);
+
+    popupTitle2.style.color = textColor2;
+    }
 }
 
 // 새로 고침시 localStorage 데이터 초기화
@@ -104,32 +123,32 @@ stompClient.connect({}, function (frame) {
 
         const level = alertData.riskLevel;
         const popupTitle = document.getElementById("popupText2");
+        const modalElement = document.getElementById("alertPopup"); // 다른 모달 컨테이너
+
         popupTitle.textContent = `위험 수준: ${level}`;
-        const popupTitle2 = document.getElementById("alertText2");
-        popupTitle2.textContent = `위험 수준: ${imgEvent}`;
 
         if (popupTitle && level) {
-
             let textColor;
+            let beforeColor;
+
             if (level === "HIGH") {
-                document.documentElement.style.setProperty('--modal-before-color', '#FF4500'); // 빨강
+                beforeColor = "#FF4500"; // 빨강
                 textColor = "#FF4500";
             } else if (level === "MEDIUM") {
-                document.documentElement.style.setProperty('--modal-before-color', '#FFD700'); // 노랑
+                beforeColor = "#FFD700"; // 노랑
                 textColor = "#FFD700";
             } else {
-                document.documentElement.style.setProperty('--modal-before-color', 'gray');
+                beforeColor = "gray"; // 기본 회색
                 textColor = "gray";
             }
+
+            // 특정 모달 컨테이너에만 스타일 적용
+            modalElement.style.setProperty('--modal-before-color', beforeColor);
+
             // 텍스트 색상 적용
             popupTitle.style.color = textColor;
-            popupTitle2.style.color = textColor;
         }
-
-        setTimeout(() => {
-                showAlertPopup();
-            }, 100);
-
+            showAlertPopup();
      });
 });
 
@@ -176,6 +195,49 @@ function showConfirmPopup() {
     document.getElementById("secondConfirmModal").style.display = "block"; // secondConfirmModal 표시
 }
 
+/*function refreshTable() {
+    const tableBody = document.querySelector("tbody");
+    const loadingIndicator = document.getElementById("loadingIndicator");
+
+    // 로딩 표시
+    loadingIndicator.style.display = "block";
+
+    // 서버에서 데이터 가져오기
+    fetch('/api/detectionDetails?page=0&size=100') // 원하는 페이지와 사이즈 지정
+        .then(response => response.json())
+        .then(data => {
+            // 테이블 초기화
+            tableBody.innerHTML = "";
+
+            // 새로운 데이터로 테이블 업데이트
+            data.forEach(detection => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${detection.riskLevel || 'N/A'}</td>
+                    <td>
+                        ${detection.imageUrlBase64
+                            ? `<img src="data:image/jpeg;base64,${detection.imageUrlBase64}" alt="Detection Image" width="175"/>`
+                            : `<img src="/images/placeholder.png" alt="No Image Available" width="100"/>`}
+                    </td>
+                    <td>${detection.formattedDetectionTime || 'N/A'}</td>
+                    <td>${detection.content || 'N/A'}</td>
+                    <td>${detection.cameraInstall?.location || 'N/A'}</td>
+                    <td>${detection.cameraInstall?.cameraId || 'N/A'}</td>
+                    <td>${detection.warning?.resolved || 'N/A'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error("테이블 새로고침 중 오류 발생:", error);
+        })
+        .finally(() => {
+            // 로딩 숨기기
+            loadingIndicator.style.display = "none";
+        });
+}*/
+
 function closeSecondConfirmModal() {
     document.getElementById("secondConfirmModal").style.display = "none"; // secondConfirmModal 숨김
 
@@ -216,7 +278,7 @@ function closeSecondConfirmModal() {
                 localStorage.removeItem("alertData"); // 처리된 데이터 제거
                 document.getElementById("alertPopup").style.display = "none";
 //                    location.reload(true); // 새로고침
-
+//                refreshTable()
 
             })
             .catch(error => {

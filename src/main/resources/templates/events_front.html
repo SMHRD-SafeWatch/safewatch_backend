@@ -56,8 +56,8 @@
         <th>확인</th>
       </tr>
       </thead>
-      <tbody>
-      <tr th:each="detection : ${details}">
+      <tbody th:fragment="tableBody" th:each="detection : ${details}">
+      <tr>
         <td th:text="${detection?.riskLevel}"></td>
         <td>
           <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
@@ -97,6 +97,7 @@
       <li><a href="javascript:void(0);" onclick="nextPage()" id="nextButton">▶</a></li>
     </ul>
   </div>
+    <div id="loadingIndicator" style="display: none;">Loading...</div>
 </div>
 
 <audio id="alertSound01" src="sounds/sound_01.mp3" preload="auto"></audio>
