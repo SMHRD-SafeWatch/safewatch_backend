@@ -78,10 +78,15 @@ window.addEventListener("load", () => {
 
 stompClient.connect({}, function (frame) {
     stompClient.subscribe('/topic/alerts', function (message) {
-        console.log("수신된 메시지:", message.body);
 
         var alertData = JSON.parse(message.body);
         localStorage.removeItem("alertData");
+
+        document.getElementById("detectionSizeDisplay").textContent = alertData.detectionSize;
+//        console.log(document.getElementById("detectionSizeDisplay")); // null이 아니어야 합니다.
+
+        console.log("전체 메시지 데이터:", alertData); // 메시지 전체 확인
+
 
         if (!alertData || !alertData.riskLevel || !alertData.imageUrl) {
             console.log("유효하지 않은 WebSocket 데이터:", alertData);
@@ -195,51 +200,10 @@ function showConfirmPopup() {
     document.getElementById("secondConfirmModal").style.display = "block"; // secondConfirmModal 표시
 }
 
-/*function refreshTable() {
-    const tableBody = document.querySelector("tbody");
-    const loadingIndicator = document.getElementById("loadingIndicator");
-
-    // 로딩 표시
-    loadingIndicator.style.display = "block";
-
-    // 서버에서 데이터 가져오기
-    fetch('/api/detectionDetails?page=0&size=100') // 원하는 페이지와 사이즈 지정
-        .then(response => response.json())
-        .then(data => {
-            // 테이블 초기화
-            tableBody.innerHTML = "";
-
-            // 새로운 데이터로 테이블 업데이트
-            data.forEach(detection => {
-                const row = document.createElement("tr");
-
-                row.innerHTML = `
-                    <td>${detection.riskLevel || 'N/A'}</td>
-                    <td>
-                        ${detection.imageUrlBase64
-                            ? `<img src="data:image/jpeg;base64,${detection.imageUrlBase64}" alt="Detection Image" width="175"/>`
-                            : `<img src="/images/placeholder.png" alt="No Image Available" width="100"/>`}
-                    </td>
-                    <td>${detection.formattedDetectionTime || 'N/A'}</td>
-                    <td>${detection.content || 'N/A'}</td>
-                    <td>${detection.cameraInstall?.location || 'N/A'}</td>
-                    <td>${detection.cameraInstall?.cameraId || 'N/A'}</td>
-                    <td>${detection.warning?.resolved || 'N/A'}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        })
-        .catch(error => {
-            console.error("테이블 새로고침 중 오류 발생:", error);
-        })
-        .finally(() => {
-            // 로딩 숨기기
-            loadingIndicator.style.display = "none";
-        });
-}*/
 
 function closeSecondConfirmModal() {
     document.getElementById("secondConfirmModal").style.display = "none"; // secondConfirmModal 숨김
+
 
     if (currentAlertSound) {
         currentAlertSound.pause(); // 소리 정지
@@ -278,7 +242,7 @@ function closeSecondConfirmModal() {
                 localStorage.removeItem("alertData"); // 처리된 데이터 제거
                 document.getElementById("alertPopup").style.display = "none";
 //                    location.reload(true); // 새로고침
-//                refreshTable()
+
 
             })
             .catch(error => {

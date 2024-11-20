@@ -22,5 +22,6 @@ public class DetectionAlert {
     private String content;
     private String location;
     private String riskLevel;
+    private int detectionSize;
 }
 

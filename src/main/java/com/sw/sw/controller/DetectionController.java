@@ -36,13 +36,13 @@ public class DetectionController {
         return "events_front";
     }
 
-//    @GetMapping("/api/detectionDetails")
-//    @ResponseBody
-//    public ResponseEntity<List<Detection>> getDetectionDetails(@RequestParam(defaultValue = "0") int page,
-//                                                               @RequestParam(defaultValue = "100") int size) {
-//        List<Detection> details = detectionService.getDetectionDetails(page, size);
-//        return ResponseEntity.ok(details);
-//    }
+ /*   @GetMapping("/api/detectionDetails")
+    @ResponseBody
+    public ResponseEntity<List<Detection>> getDetectionDetails(@RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "100") int size) {
+        List<Detection> details = detectionService.getDetectionDetails(page, size);
+        return ResponseEntity.ok(details);
+    }*/
 
     @PutMapping("/resolveWarning")
     @ResponseBody
