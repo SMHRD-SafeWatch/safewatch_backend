@@ -66,7 +66,7 @@ async function fetchResolvedData() {
   }
 }
 
-function startPollingResolvedData(interval = 5000) { // 5000ms (5초) 기본값
+function startPollingResolvedData(interval = 10000) {
     setInterval(async () => {
         await fetchResolvedData();
     }, interval);
@@ -188,9 +188,9 @@ function clearExistingResources() {
 // ws 핸들러
 let reconnectInterval = 3000;
 let maxReconnectAttempts = 100;
+let reconnectAttempts = 0;
 function createWebSocketConnection(port, canvasElement) {
             const wsClient = new WebSocket('ws://localhost:' + port);
-            let reconnectAttempts = 0;
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
@@ -208,6 +208,7 @@ function createWebSocketConnection(port, canvasElement) {
                   setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
                 } else {
                   console.error('재연결 시도 횟수를 초과했습니다.');
+                    alert('서버와의 연결에 실패했습니다. 이 문제가 계속 발생하면 시스템 관리자에게 문의해 주세요.');
                 }
             };
 
