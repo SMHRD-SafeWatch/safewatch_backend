@@ -18,10 +18,6 @@ public class AdminController {
     @GetMapping("/settings")
     public String settings(Model model) { return "settings"; }
 
-    // warning_front page 이동
-    @GetMapping("/warning_front")
-    public String warning_front(){ return "warning_front"; }
-
     // monitoring page 이동
     @GetMapping("/monitoring")
     public String monitoring(){
@@ -38,6 +34,10 @@ public class AdminController {
         model.addAttribute("adm", null);
         return "login";
     }
+
+    // main page 이동
+    @GetMapping("/safewatch")
+    public String showMainPage() { return "main"; }
 
     // 로그인
     @PostMapping("/login")
