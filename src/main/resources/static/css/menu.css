@@ -101,6 +101,11 @@ body {
     border-bottom-right-radius: 8px;
 }
 
+.menu-detection-size {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
 .menu-icon1 {
     mask: url('../icon/monitoring.svg') no-repeat center;
 }

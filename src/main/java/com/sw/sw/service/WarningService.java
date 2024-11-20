@@ -107,4 +107,7 @@ public class WarningService {
     public boolean hasUnresolvedWarnings() {
         return warningRepository.existsUnresolvedWarnings();
     }
+
+    // 개수 확인
+    public long countUnresolvedWarnings() { return warningRepository.countUnresolvedWarnings(); }
 }

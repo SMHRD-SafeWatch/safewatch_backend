@@ -1,6 +1,7 @@
 package com.sw.sw.controller;
 
 import com.sw.sw.entity.Detection;
+import com.sw.sw.repository.DetectionRepository;
 import com.sw.sw.service.DatabaseChangeService;
 import com.sw.sw.service.DetectionService;
 import lombok.RequiredArgsConstructor;

@@ -57,8 +57,8 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
             beforeColor = "#FF4500"; // 빨강
             textColor2 = "#FF4500"; // 텍스트 색상
         } else if (riskLevel === "MEDIUM") {
-            beforeColor = "#FFD700"; // 노랑
-            textColor2 = "#FFD700";
+            beforeColor = "rgb(255,149,55,1)";
+            textColor2 = "rgb(255,149,55,1)";
         } else {
             beforeColor = "gray"; // 기본 회색
             textColor2 = "gray";
@@ -78,10 +78,11 @@ window.addEventListener("load", () => {
 
 stompClient.connect({}, function (frame) {
     stompClient.subscribe('/topic/alerts', function (message) {
-        console.log("수신된 메시지:", message.body);
 
         var alertData = JSON.parse(message.body);
         localStorage.removeItem("alertData");
+
+        console.log("전체 메시지 데이터:", alertData); // 메시지 전체 확인
 
         if (!alertData || !alertData.riskLevel || !alertData.imageUrl) {
             console.log("유효하지 않은 WebSocket 데이터:", alertData);
@@ -135,8 +136,8 @@ stompClient.connect({}, function (frame) {
                 beforeColor = "#FF4500"; // 빨강
                 textColor = "#FF4500";
             } else if (level === "MEDIUM") {
-                beforeColor = "#FFD700"; // 노랑
-                textColor = "#FFD700";
+                beforeColor = "rgb(255,149,55,1)"; // 노랑
+                textColor = "rgb(255,149,55,1)";
             } else {
                 beforeColor = "gray"; // 기본 회색
                 textColor = "gray";
