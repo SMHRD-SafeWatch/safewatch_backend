@@ -183,6 +183,7 @@ function clearExistingResources() {
         clients.forEach(client => client.close());
         clients = [];
     }
+    reconnectAttempts = 0;
 }
 
 // ws 핸들러
@@ -235,7 +236,6 @@ function changeSection(section) {
 function renderVideos() {
     container.innerHTML = '';
     clearExistingResources();
-
     const filteredPortList = portList.filter(portObj => portObj.section === currentSection);
 
 
@@ -248,7 +248,7 @@ function renderVideos() {
         divContainer.classList.add('video-card');
 
         let canvas;
-        if(!portObj.cameraId.includes("API")){
+        if(!portObj.cameraId.includes("CAM")){
             canvas = document.createElement('canvas');
             canvas.id = portObj.cameraId;
             canvas.style.width = "306.66px";

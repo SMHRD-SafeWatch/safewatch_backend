@@ -22,7 +22,7 @@ async function fetchData() {
 
         // `camera_url`과 `port`만 추출한 리스트 생성
         const rtspList = cameras.map(camera => {
-            if (!camera.cameraId.includes("API")) {
+            if (!camera.cameraId.includes("CAM")) {
                 return {
                     url: camera.cameraUrl,
                     port: camera.port
@@ -59,9 +59,9 @@ function openStream(obj){
             };
 
             if (obj.port===3008) {
-                ffmpegOptions['-b:v'] = '1500k';
-                ffmpegOptions['-maxrate'] = '1500k';
-                ffmpegOptions['-bufsize'] = '3000k';
+                ffmpegOptions['-b:v'] = '1400k';
+                ffmpegOptions['-maxrate'] = '1400k';
+                ffmpegOptions['-bufsize'] = '2000k';
             }
 
             var stream = new Stream({
