@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Events_front</title>
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/events.css">
+<!--  <link rel="stylesheet" href="css/styles.css">-->
+
+</head>
+<body>
+<div class="sidebar">
+  <div class="logo">
+          <span class="logo-icon">
+            <img src="icon/safewatch.svg" alt="Safe Watch Icon">
+          </span>
+    <h2>Safe Watch</h2>
+  </div>
+  <div class="menu">
+    <ul>
+      <li class="menu-item" onclick="selectMenu('monitoring')">
+        <span class="menu-icon1"></span>
+        <span class="menu-text">Monitoring</span>
+      </li>
+      <li class="menu-item active" onclick="selectMenu('events')">
+        <img class="menu-icon2" src="../icon/events_click.svg" alt="Events Icon">
+        <span class="menu-text">Events</span>
+        <span class="menu-detection-size"></span>
+      </li>
+      <li class="menu-item" onclick="selectMenu('analytics')">
+        <span class="menu-icon3"></span>
+        <span class="menu-text">Analytics</span>
+      </li>
+    </ul>
+  </div>
+  <div class="menu-item" onclick="selectMenu('settings')">
+    <span class="menu-icon4"></span>
+    <span class="menu-text">Settings</span>
+  </div>
+</div>
+<div class="main-content">
+  <header>
+    <h1 class="main-text">Events</h1>
+    <p>날짜</p>
+  </header>
+  <div class="container">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>경고 단계</th>
+        <th>사진</th>
+        <th>일자</th>
+        <th>사건</th>
+        <th>구역</th>
+        <th>카메라</th>
+        <th>확인</th>
+      </tr>
+      </thead>
+      <tbody>
+<!--      <tbody th:fragment="tableBody" th:each="detection : ${details}">-->
+<!--      <tr>-->
+<!--        <td th:text="${detection?.riskLevel}"></td>-->
+<!--        <td>-->
+<!--          &lt;!&ndash; imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 &ndash;&gt;-->
+<!--          <img-->
+<!--                  th:if="${detection.imageUrlBase64 != null}"-->
+<!--                  th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"-->
+<!--                  alt="Detection Image"-->
+<!--                  width="175"-->
+<!--                  th:attr="data-risk-level=${detection.riskLevel},-->
+<!--             data-detection-time=${detection.formattedDetectionTime},-->
+<!--             data-location=${detection.cameraInstall?.location},-->
+<!--             data-camera-id=${detection.cameraInstall?.cameraId},-->
+<!--             data-content=${detection.content}"-->
+<!--                  onclick="handleImageClick(this)"-->
+<!--          />-->
+
+
+<!--          &lt;!&ndash; imageUrlBase64가 null일 때 기본 이미지를 표시 &ndash;&gt;-->
+<!--          <img th:if="${detection.imageUrlBase64 == null}"-->
+<!--               th:src="@{/images/placeholder.png}"-->
+<!--               alt="No Image Available" width="100"/>-->
+<!--        </td>-->
+<!--        <td th:text="${detection?.formattedDetectionTime}"></td>-->
+<!--        <td th:text="${detection?.content}"></td>-->
+<!--        <td th:text="${detection.cameraInstall?.location}"></td>-->
+<!--        <td th:text="${detection.cameraInstall?.cameraId}"></td>-->
+<!--        <td th:text="${detection.warning?.resolved}"></td>-->
+
+<!--      </tr>-->
+<!--      &lt;!&ndash;디버깅 추가&ndash;&gt;-->
+
+      </tbody>
+    </table>
+    <ul class="pagination">
+      <li><a href="javascript:void(0);" onclick="previousPage()" id="prevButton">◀</a></li>
+      <li id="paginationNumbers"></li> <!-- 페이지 번호를 표시할 위치 -->
+      <li><a href="javascript:void(0);" onclick="nextPage()" id="nextButton">▶</a></li>
+    </ul>
+  </div>
+</div>
+
+<audio id="alertSound01" src="sounds/sound_01.mp3" preload="auto"></audio>
+<audio id="alertSound02" src="sounds/sound_02.mp3" preload="auto"></audio>
+<audio id="alertSound03" src="sounds/sound_03.mp3" preload="auto"></audio>
+
+<div id="alertModal" class="alert-modal">
+  <div class="modal-content">
+    <h2 class="modal-title" id="alertText2">
+      <!--      <span id="alertIcon2" class="alert-icon"></span>-->
+      <!--      <span >알림</span>-->
+    </h2>
+
+    <p id="modalContent" class="modal-description"></p>
+
+    <div class="modal-content-body">
+      <img src="" alt="Alert Image" id="modalImage" class="modal-image">
+      <div class="modal-details">
+        <div class="detail-section">
+          <p class="section-title">알림 위치</p>
+          <div class="detail-row">
+            <div class="detail-item icon-location" id="modalLocation"></div>
+            <div class="detail-item icon-camera" id="modalCameraId"></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">알림 일시</p>
+          <div class="detail-row">
+            <div class="detail-item icon-calendar" id="modalDate"></div>
+            <div class="detail-item icon-clock" id="modalTime"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="confirm-btn" onclick="closeAlertModal()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!--새로 만든 모달 -->
+<div id="alertPopup" class="alert-popup">
+  <div class="modal-content">
+    <h2 class="modal-title" id="popupText2">
+      <!--      <span id="popupIcon2" class="alert-icon"></span>-->
+      <!--      <span >팝업 알림</span>-->
+    </h2>
+    <p id="popupContent" class="modal-description"></p>
+    <div class="modal-content-body">
+      <img src="" alt="Popup Image" id="popupImage" class="modal-image">
+      <div class="modal-details">
+        <div class="detail-section">
+          <p class="section-title">팝업 위치</p>
+          <div class="detail-row">
+            <div class="detail-item icon-location" id="popupLocation"></div>
+            <div class="detail-item icon-camera" id="popupCameraId"></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <p class="section-title">팝업 일시</p>
+          <div class="detail-row">
+            <div class="detail-item icon-calendar" id="popupDetectionDate"></div>
+            <div class="detail-item icon-clock" id="popupDetectionTime"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="confirm-btn" onclick="showConfirmPopup()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Second Confirm Modal -->
+<div id="secondConfirmModal" class="second-confirm-modal">
+  <h2 class="second-confirm-title">확인하셨습니까?</h2>
+  <div class="second-confirm-btn">
+    <button onclick="closeSecondConfirmModal()">확인</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/events.js"></script>
+
+</body>
+</html>

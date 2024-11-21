@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Safe Watch</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="main-content" id="main-content">
+    <div class="logo">
+            <span class="logo-icon">
+                <img src="icon/safewatch_black.svg" alt="Safe Watch Icon">
+            </span>
+        <span class="logo-text">Safe<br>Watch</span>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        localStorage.setItem("hasSeenMain", "true");
+
+        setTimeout(() => {
+            document.getElementById("main-content").classList.add("hidden");
+
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 700);
+        },800);
+    });
+</script>
+</body>
+</html>
