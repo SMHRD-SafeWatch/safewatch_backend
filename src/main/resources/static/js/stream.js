@@ -13,7 +13,7 @@ async function fetchCameraData() {
     // JSON 데이터로 변환
     const cameras = await response.json();
 
-    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId, cameraUrl: camera.cameraUrl }));
+    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId, cameraUrl: camera.cameraUrl, section: camera.location }));
     renderVideos();
   } catch (error) {
     console.error('Error fetching camera data:', error);
@@ -222,14 +222,26 @@ function createWebSocketConnection(port, canvasElement) {
             players.push(wsPlayer);
         }
 
+let currentSection = 'section 1';
+function changeSection(section) {
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    document.getElementById(section).classList.add('active');
+    currentSection = section;
+    currentPage = 1;
+    renderVideos();
+    updatePageInfo();
+}
 
 function renderVideos() {
     container.innerHTML = '';
     clearExistingResources();
 
+    const filteredPortList = portList.filter(portObj => portObj.section === currentSection);
+
+
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentItems = portList.slice(startIndex, endIndex);
+    const currentItems = filteredPortList.slice(startIndex, endIndex);
 
     currentItems.forEach((portObj, index) => {
         const divContainer = document.createElement('div');
@@ -300,8 +312,10 @@ function updatePageInfo() {
   const pageInfo = document.getElementById('page-info');
   pageInfo.innerHTML = ''; // 기존 내용 제거
 
-  const totalPages = Math.ceil(portList.length / itemsPerPage);
+//  const totalPages = Math.ceil(portList.length / itemsPerPage);
 
+  const filteredPortList = portList.filter(portObj => portObj.section === currentSection);
+  const totalPages = Math.ceil(filteredPortList.length / itemsPerPage);
   // 페이지 1개 이하면
   if (totalPages <= 1) {
       return; // 페이지네이션 버튼을 생성하지 않고 종료
