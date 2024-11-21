@@ -181,7 +181,7 @@ let reconnectInterval = 3000; // 재연결 간격 (밀리초)
 let maxReconnectAttempts = Infinity; // 무한 재연결
 let reconnectAttempts = 0;
 function createWebSocketConnection(port, canvasElement) {
-            const wsClient = new WebSocket('ws://localhost:' + port);
+            const wsClient = new WebSocket('ws://192.168.20.51:' + port);
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
