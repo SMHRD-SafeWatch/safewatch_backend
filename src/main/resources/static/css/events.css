@@ -92,9 +92,9 @@ img.thumbnail {
     padding: 22px 28px;
     border-radius: 4px;
     width: 800px;
-/*
-    height: 435px;
-*/
+    /*
+        height: 435px;
+    */
     max-width: 90%;
     position: relative;
     justify-content: center;
@@ -149,12 +149,12 @@ img.thumbnail {
 
 .modal-content-body {
     display: flex;
-    gap: 35px;
+    gap: 28px;
     margin-bottom: 10px;
 }
 
 .modal-image {
-    width: 400px;
+    width: 380px;
     height: 270px;
     border-radius: 4px;
 }

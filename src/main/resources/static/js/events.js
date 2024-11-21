@@ -17,8 +17,6 @@ function resetCurrentDetectionId() {
     currentDetectionId = null;
 }
 
-
-
 function handleImageClick(imgElement) {
     // 이미지 데이터와 기타 속성 읽기
     const imageUrl = imgElement.getAttribute("src"); // Base64 이미지 URL
@@ -59,8 +57,8 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
             beforeColor = "#FF4500"; // 빨강
             textColor2 = "#FF4500"; // 텍스트 색상
         } else if (riskLevel === "MEDIUM") {
-            beforeColor = "#FFD700"; // 노랑
-            textColor2 = "#FFD700";
+            beforeColor = "rgb(255,149,55,1)";
+            textColor2 = "rgb(255,149,55,1)";
         } else {
             beforeColor = "gray"; // 기본 회색
             textColor2 = "gray";
@@ -85,14 +83,8 @@ stompClient.connect({}, function (frame) {
         var alertData = JSON.parse(message.body);
         localStorage.removeItem("alertData");
 
-        document.getElementById("detectionSizeDisplay").textContent = alertData.detectionSize;
-//        console.log(document.getElementById("detectionSizeDisplay")); // null이 아니어야 합니다.
-
-        console.log("전체 메시지 데이터:", alertData); // 메시지 전체 확인
-
 
         if (!alertData || !alertData.riskLevel || !alertData.imageUrl) {
-            console.log("유효하지 않은 WebSocket 데이터:", alertData);
             return; // 데이터가 유효하지 않으면 처리 중단
         }
 
@@ -142,8 +134,8 @@ stompClient.connect({}, function (frame) {
                 beforeColor = "#FF4500"; // 빨강
                 textColor = "#FF4500";
             } else if (level === "MEDIUM") {
-                beforeColor = "#FFD700"; // 노랑
-                textColor = "#FFD700";
+                beforeColor = "rgb(255,149,55,1)"; // 노랑
+                textColor = "rgb(255,149,55,1)";
             } else {
                 beforeColor = "gray"; // 기본 회색
                 textColor = "gray";
@@ -166,20 +158,27 @@ stompClient.connect({}, function (frame) {
 
 
 function showAlertPopup() {
-        // 모달을 열기 전에 데이터 유효성 검사
+    // 소리 알림 상태 확인
+    const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
+    const volumeLevel = localStorage.getItem('volumeLevel') || 50;
+
+    // 모달을 열기 전에 데이터 유효성 검사
     const popupContent = document.getElementById("popupContent").textContent.trim();
     const popupImage = document.getElementById("popupImage").src;
 
     if (!popupContent || popupContent === "N/A") {
-        console.log("유효하지 않은 데이터로 인해 모달을 표시하지 않습니다.");
         return; // 유효하지 않은 데이터면 모달 열지 않음
     }
 
     if (!popupImage || popupImage.includes("placeholder.png")) {
-        console.log("이미지가 없어서 모달을 표시하지 않습니다.");
         return; // 이미지가 없을 경우에도 모달 열지 않음
     }
 
+    if (!soundEnabled) {
+        console.log("소리 알림이 꺼져 있으므로 소리를 재생하지 않습니다.");
+        document.getElementById("alertPopup").style.display = "flex";
+        return;
+    }
 
     const level = document.getElementById("popupText2").textContent.split(':')[1].trim(); // 위험 수준 추출
     if (level === "HIGH") {
@@ -192,6 +191,7 @@ function showAlertPopup() {
 
     // 사용자 상호작용이 발생한 경우에만 play() 호출
     if (userInteracted && currentAlertSound) {
+        currentAlertSound.volume = volumeLevel / 100; // 설정된 볼륨 적용
         currentAlertSound.loop = true;
         currentAlertSound.currentTime = 0;
         currentAlertSound.play().catch((error) => {

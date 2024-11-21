@@ -85,6 +85,10 @@ body {
     font-size: 13px;
 }
 
+.menu-item {
+    position: relative;
+}
+
 .menu-item.active::before {
     content: '';
     width: 6px;
@@ -97,11 +101,13 @@ body {
     border-bottom-right-radius: 8px;
 }
 
+.menu-detection-size {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
 .menu-icon1 {
     mask: url('../icon/monitoring.svg') no-repeat center;
-}
-.menu-icon2 {
-    mask: url('../icon/events.svg') no-repeat center;
 }
 .menu-icon3 {
     mask: url('../icon/analytics.svg') no-repeat center;
@@ -110,9 +116,13 @@ body {
     mask: url('../icon/settings.svg') no-repeat center;
 }
 
+.menu-icon2 {
+    width: 24px;
+    height: 24px;
+    margin: 0px 10px 0px 0px;
+}
 
 .menu-icon1,
-.menu-icon2,
 .menu-icon3,
 .menu-icon4  {
     width: 24px;
@@ -122,10 +132,13 @@ body {
 }
 
 .menu-item.active .menu-icon1,
-.menu-item.active .menu-icon2,
 .menu-item.active .menu-icon3,
 .menu-item.active .menu-icon4 {
     background-color: #00E5FF;
+}
+
+.menu-item.active .menu-text {
+    color: #00E5FF !important; /* 강제로 우선순위 지정 */
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -23,8 +23,9 @@
         <span class="menu-text">Monitoring</span>
       </li>
       <li class="menu-item active" onclick="selectMenu('events')">
-        <span class="menu-icon2"></span>
+        <img class="menu-icon2" src="../icon/events_click.svg" alt="Events Icon">
         <span class="menu-text">Events</span>
+        <span class="menu-detection-size"></span>
       </li>
       <li class="menu-item" onclick="selectMenu('analytics')">
         <span class="menu-icon3"></span>
@@ -37,7 +38,6 @@
     <span class="menu-text">Settings</span>
   </div>
 </div>
-
 <div class="main-content">
   <header>
     <h1 class="main-text">Events</h1>
@@ -98,7 +98,6 @@
       <li><a href="javascript:void(0);" onclick="nextPage()" id="nextButton">▶</a></li>
     </ul>
   </div>
-    <p>총 미처리 알림 수: <span id="detectionSizeDisplay"></span></p>
 </div>
 
 <audio id="alertSound01" src="sounds/sound_01.mp3" preload="auto"></audio>
