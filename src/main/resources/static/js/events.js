@@ -442,7 +442,6 @@ function updateTable(detections) {
                 `;
 
 
-
                 tableBody.appendChild(row);
             });
              resetPagination();
