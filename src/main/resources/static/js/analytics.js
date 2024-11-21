@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // 주별 알림 건수 
+    // 주별 알림 건수
     function updateWeeklyAlerts(year, weekOfYear, data) {
         const startOfWeek = getISOStartOfWeek(year, weekOfYear);
 

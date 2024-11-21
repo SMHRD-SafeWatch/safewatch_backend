@@ -190,7 +190,7 @@ let reconnectInterval = 3000;
 let maxReconnectAttempts = 100;
 let reconnectAttempts = 0;
 function createWebSocketConnection(port, canvasElement) {
-            const wsClient = new WebSocket('ws://localhost:' + port);
+            const wsClient = new WebSocket('ws://192.168.20.51:' + port);
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
