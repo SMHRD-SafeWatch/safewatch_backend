@@ -30,8 +30,8 @@ public class DetectionController {
                              @RequestParam(defaultValue = "100") int size,Model model) {
         // 전체 데이터 로드
 
-        List<Detection> details = detectionService.getDetectionDetails(page, size);
-        model.addAttribute("details", details);
+//        List<Detection> details = detectionService.getDetectionDetails(page, size);
+//        model.addAttribute("details", details);
         return "events_front";
     }
 
@@ -41,9 +41,6 @@ public class DetectionController {
                                              @RequestParam(defaultValue = "100") int size,Model model) {
         // Detection 엔티티를 DTO로 변환하여 반환
         List<DetectionAsys> detections = detectionService.getAllDetections(page, size);
-
-        System.out.println("Returning detections: " + detections);
-
         return detections;
 
     }
@@ -52,7 +49,6 @@ public class DetectionController {
     @PutMapping("/resolveWarning")
     @ResponseBody
     public ResponseEntity<String> resolveWarning(@RequestParam("detectionId") Long detectionId) {
-        System.out.println("Received detectionId: " + detectionId);
         boolean updated = detectionService.updateResolvedStatus(detectionId);
         if (updated) {
             return ResponseEntity.ok("Warning resolved successfully.");

@@ -134,9 +134,26 @@ img.thumbnail {
     -webkit-mask: url('../icon/warning.svg') no-repeat center;
     mask-size: contain;
     -webkit-mask-size: contain;
-    background-color: red;
+    background-color: gray;
     vertical-align: middle;
     margin: 0 5px 4px 0;
+}
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-icon.high {
+    background-color: #FF4500;
+}
+
+.alert-icon.medium {
+    background-color: rgb(255,149,55,1);
+}
+
+.alert-icon.low {
+    background-color: gray;
 }
 
 .modal-description {
