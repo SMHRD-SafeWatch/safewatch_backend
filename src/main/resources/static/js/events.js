@@ -92,6 +92,7 @@ stompClient.connect({}, function (frame) {
 
         console.log("WebSocket 연결 상태:", stompClient.connected);
 
+
         currentDetectionId = alertData.detectionId;
 
         if (detectionTimeout) clearTimeout(detectionTimeout);
