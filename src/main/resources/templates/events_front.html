@@ -5,7 +5,6 @@
   <title>Events_front</title>
   <link rel="stylesheet" href="css/menu.css">
   <link rel="stylesheet" href="css/events.css">
-<!--  <link rel="stylesheet" href="css/styles.css">-->
 
 </head>
 <body>
@@ -56,38 +55,7 @@
         <th>확인</th>
       </tr>
       </thead>
-      <tbody th:fragment="tableBody" th:each="detection : ${details}">
-      <tr>
-        <td th:text="${detection?.riskLevel}"></td>
-        <td>
-          <!-- imageUrlBase64가 null이 아닐 때 인코딩된 이미지를 표시 -->
-          <img
-                  th:if="${detection.imageUrlBase64 != null}"
-                  th:src="'data:image/jpeg;base64,' + ${detection.imageUrlBase64}"
-                  alt="Detection Image"
-                  width="175"
-                  th:attr="data-risk-level=${detection.riskLevel},
-             data-detection-time=${detection.formattedDetectionTime},
-             data-location=${detection.cameraInstall?.location},
-             data-camera-id=${detection.cameraInstall?.cameraId},
-             data-content=${detection.content}"
-                  onclick="handleImageClick(this)"
-          />
-
-
-          <!-- imageUrlBase64가 null일 때 기본 이미지를 표시 -->
-          <img th:if="${detection.imageUrlBase64 == null}"
-               th:src="@{/images/placeholder.png}"
-               alt="No Image Available" width="100"/>
-        </td>
-        <td th:text="${detection?.formattedDetectionTime}"></td>
-        <td th:text="${detection?.content}"></td>
-        <td th:text="${detection.cameraInstall?.location}"></td>
-        <td th:text="${detection.cameraInstall?.cameraId}"></td>
-        <td th:text="${detection.warning?.resolved}"></td>
-
-      </tr>
-      <!--디버깅 추가-->
+      <tbody>
 
       </tbody>
     </table>
@@ -141,8 +109,7 @@
 <div id="alertPopup" class="alert-popup">
   <div class="modal-content">
     <h2 class="modal-title" id="popupText2">
-      <!--      <span id="popupIcon2" class="alert-icon"></span>-->
-      <!--      <span >팝업 알림</span>-->
+
     </h2>
     <p id="popupContent" class="modal-description"></p>
     <div class="modal-content-body">
