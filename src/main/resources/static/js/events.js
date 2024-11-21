@@ -79,9 +79,9 @@ window.addEventListener("load", () => {
 
 stompClient.connect({}, function (frame) {
     stompClient.subscribe('/topic/alerts', function (message) {
+        console.log("수신된 메시지:", message.body);
 
         var alertData = JSON.parse(message.body);
-        localStorage.removeItem("alertData");
 
 
         if (!alertData || !alertData.riskLevel || !alertData.imageUrl) {
@@ -407,43 +407,3 @@ function nextPage() {
     showPageGroup(currentPage);
   }
 }
-
-
-
-// 테이블 업데이트 함수
-function updateTable(detections) {
-    const tableBody = document.querySelector('tbody'); // tbody 요소 선택
-    tableBody.innerHTML = ''; // 기존 테이블 내용 초기화
-
-    detections.forEach(detection => {
-        // 새로운 행 생성
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-            <td>${detection.riskLevel || ''}</td>
-            <td>
-                ${
-                    detection.imageUrlBase64
-                            ? `<img src="data:image/jpeg;base64,${detection.imageUrlBase64}" alt="Detection Image" width="175"
-                                   data-risk-level="${detection.riskLevel || ''}"
-                                   data-detection-time="${detection.formattedDetectionTime || ''}"
-                                   data-location="${detection.cameraInstall?.location || ''}"
-                                   data-camera-id="${detection.cameraInstall?.cameraId || ''}"
-                                   data-content="${detection.content || ''}"
-                                   onclick="handleImageClick(this)" />`
-                            : `<img src="/images/placeholder.png" alt="No Image Available" width="100" />`
-                        }
-                    </td>
-                    <td>${detection.formattedDetectionTime || ''}</td>
-                    <td>${detection.content || ''}</td>
-                    <td>${detection.location || ''}</td>
-                    <td>${detection.cameraId || ''}</td>
-                    <td>${detection.resolved || ''}</td>
-                `;
-
-
-
-                tableBody.appendChild(row);
-            });
-             resetPagination();
-        }
