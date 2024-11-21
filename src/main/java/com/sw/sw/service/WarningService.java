@@ -25,12 +25,13 @@ public class WarningService {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
 
-        List<Warning> warnings = warningRepository.findByWarningTimeBetweenWithDetection(startOfDay, endOfDay);
+        List<Object[]> results = warningRepository.findWarningTimeAndRiskLevel(startOfDay, endOfDay);
 
-        return warnings.stream()
+        // 위험 수준별 그룹화
+        return results.stream()
                 .collect(Collectors.groupingBy(
-                        w -> w.getDetection().getRiskLevel(),
-                        Collectors.summingInt(w -> 1)
+                        result -> (String) result[1], // 위험 수준
+                        Collectors.summingInt(result -> 1) // 건수 합계
                 ));
     }
 
@@ -39,32 +40,47 @@ public class WarningService {
         LocalDate startOfWeek = LocalDate.of(year, 1, 4)
                 .with(WeekFields.ISO.weekBasedYear(), year)
                 .with(WeekFields.ISO.weekOfYear(), weekOfYear)
-                .with(java.time.DayOfWeek.MONDAY);
+                .with(DayOfWeek.MONDAY);
 
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
-        List<Warning> warnings = warningRepository.findByWarningTimeBetweenWithDetection(
+        List<Object[]> results = warningRepository.findWeeklyGroupedByDayAndRiskLevel(
                 startOfWeek.atStartOfDay(), endOfWeek.atTime(23, 59, 59)
         );
 
+        // 요일별 위험 수준별 그룹화
         Map<String, Map<String, Integer>> alertsByDayAndRiskLevel = new LinkedHashMap<>();
-        for (int i = 0; i < 7; i++) {
-            LocalDate day = startOfWeek.plusDays(i);
-            String koreanDay = getKoreanDay(day.getDayOfWeek());
+        results.forEach(row -> {
+            String dayOfWeek = (String) row[0]; // 요일
+            String riskLevel = (String) row[1]; // 위험 수준
+            int count = ((Number) row[2]).intValue(); // 건수
 
-            Map<String, Integer> countsByRiskLevel = warnings.stream()
-                    .filter(w -> w.getWarningTime().toLocalDate().equals(day))
-                    .collect(Collectors.groupingBy(
-                            w -> w.getDetection().getRiskLevel(),
-                            Collectors.summingInt(w -> 1)
-                    ));
-
-            alertsByDayAndRiskLevel.put(koreanDay, countsByRiskLevel);
-        }
+            alertsByDayAndRiskLevel
+                    .computeIfAbsent(dayOfWeek, k -> new HashMap<>())
+                    .put(riskLevel, count);
+        });
 
         return alertsByDayAndRiskLevel;
     }
 
+    // 월별 알림 건수
+    public Map<Integer, Map<String, Integer>> getMonthlyAlerts(int year) {
+        List<Object[]> results = warningRepository.findMonthlyGroupedByMonthAndRiskLevel(year);
+
+        // 월별 위험 수준별 그룹화
+        Map<Integer, Map<String, Integer>> monthlyAlerts = new LinkedHashMap<>();
+        results.forEach(row -> {
+            int month = ((Number) row[0]).intValue(); // 월
+            String riskLevel = (String) row[1]; // 위험 수준
+            int count = ((Number) row[2]).intValue(); // 건수
+
+            monthlyAlerts
+                    .computeIfAbsent(month, k -> new HashMap<>())
+                    .put(riskLevel, count);
+        });
+
+        return monthlyAlerts;
+    }
 
     private String getKoreanDay(DayOfWeek dayOfWeek) {
         switch (dayOfWeek) {
@@ -77,30 +93,6 @@ public class WarningService {
             case SUNDAY: return "일";
             default: return "";
         }
-    }
-
-    // 월별 알림 건수
-    public Map<Integer, Map<String, Integer>> getMonthlyAlerts(int year) {
-        Map<Integer, Map<String, Integer>> monthlyAlerts = new HashMap<>();
-
-        for (int month = 1; month <= 12; month++) {
-            LocalDate startOfMonth = LocalDate.of(year, month, 1);
-            LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
-
-            List<Warning> warnings = warningRepository.findByWarningTimeBetweenWithDetection(
-                    startOfMonth.atStartOfDay(),
-                    endOfMonth.plusDays(1).atStartOfDay()
-            );
-
-            Map<String, Integer> typeCounts = warnings.stream()
-                    .collect(Collectors.groupingBy(
-                            w -> w.getDetection().getRiskLevel(),
-                            Collectors.summingInt(w -> 1)
-                    ));
-
-            monthlyAlerts.put(month, typeCounts);
-        }
-        return monthlyAlerts;
     }
 
     // 확인 안 된(Resolved = 'N') 경고 알림 여부 확인
