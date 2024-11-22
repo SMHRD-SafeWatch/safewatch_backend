@@ -97,6 +97,4 @@ public class DetectionService {
         return false;
     }
 
-
-
 }

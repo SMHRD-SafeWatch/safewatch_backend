@@ -249,19 +249,39 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Error fetching detections:", error));
 });
 
+function updateTableWithRetry(url, retries = 3, delay = 1000) {
+    function fetchData(attempt) {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.length === 0 && attempt < retries) {
+                    console.warn(`No data found. Retrying... (Attempt: ${attempt + 1}/${retries})`);
+                    setTimeout(() => fetchData(attempt + 1), delay);
+                } else {
+                    console.log("Data fetched successfully:", data);
+                    updateTable(data); // 테이블 업데이트
+                }
+            })
+            .catch(error => {
+                if (attempt < retries) {
+                    console.warn(`Fetch failed. Retrying... (Attempt: ${attempt + 1}/${retries})`, error);
+                    setTimeout(() => fetchData(attempt + 1), delay);
+                } else {
+                    console.error("Fetch failed after retries:", error);
+                }
+            });
+    }
+
+    fetchData(0); // 최초 호출
+}
+
 function closeSecondConfirmModal() {
     document.getElementById("secondConfirmModal").style.display = "none"; // secondConfirmModal 숨김
-
-    fetch('/detections') // 서버에서 데이터를 가져올 엔드포인트
-        .then(response => response.json()) // JSON으로 응답 처리
-        .then(data => {
-            setTimeout(() => {
-            updateTable(data);
-        }, 0);
-        })
-        .catch(error => {
-            console.error('Error fetching detections:', error);
-        });
 
     if (currentAlertSound) {
         currentAlertSound.pause(); // 소리 정지
@@ -269,6 +289,17 @@ function closeSecondConfirmModal() {
         currentAlertSound.loop = false; // 반복 제거
         currentAlertSound = null; // 변수 초기화
     }
+
+    fetch('/detections') // 서버에서 데이터를 가져올 엔드포인트
+        .then(response => response.json()) // JSON으로 응답 처리
+        .then(data => {
+
+            updateTable(data);
+
+        })
+        .catch(error => {
+            console.error('Error fetching detections:', error);
+        });
 
 
     var storedAlertData = localStorage.getItem("alertData");
@@ -305,7 +336,8 @@ function closeSecondConfirmModal() {
                 localStorage.removeItem("alertData"); // 처리된 데이터 제거
                 document.getElementById("alertPopup").style.display = "none";
 //                    location.reload(true); // 새로고침
-
+                updateTable(data);
+                updateTableWithRetry('/detections'); // 재시도 로직 사용
 
             })
             .catch(error => {

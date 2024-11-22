@@ -13,7 +13,7 @@ async function fetchCameraData() {
     // JSON 데이터로 변환
     const cameras = await response.json();
 
-    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId, cameraUrl: camera.cameraUrl }));
+    portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId, cameraUrl: camera.cameraUrl, section: camera.location }));
     renderVideos();
   } catch (error) {
     console.error('Error fetching camera data:', error);
@@ -54,10 +54,10 @@ async function fetchResolvedData() {
       if (iconElement) {
         if (cameraStatusMap[cameraId].hasResolvedY) {
           // `resolved` 값이 'Y'인 항목이 하나라도 있으면 경고 아이콘으로 변경
-          iconElement.src = 'icon/notification_warning.svg'; // 예시 아이콘 경로
+          iconElement.src = 'icon/notification_warning.svg';
         } else {
           // 모두 'N'인 경우 기본 아이콘으로 유지
-          iconElement.src = 'icon/notification.svg'; // 예시 아이콘 경로
+          iconElement.src = 'icon/notification.svg';
         }
       }
     });
@@ -65,12 +65,18 @@ async function fetchResolvedData() {
     console.error('Error fetching camera data:', error);
   }
 }
+
+function startPollingResolvedData(interval = 10000) {
+    setInterval(async () => {
+        await fetchResolvedData();
+    }, interval);
+}
+
 // 페이지가 로드되면 데이터 가져오기
 window.onload = async () => {
   await fetchResolvedData();
   await fetchCameraData();
-
-//  setInterval(fetchCameraData, 3000);
+  startPollingResolvedData();
 };
 
 
@@ -83,6 +89,7 @@ const modal_video = document.getElementById("stream");
 const title = document.getElementById("modal-title");
 const modal_icon = document.getElementById("modal-icon");
 
+// 모달 canvas
 function clickModal(port, cameraId, cameraUrl) {
     if (modal_player) {
         modal_player.stop();
@@ -95,14 +102,14 @@ function clickModal(port, cameraId, cameraUrl) {
     modal_video.innerHTML = '';
 
     let stream_video;
-    if(!cameraId.includes("API")){
+    if(!cameraId.includes("CAM")){
         stream_video = document.createElement('canvas');
         stream_video.id = 'canvasModal';
         stream_video.style.width = "700px";
         stream_video.style.height = "480px";
         modal_video.appendChild(stream_video);
 
-        modal_client = new WebSocket('ws://localhost:' + port);
+        modal_client = new WebSocket('ws://192.168.20.51:' + port);
         modal_player = new jsmpeg(modal_client, { canvas: stream_video });
     }else{
         stream_video = document.createElement("img");
@@ -166,6 +173,7 @@ const container = document.getElementById('video-container');
 let players = [];
 let clients = [];
 
+// ws닫기
 function clearExistingResources() {
     if (players.length > 0) {
         players.forEach(player => player.stop());
@@ -175,29 +183,40 @@ function clearExistingResources() {
         clients.forEach(client => client.close());
         clients = [];
     }
+    reconnectAttempts = 0;
 }
 
-let reconnectInterval = 3000; // 재연결 간격 (밀리초)
-let maxReconnectAttempts = Infinity; // 무한 재연결
-let reconnectAttempts = 0;
+// ws 핸들러
+let reconnectInterval = 3000;
+let maxReconnectAttempts = 10;
+const reconnectAttemptsMap = new Map();
 function createWebSocketConnection(port, canvasElement) {
+
+            if (!reconnectAttemptsMap.has(port)) {
+                    reconnectAttemptsMap.set(port, 0);
+                }
+
             const wsClient = new WebSocket('ws://192.168.20.51:' + port);
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
-            };
+                reconnectAttemptsMap.set(port, 0);
+                };
 
             wsClient.onerror = function(err) {
                 console.error('WebSocket error on port:', port, err);
             };
 
             wsClient.onclose = function() {
+                const attempts = reconnectAttemptsMap.get(port) || 0;
                 // 재연결 시도
-                if (reconnectAttempts < maxReconnectAttempts) {
-                  reconnectAttempts++;
+                if (reconnectAttemptsMap.get(port) < maxReconnectAttempts) {
+                  reconnectAttemptsMap.set(port, attempts + 1);
                   setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
                 } else {
                   console.error('재연결 시도 횟수를 초과했습니다.');
+                  alert('서버와의 연결에 실패했습니다. 이 문제가 계속 발생하면 시스템 관리자에게 문의해 주세요.');
+                  reconnectAttemptsMap.delete(port);
                 }
             };
 
@@ -207,28 +226,43 @@ function createWebSocketConnection(port, canvasElement) {
             });
 
             // 연결된 client와 player 저장
-            clients.push(wsClient);
-            players.push(wsPlayer);
+            if (!clients.some(client => client.url === `ws://192.168.20.51:${port}`)) {
+                clients.push(wsClient);
+            }
+            if (!players.some(player => player.canvas === canvasElement)) {
+                players.push(wsPlayer);
+            }
         }
 
+let currentSection = 'section 1';
+function changeSection(section) {
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    document.getElementById(section).classList.add('active');
+    currentSection = section;
+    currentPage = 1;
+    renderVideos();
+    updatePageInfo();
+}
 
 function renderVideos() {
     container.innerHTML = '';
     clearExistingResources();
+    const filteredPortList = portList.filter(portObj => portObj.section === currentSection);
+
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentItems = portList.slice(startIndex, endIndex);
+    const currentItems = filteredPortList.slice(startIndex, endIndex);
 
     currentItems.forEach((portObj, index) => {
         const divContainer = document.createElement('div');
         divContainer.classList.add('video-card');
 
         let canvas;
-        if(!portObj.cameraId.includes("API")){
+        if(!portObj.cameraId.includes("CAM")){
             canvas = document.createElement('canvas');
             canvas.id = portObj.cameraId;
-            canvas.style.width = "400px";
+            canvas.style.width = "306.66px";
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
             canvas.onclick = function() {
@@ -238,7 +272,7 @@ function renderVideos() {
         }else{
             canvas = document.createElement("img");
             canvas.id = portObj.cameraId;
-            canvas.style.width = "300px";
+            canvas.style.width = "306.66px";
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
             canvas.src = portObj.cameraUrl;
@@ -289,8 +323,10 @@ function updatePageInfo() {
   const pageInfo = document.getElementById('page-info');
   pageInfo.innerHTML = ''; // 기존 내용 제거
 
-  const totalPages = Math.ceil(portList.length / itemsPerPage);
+//  const totalPages = Math.ceil(portList.length / itemsPerPage);
 
+  const filteredPortList = portList.filter(portObj => portObj.section === currentSection);
+  const totalPages = Math.ceil(filteredPortList.length / itemsPerPage);
   // 페이지 1개 이하면
   if (totalPages <= 1) {
       return; // 페이지네이션 버튼을 생성하지 않고 종료

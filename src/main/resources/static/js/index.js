@@ -22,7 +22,7 @@ async function fetchData() {
 
         // `camera_url`과 `port`만 추출한 리스트 생성
         const rtspList = cameras.map(camera => {
-            if (!camera.cameraId.includes("API")) {
+            if (!camera.cameraId.includes("CAM")) {
                 return {
                     url: camera.cameraUrl,
                     port: camera.port
@@ -31,7 +31,6 @@ async function fetchData() {
                 return null;
             }
         }).filter(item => item !== null); // null 값 제거
-        console.log(activeStreams);
         // 각 스트림에 대해 openStream 함수 호출
         rtspList.forEach(camera => {
             if(!activeStreams.has(camera.port)){
