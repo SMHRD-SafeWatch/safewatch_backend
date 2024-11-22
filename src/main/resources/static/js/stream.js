@@ -189,13 +189,18 @@ function clearExistingResources() {
 // ws 핸들러
 let reconnectInterval = 3000;
 let maxReconnectAttempts = 100;
-let reconnectAttempts = 0;
+const reconnectAttemptsMap = new Map();
 function createWebSocketConnection(port, canvasElement) {
+
+            if (!reconnectAttemptsMap.has(port)) {
+                    reconnectAttemptsMap.set(port, 0);
+                }
+
             const wsClient = new WebSocket('ws://192.168.20.51:' + port);
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
-                reconnectAttempts = 0;
+                reconnectAttemptsMap.set(port, 0);
                 };
 
             wsClient.onerror = function(err) {
@@ -203,24 +208,30 @@ function createWebSocketConnection(port, canvasElement) {
             };
 
             wsClient.onclose = function() {
+                const attempts = reconnectAttemptsMap.get(port) || 0;
                 // 재연결 시도
                 if (reconnectAttempts < maxReconnectAttempts) {
-                  reconnectAttempts++;
+                  reconnectAttemptsMap.set(port, attempts + 1);
                   setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
                 } else {
                   console.error('재연결 시도 횟수를 초과했습니다.');
-                    alert('서버와의 연결에 실패했습니다. 이 문제가 계속 발생하면 시스템 관리자에게 문의해 주세요.');
+                  alert('서버와의 연결에 실패했습니다. 이 문제가 계속 발생하면 시스템 관리자에게 문의해 주세요.');
+                  reconnectAttemptsMap.delete(port);
                 }
             };
 
-            wsPlayer = new jsmpeg(wsClient, {
+            const wsPlayer = new jsmpeg(wsClient, {
                 canvas: canvasElement,
                 autoplay: true,
             });
 
             // 연결된 client와 player 저장
-            clients.push(wsClient);
-            players.push(wsPlayer);
+            if (!clients.some(client => client.url === `ws://192.168.20.51:${port}`)) {
+                clients.push(wsClient);
+            }
+            if (!players.some(player => player.canvas === canvasElement)) {
+                players.push(wsPlayer);
+            }
         }
 
 let currentSection = 'section 1';
