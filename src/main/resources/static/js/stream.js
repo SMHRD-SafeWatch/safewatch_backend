@@ -102,14 +102,14 @@ function clickModal(port, cameraId, cameraUrl) {
     modal_video.innerHTML = '';
 
     let stream_video;
-    if(!cameraId.includes("API")){
+    if(!cameraId.includes("CAM")){
         stream_video = document.createElement('canvas');
         stream_video.id = 'canvasModal';
         stream_video.style.width = "700px";
         stream_video.style.height = "480px";
         modal_video.appendChild(stream_video);
 
-        modal_client = new WebSocket('ws://localhost:' + port);
+        modal_client = new WebSocket('ws://192.168.20.51:' + port);
         modal_player = new jsmpeg(modal_client, { canvas: stream_video });
     }else{
         stream_video = document.createElement("img");
