@@ -188,7 +188,7 @@ function clearExistingResources() {
 
 // ws 핸들러
 let reconnectInterval = 3000;
-let maxReconnectAttempts = 100;
+let maxReconnectAttempts = 10;
 const reconnectAttemptsMap = new Map();
 function createWebSocketConnection(port, canvasElement) {
 
@@ -210,7 +210,7 @@ function createWebSocketConnection(port, canvasElement) {
             wsClient.onclose = function() {
                 const attempts = reconnectAttemptsMap.get(port) || 0;
                 // 재연결 시도
-                if (reconnectAttempts < maxReconnectAttempts) {
+                if (reconnectAttemptsMap.get(port) < maxReconnectAttempts) {
                   reconnectAttemptsMap.set(port, attempts + 1);
                   setTimeout(() => createWebSocketConnection(port, canvasElement), reconnectInterval);
                 } else {
