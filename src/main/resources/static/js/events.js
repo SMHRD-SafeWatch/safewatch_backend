@@ -25,15 +25,16 @@ function handleImageClick(imgElement) {
     const detectionTime = imgElement.getAttribute("data-detection-time");
     const content = imgElement.getAttribute("data-content");
     const riskLevel = imgElement.getAttribute("data-risk-level");
-
+    const detectionId = imgElement.getAttribute("data-detection-id");
     // 이미지 클릭 처리 로직 실행
-    updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel);
+    updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel, detectionId);
 }
 
 
-
-function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel) {
+var detectionIdAlert = null;
+function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, content, riskLevel, detectionId) {
     // 모달 DOM 요소 가져오기
+    detectionIdAlert = detectionId;
     const modal = document.getElementById('alertModal'); // 'alertModal' ID를 가진 요소 가져오기
     const modalImage = modal.querySelector('#modalImage'); // 모달의 이미지 요소
     // 모달 업데이트
@@ -44,28 +45,45 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
     document.getElementById('modalDate').textContent = detectionTime ? detectionTime.split(' ')[0] : 'N/A';
     document.getElementById('modalTime').textContent = detectionTime ? detectionTime.split(' ')[1] : 'N/A';
 
+    detectionIdAlert
     // 모달 표시
     modal.style.display = 'flex';
 
     const popupTitle2 = document.getElementById("alertText2");
     popupTitle2.textContent = `위험 수준: ${riskLevel}`;
+    const alertIcon2 = document.getElementById("alertIcon2");
+    const alertIcon = document.getElementById("alertIcon");
 
     if (popupTitle2 && riskLevel) {
         let beforeColor;
         let textColor2;
+        let iconColor;
+
         if (riskLevel === "HIGH") {
             beforeColor = "#FF4500"; // 빨강
             textColor2 = "#FF4500"; // 텍스트 색상
+            iconColor = "#FF4500";
+
         } else if (riskLevel === "MEDIUM") {
             beforeColor = "rgb(255,149,55,1)";
             textColor2 = "rgb(255,149,55,1)";
+            iconColor = "rgb(255,149,55,1)";
+
         } else {
             beforeColor = "gray"; // 기본 회색
             textColor2 = "gray";
+            iconColor = "gray";
         }
     modal.style.setProperty('--modal-before-color', beforeColor);
 
     popupTitle2.style.color = textColor2;
+
+    if (alertIcon2) {
+            alertIcon2.style.backgroundColor = iconColor;
+        }
+    if (alertIcon) {
+        alertIcon.style.backgroundColor = iconColor;
+    }
     }
 }
 
@@ -73,13 +91,11 @@ function updateAlertModalContent(imageUrl, location, cameraId, detectionTime, co
 window.addEventListener("load", () => {
     // localStorage 초기화
     localStorage.removeItem("alertData");
-    console.log("localStorage 초기화 완료");
 });
 
 
 stompClient.connect({}, function (frame) {
     stompClient.subscribe('/topic/alerts', function (message) {
-        console.log("수신된 메시지:", message.body);
 
         var alertData = JSON.parse(message.body);
 
@@ -123,23 +139,29 @@ stompClient.connect({}, function (frame) {
 
         const level = alertData.riskLevel;
         const popupTitle = document.getElementById("popupText2");
-        const modalElement = document.getElementById("alertPopup"); // 다른 모달 컨테이너
+        const modalElement = document.getElementById("alertPopup");
+
+        const alertIcon2 = document.getElementById("alertIcon2");
+        const alertIcon = document.getElementById("alertIcon");
 
         popupTitle.textContent = `위험 수준: ${level}`;
 
         if (popupTitle && level) {
             let textColor;
             let beforeColor;
-
+            let iconColor;
             if (level === "HIGH") {
                 beforeColor = "#FF4500"; // 빨강
                 textColor = "#FF4500";
+                iconColor = "#FF4500";
             } else if (level === "MEDIUM") {
                 beforeColor = "rgb(255,149,55,1)"; // 노랑
                 textColor = "rgb(255,149,55,1)";
+                iconColor = "rgb(255,149,55,1)";
             } else {
                 beforeColor = "gray"; // 기본 회색
                 textColor = "gray";
+                iconColor = "gray";
             }
 
             // 특정 모달 컨테이너에만 스타일 적용
@@ -147,6 +169,14 @@ stompClient.connect({}, function (frame) {
 
             // 텍스트 색상 적용
             popupTitle.style.color = textColor;
+
+            if (alertIcon2) {
+                    alertIcon2.style.backgroundColor = iconColor;
+                }
+            if (alertIcon) {
+                alertIcon.style.backgroundColor = iconColor;
+            }
+
             }
             showAlertPopup();
 
@@ -245,7 +275,6 @@ function closeSecondConfirmModal() {
     if (storedAlertData) {
         var alertData = JSON.parse(storedAlertData);
         if (!alertData.detectionId || alertData.resolved === 'Y') {
-            console.log("유효하지 않은 데이터, 처리 중지");
             localStorage.removeItem("alertData");
             return;
         }
@@ -254,7 +283,6 @@ function closeSecondConfirmModal() {
 
         var detectionId = document.getElementById("popupCameraId").getAttribute("data-detection-id");
 
-        console.log("DetectionId from popup:", detectionId);
 
         if (!detectionId) {
                 console.error("DetectionId is null or undefined.");
@@ -274,7 +302,6 @@ function closeSecondConfirmModal() {
         })
             .then(response => response.text())
             .then(data => {
-                console.log("Resolve Warning Response:", data);
                 localStorage.removeItem("alertData"); // 처리된 데이터 제거
                 document.getElementById("alertPopup").style.display = "none";
 //                    location.reload(true); // 새로고침
@@ -295,25 +322,28 @@ function closeSecondConfirmModal() {
 
 function closeAlertModal(){
     document.getElementById("alertModal").style.display = "none";
-}
+
+     fetch('/resolveWarning?detectionId=' + detectionIdAlert, {
+            method: 'PUT'
+        })
+            .then(response => response.text())
+            .then(data => {
+                localStorage.removeItem("alertData"); // 처리된 데이터 제거
+                document.getElementById("alertPopup").style.display = "none";
+
+            })
+            .catch(error => {
+                console.error("AJAX 요청 오류:", error);
+                // 오류 발생 시 currentDetectionId 초기화
+                currentDetectionId = null;
+            })
+            .finally(()=>{
+               currentDetectionId = null;
+            });
+        }
 
 
-// "확인" 컬럼이 N인 행에 클래스 추가
-const tableRows = document.querySelectorAll(".table tbody tr");
-tableRows.forEach(row => {
-    const confirmCell = row.cells[row.cells.length - 1]; // 마지막 cell (확인 컬럼)
-    if (confirmCell.textContent.trim() === 'N') {
-        row.classList.add("dark-row");
-    }
-});
 
-// Warning - 이미지 클릭시
-const images = document.querySelectorAll(".thumbnail");
-images.forEach(img => {
-    img.addEventListener("click", function () {
-        openModal(this.src);
-    });
-});
 
 function openModal(imageSrc) {
     const modal = document.getElementById("alertModal");
@@ -418,7 +448,6 @@ function updateTable(detections) {
     detections.forEach(detection => {
         // 새로운 행 생성
         const row = document.createElement('tr');
-
         row.innerHTML = `
             <td>${detection.riskLevel || ''}</td>
             <td>
@@ -430,6 +459,7 @@ function updateTable(detections) {
                                    data-location="${detection.cameraInstall?.location || ''}"
                                    data-camera-id="${detection.cameraInstall?.cameraId || ''}"
                                    data-content="${detection.content || ''}"
+                                   data-detection-id="${detection.detectionId || ''}"
                                    onclick="handleImageClick(this)" />`
                             : `<img src="/images/placeholder.png" alt="No Image Available" width="100" />`
                         }
@@ -439,8 +469,8 @@ function updateTable(detections) {
                     <td>${detection.location || ''}</td>
                     <td>${detection.cameraId || ''}</td>
                     <td>${detection.resolved || ''}</td>
+                    <input type="hidden" name="detectionId" value="${detection.detectionId || ''}" />
                 `;
-
 
 
                 tableBody.appendChild(row);

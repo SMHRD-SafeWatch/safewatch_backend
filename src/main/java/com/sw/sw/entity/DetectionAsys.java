@@ -17,5 +17,6 @@ public class DetectionAsys {
     private String location;
     private String cameraId;
     private String resolved;
+    private Long detectionId;
 
 }
