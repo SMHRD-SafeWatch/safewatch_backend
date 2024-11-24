@@ -22,7 +22,7 @@ async function fetchData() {
 
         // `camera_url`과 `port`만 추출한 리스트 생성
         const rtspList = cameras.map(camera => {
-            if (!camera.cameraId.includes("CAM")) {
+            if (camera.port >= 3000 && camera.port < 4000) {
                 return {
                     url: camera.cameraUrl,
                     port: camera.port

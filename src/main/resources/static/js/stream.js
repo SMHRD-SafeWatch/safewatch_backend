@@ -14,6 +14,7 @@ async function fetchCameraData() {
     const cameras = await response.json();
 
     portList = cameras.map(camera => ({ wsPort: camera.port, cameraId: camera.cameraId, cameraUrl: camera.cameraUrl, section: camera.location }));
+    portList.sort((a, b) => a.cameraId.localeCompare(b.cameraId));
     renderVideos();
   } catch (error) {
     console.error('Error fetching camera data:', error);
@@ -90,7 +91,7 @@ const title = document.getElementById("modal-title");
 const modal_icon = document.getElementById("modal-icon");
 
 // 모달 canvas
-function clickModal(port, cameraId, cameraUrl) {
+function clickModal(port, cameraId, cameraUrl ,currentTime) {
     if (modal_player) {
         modal_player.stop();
         modal_player = null;
@@ -102,7 +103,7 @@ function clickModal(port, cameraId, cameraUrl) {
     modal_video.innerHTML = '';
 
     let stream_video;
-    if(!cameraId.includes("CAM")){
+    if(port >= 3000 && port< 4000){
         stream_video = document.createElement('canvas');
         stream_video.id = 'canvasModal';
         stream_video.style.width = "700px";
@@ -111,7 +112,7 @@ function clickModal(port, cameraId, cameraUrl) {
 
         modal_client = new WebSocket('ws://192.168.20.51:' + port);
         modal_player = new jsmpeg(modal_client, { canvas: stream_video });
-    }else{
+    }else if(port >= 4000 && port < 5000){
         stream_video = document.createElement("img");
         stream_video.id = 'canvasModal';
         stream_video.style.width = "700px";
@@ -120,7 +121,22 @@ function clickModal(port, cameraId, cameraUrl) {
         title.textContent = cameraId;
 
         stream_video.src = cameraUrl;
-        };
+    }else if(port >= 5000 && port < 6000){
+        stream_video = document.createElement("video");
+        stream_video.id = 'canvasModal';
+        stream_video.style.width = "700px";
+        stream_video.style.height = "480px";
+        modal_video.appendChild(stream_video);
+        title.textContent = cameraId;
+
+        stream_video.src = cameraUrl;
+        stream_video.controls = false;
+        stream_video.autoplay = true;
+        stream_video.muted = true;
+        stream_video.loop = true;
+        stream_video.currentTime = currentTime;
+
+        }
 
     title.textContent = cameraId;
     const hasResolvedY = resolvedList.some(item => item.cameraId === cameraId && item.resolved === 'Y');
@@ -132,6 +148,15 @@ function clickModal(port, cameraId, cameraUrl) {
     const modal = document.getElementById("alertModal");
     const modalImage = document.getElementById("modalImage");
     modal.style.display = "flex"; // 모달 표시
+}
+
+
+// 공유 재생 시간 동기화를 멈춤
+function stopSharedPlaybackSync() {
+    if (sharedPlaybackInterval) {
+        clearInterval(sharedPlaybackInterval);
+        sharedPlaybackInterval = null;
+    }
 }
 
 // 모달 닫기 (X 버튼 클릭 시)
@@ -258,18 +283,20 @@ function renderVideos() {
         const divContainer = document.createElement('div');
         divContainer.classList.add('video-card');
 
+        let currentTime = 0;
+
         let canvas;
-        if(!portObj.cameraId.includes("CAM")){
+        if(portObj.wsPort >= 3000 && portObj.wsPort < 4000){
             canvas = document.createElement('canvas');
             canvas.id = portObj.cameraId;
             canvas.style.width = "306.66px";
             canvas.style.height = "200px";
             canvas.classList.add('canvas-item');
             canvas.onclick = function() {
-            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl);
+            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl, currentTime);
             };
             createWebSocketConnection(portObj.wsPort, canvas);
-        }else{
+        }else if(portObj.wsPort >= 4000 && portObj.wsPort < 5000){
             canvas = document.createElement("img");
             canvas.id = portObj.cameraId;
             canvas.style.width = "306.66px";
@@ -277,10 +304,30 @@ function renderVideos() {
             canvas.classList.add('canvas-item');
             canvas.src = portObj.cameraUrl;
             canvas.onclick = function() {
-            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl);
+            clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl, currentTime);
 
-            };
-        }
+            }
+        }else if(portObj.wsPort >= 5000 && portObj.wsPort < 6000){
+            canvas = document.createElement("video");
+            canvas.id = portObj.cameraId;
+            canvas.style.width = "306.66px";
+            canvas.style.height = "200px";
+            canvas.classList.add('video-item');
+
+            canvas.src = portObj.cameraUrl;
+            canvas.controls = false;
+            canvas.autoplay = true;
+            canvas.muted = true;
+            canvas.loop = true;
+
+            canvas.onclick = function() {
+
+                currentTime = canvas.currentTime; // 현재 재생 시간 저장
+
+                clickModal(portObj.wsPort, portObj.cameraId, portObj.cameraUrl, currentTime);
+            }
+        };
+
 
         const videoInfo = document.createElement('div');
         videoInfo.classList.add('video-info');
