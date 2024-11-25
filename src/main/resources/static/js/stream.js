@@ -1,3 +1,4 @@
+// WebSocket 호스트 자기 아이피로 변경해주기
 let portList = [];
 let resolvedList = [];
 
@@ -110,7 +111,7 @@ function clickModal(port, cameraId, cameraUrl ,currentTime) {
         stream_video.style.height = "480px";
         modal_video.appendChild(stream_video);
 
-        modal_client = new WebSocket('ws://192.168.20.51:' + port);
+        modal_client = new WebSocket('ws://110.0.55.44:' + port);
         modal_player = new jsmpeg(modal_client, { canvas: stream_video });
     }else if(port >= 4000 && port < 5000){
         stream_video = document.createElement("img");
@@ -221,7 +222,7 @@ function createWebSocketConnection(port, canvasElement) {
                     reconnectAttemptsMap.set(port, 0);
                 }
 
-            const wsClient = new WebSocket('ws://192.168.20.51:' + port);
+            const wsClient = new WebSocket('ws://110.0.55.44:' + port);
 
             wsClient.onopen = function() {
                 console.log('WebSocket connection established to port:', port);
@@ -251,7 +252,7 @@ function createWebSocketConnection(port, canvasElement) {
             });
 
             // 연결된 client와 player 저장
-            if (!clients.some(client => client.url === `ws://192.168.20.51:${port}`)) {
+            if (!clients.some(client => client.url === `ws://192.168.0.212:${port}`)) {
                 clients.push(wsClient);
             }
             if (!players.some(player => player.canvas === canvasElement)) {
